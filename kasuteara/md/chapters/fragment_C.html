@@ -1,0 +1,302 @@
+<section class="lecture-header" id="lec-source1" data-title="金子先生パート第1回: コンパイラ入門とフェーズ構造">
+  <h2>言語処理系（１）: コンパイラ入門とフェーズ構造を0から理解する</h2>
+
+  <div class="generated-content lecture-overview">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-high">信頼度: 高</span>
+    <p><strong>この回は何を学ぶか:</strong> 「コンパイラとは何か」という定義から出発し、コンパイラの内部が字句解析・構文解析・中間コード生成・コード最適化・コード生成という一連のフェーズ（工程）に分かれていること、そしてそれらを表管理（記号表）と誤り処理が横断的に支えていることを学びます。最後に <code>int foo(int x){ int y = x*x; return y+2; }</code> という具体的な関数が、字句解析→構文解析→コード生成という3つのフェーズを通ってどう姿を変えていくかを一気通貫でたどります。</p>
+    <p><strong>なぜ学ぶのか:</strong> この回は今学期の「地図」です。次回以降（言語処理系（２）〜（５））で学ぶ実行時メモリ・関数呼出し・文のコード生成・レジスタ見積り・最適化は、すべてこの回で示す「コード生成フェーズ」の中身を1つずつ拡大して見ているにすぎません。フェーズの全体像を先に押さえておくことで、個々のアセンブリ命令が「コンパイラのどの仕事の結果なのか」を見失わずに学習を進められます。</p>
+  </div>
+
+  <div class="intuition-box"><strong>全体像:</strong> コンパイラは、原始プログラム（ソースコード）という「レシピ」を、目的プログラム（アセンブリ・機械語）という「別の言語で書かれた同じ内容のレシピ」に書き換える翻訳者です。翻訳は一発では終わらず、(1)材料を単語ごとに切り分ける（字句解析）、(2)単語の並びが文法的に正しいか調べ、構造を木の形にまとめる（構文解析）、(3)計算機の詳細に依存しない共通の指示書に書き直す（中間コード生成）、(4)指示書の無駄を削る（コード最適化、省略されることもある）、(5)実際の機械の言葉に落とし込む（コード生成）、という順番の工程（フェーズ）を経ます。</div>
+
+  <h3>翻訳系・コンパイラ・アセンブラの違い</h3>
+  <p>まず土台になる用語を整理します。ある言語で書かれたプログラムを、別の言語で書かれたプログラムに変換するプログラム全般を<strong>翻訳系(translator)</strong>と呼びます。変換元の言語を<strong>原始言語(source language)</strong>、変換先の言語を<strong>目的言語(object language / target language)</strong>と呼びます。翻訳系のうち、目的言語がアセンブリ言語や機械語であるものを特に<strong>コンパイラ(compiler)</strong>と呼びます。したがって「コンパイラ」と「翻訳系」は同義語ではなく、コンパイラは翻訳系の中の一種類（目的言語が機械語寄りのもの）だという包含関係になります。</p>
+  <p>紛らわしい仲間も整理しておきます。<strong>アセンブラ</strong>は原始言語がアセンブリ言語、目的言語が機械語である翻訳系です。<strong>解釈系(interpreter)</strong>は、プログラムを中間コードへ翻訳したうえで、その中間コードを直接実行するしくみです（コンパイラのようにいったん目的コードを作って後で実行する、という2段階には分かれません）。<strong>前処理系</strong>は、高水準言語のプログラムを同じ高水準言語の別のプログラムへ翻訳するもの（マクロ展開などが典型）です。</p>
+  <p>コンパイルと実行は完全に別々の2段階です。まずコンパイラが原始コードを読み込み目的コードを生成する「コンパイル」段階があり、そのあとで目的コードが実際の入力を受け取って出力を生成する「実行」段階があります。この2段階が分かれていることが、コンパイラ型言語とインタプリタ型言語の実行モデルの違いの出発点になります。</p>
+  <img class="figure" src="images/selected_figures/01_01_compiler_io_1_p005.png" alt="コンパイラの入出力: コンパイル段階と実行段階が分かれていることを示す図" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: コンパイラ＝目的言語がアセンブリ/機械語である翻訳系。コンパイルと実行は別の2段階。</div>
+
+  <h3>コンパイラの構造: 5つのフェーズと2つの横断的な仕事</h3>
+  <p>コンパイラの内部は、一直線につながった工程（フェーズ、phase）に分けて考えるのが標準的な整理の仕方です。原始プログラムは次の順序で姿を変えていきます。</p>
+  <p>(1) <strong>字句解析(lexical analysis)</strong> → (2) <strong>構文解析(syntax analysis)</strong> → (3) <strong>中間コード生成(intermediate code generation)</strong> → (4) <strong>コード最適化(code optimization)</strong>（必ずあるとは限らない）→ (5) <strong>コード生成(code generation)</strong>。</p>
+  <p>この5つの主フェーズに加えて、<strong>表管理(table management)</strong>（記号表への名前・型などの情報の登録と参照）と<strong>誤り処理(error handling)</strong>（各フェーズが検出した誤りの報告・処理継続の調整）が、5フェーズすべてを横断して働きます。いくつかのフェーズをひとまとめにした実行単位を<strong>パス(pass)</strong>と呼び、パス間のデータのやり取りは中間ファイルで行われますが、フェーズをどうパスにまとめるかという決まった原則はありません。</p>
+  <img class="figure" src="images/selected_figures/02_02_compiler_phases_1_p012.png" alt="コンパイラのフェーズ図: 字句解析→構文解析→中間コード生成→コード最適化→コード生成の流れと、それを横断する表管理・誤り処理" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: 字句解析→構文解析→中間コード生成→（コード最適化）→コード生成の順。表管理と誤り処理は全フェーズを横断する。</div>
+
+  <h3>字句解析: 文字の並びを「単語」に切り分ける</h3>
+  <p>字句解析系(lexical analyzer)はコンパイラの最初のフェーズであり、原始プログラムとコンパイラ本体とのインタフェースにあたります。原始プログラムを1文字ずつ読み込み、<strong>字句(token)</strong>と呼ばれる論理的な塊にまとめていく仕事をします。字句には、<code>IF</code>や<code>DO</code>のような<strong>手掛かり語(keyword)</strong>、<code>X</code>や<code>NUM</code>のような<strong>識別子(identifier)</strong>、<code>+</code>や<code>&lt;=</code>のような<strong>演算子記号(operator symbol)</strong>などの種類があります。</p>
+  <p>字句は「型」と「値」の対（ペア）として表されます。<code>IF</code>や<code>;</code>のように値を持たない型もあれば、識別子や定数のように値を持つ型もあります。どこまでを1つの字句とみなすかはコンパイラ設計者にある程度の任意性がありますが、たとえば<code>MAX</code>という識別子を<code>M</code>と<code>AX</code>に分けて扱うのは不自然です。</p>
+  <p>字句の切り出しには先読みが必要になる場合があります。原文の例では、<code>IF(5.EQ.MAX)GOTO100</code>という文字列を読んでいるとき、<code>5</code>の直後に<code>.</code>が続くのを見た時点では、それが<code>5</code>（整数）で終わるのか、<code>5.0</code>（実数）になるのか、あるいは<code>5.E-10</code>のような指数表記になるのかがまだ確定していません。この文全体を字句解析すると <code>[if,-] [(,-] [const,341] [eq,-] [id,729] [),-] [goto,-] [label,554]</code> のような（型,値）の並びが得られます。ここで<code>[const,341]</code>は「定数、値は341」、<code>[id,729]</code>は「識別子、記号表上の729番目の登録」を意味します。</p>
+  <div class="beginner-key">最低限ここだけ覚える: 字句は(型,値)のペア。字句解析は文字の先読みをしながら原始プログラムを単語（字句）に切り分ける仕事。</div>
+
+  <h3>構文解析と解析木: 単語の並びに文法構造を与える</h3>
+  <p>構文解析系(syntax analyzer)は、字句解析系から受け取った字句の並びが原始言語の文法として許されるかどうかを検査し、以降のフェーズで使いやすい木構造のデータへと変換します。たとえば <code>A + B</code> を表す3つの字句（<code>A</code>, <code>+</code>, <code>B</code>）は、<strong>式(expression)</strong>という1つの構文構造にまとめられ、式はさらに他の構文構造とまとめられて文を構成していきます。この木構造を<strong>解析木(parse tree)</strong>と呼び、木の葉（末端）に字句が並びます。</p>
+  <p>構文解析は誤り検査の役割も担います。たとえば<code>A + / B</code>のような字句の並びは <code>[id,…], [+,-], [/,-], [id,…]</code> となりますが、演算子が2つ連続することは文法上許されないため、この時点で誤りだと判定できます。</p>
+  <p>同じ見た目の式でも、演算子の結合則は言語によって異なることがある点も重要です。<code>A / B * C</code> という式は、CやFortranでは <code>(A / B) * C</code>（左から評価）と解釈されますが、APLでは <code>A / (B * C)</code>（右から評価）と解釈されます。つまり「どちらを先に計算するか」は言語仕様の一部であり、構文解析はその言語ごとの規則に従って木を組み立てます。</p>
+  <img class="figure" src="images/selected_figures/03_03_syntax_tree_expression_1_p028.png" alt="式A/B*Cの解析木の例: CやFortranでの(A/B)*CとAPLでのA/(B*C)の違い" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: 構文解析は字句の並びの文法チェック＋解析木（木構造）への変換。演算子の結合順は言語ごとに異なりうる。</div>
+
+  <h3>中間コード生成と3番地コード</h3>
+  <p>中間コード生成系(intermediate code generator)は、構文解析系が作った構文構造（解析木）を使って、<strong>中間コード</strong>と呼ぶ一連の簡単な命令列を生成します。中間コードはマクロのようなもので、特定の計算機の詳細から独立した構造になっているのが特徴です。代表的な中間コードの形式が<strong>3番地コード(three-address code)</strong>で、基本の文の形は</p>
+  <p><code>A := B op C</code>（<code>A</code>が代入先、<code>B</code>と<code>C</code>が被演算子、<code>op</code>が演算子）</p>
+  <p>という「1つの代入先＋2つの被演算子＋1つの演算子」の単純な形をしています。この形式なら、複雑な式でも「一時変数を介した単純な計算の連鎖」として表現できます。</p>
+  <p>制御構造も3番地コードでは「条件判定＋ラベルへのジャンプ」の連鎖に展開されます。原文にある <code>while A&gt;B &amp; A&lt;=2*B-5 do A:=A+B;</code> というwhile文は、次のように展開されます。</p>
+  <pre><code>L1: if A&gt;B goto L2
+    goto L3
+L2: T1 := 2 * B
+    T2 := T1 - 5
+    if A &lt;= T2 goto L4
+    goto L3
+L4: A := A + B
+    goto L1
+L3:</code></pre>
+  <p>ここでは、まず前半条件<code>A&gt;B</code>をL1で判定し、成立しなければ即座にL3（ループの外）へ抜けます。成立した場合だけ後半条件の計算に進み、<code>2*B</code>と<code>2*B-5</code>をそれぞれ一時変数<code>T1</code>・<code>T2</code>に退避してから<code>A&lt;=T2</code>を判定し、成立すればL4（ループ本体）へ、しなければL3（脱出）へ分岐します。「複合条件を一度に判定せず、一時変数を介して段階的に判定する」という組み立て方は、次回以降で学ぶif文・while文のコード生成の原型になっています。</p>
+  <p><strong>補足（自作の数値例）:</strong> 同じ3番地コードの考え方を、原文にはない別の式で確認してみます。<code>if (A &gt; B) C = D + E * F;</code> という文を3番地コードにすると、演算子の優先順位（乗算が先）を反映して次のようになります。</p>
+  <pre><code>if A &gt; B goto L1
+goto L2
+L1: T1 := E * F
+    T2 := D + T1
+    C := T2
+L2:</code></pre>
+  <p>乗算<code>E*F</code>を先に一時変数<code>T1</code>へ計算し、それを<code>D</code>に足した結果を<code>T2</code>に置き、最後に<code>C</code>へ代入する、という3手順に分解されている点が「A := B op C」の形の繰り返し適用になっていることを確認してください。</p>
+  <img class="figure" src="images/selected_figures/04_04_three_address_code_1_p030.png" alt="3番地コードの基本形 A := B op C" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: 3番地コードは「A := B op C」の形。複雑な式や複合条件は、一時変数を介した複数の3番地コード文の連鎖に分解される。</div>
+
+  <h3>コード最適化: 局所最適化・共通部分式の削除・ループ最適化</h3>
+  <p>コード最適化(code optimization)は、最終的な目的プログラムの実行速度向上や使用記憶域の抑制を目指して中間コードを改良するフェーズです。前フェーズ一覧の説明でも述べたとおり、このフェーズは必ず存在するとは限りません。</p>
+  <p>局所的なプログラム変換だけで達成できる最適化を<strong>局所最適化(local optimization)</strong>と呼びます。先ほどのwhile文の3番地コードの一部を例にとると、</p>
+  <pre><code>L1: if A &gt; B goto L2
+    goto L3
+L2: T1 := 2 * B
+    T2 := T1 - 5</code></pre>
+  <p>という2つの連続した分岐（「Aが上ならL2、そうでなければ次の行でL3」）は、条件を否定して1つの分岐にまとめることで</p>
+  <pre><code>L1: if A &lt;= B goto L3
+L2: T1 := 2 * B
+    T2 := T1 - 5</code></pre>
+  <p>のように書き換えられます。「AがB以下ならL3へ、それ以外は自然にL2へ落ちる」という書き方にすることで、無条件ジャンプ（<code>goto L3</code>）1文が丸ごと不要になります。これは「不要な命令を削る」という最適化の最も基本的な形です。</p>
+  <p>局所最適化の代表例として、<strong>共通部分式の削除</strong>と<strong>ループ最適化</strong>があります。<code>A := B + C + D</code>と<code>E := B + C + F</code>という2つの文には共通する部分式<code>B + C</code>が含まれています。これを2回別々に計算するのは無駄なので、1回だけ計算した結果を一時変数に入れて使い回します。</p>
+  <pre><code>T1 := B + C
+A := T1 + D
+E := T1 + F</code></pre>
+  <p>ループ最適化では、ループの中で値が変わらない計算（<strong>ループ不変式, loop invariant computation</strong>）を検出し、ループの直前に1回だけ計算するように移動します。ループを1回通るたびに同じ計算を繰り返すのではなく、ループに入る前に1回計算しておけば済む、という考え方です。</p>
+  <img class="figure" src="images/selected_figures/05_05_local_optimization_1_p033.png" alt="局所最適化の例: 2つの連続した分岐を1つの分岐に書き換える" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: 局所最適化は近い範囲だけを見た書き換え。代表例は共通部分式の削除（同じ計算を使い回す）とループ不変式のループ外への移動。</div>
+
+  <h3>コード生成・レジスタ割当て・表管理・誤り処理</h3>
+  <p>最後のフェーズであるコード生成(code generation)では、データ用の記憶位置、各データをアクセスするためのコード、計算遂行に使うレジスタなどを決定して、実際の目的コード（アセンブリ・機械語）を生成します。中間コードを機械的かつ単純に変換するだけだと、冗長なデータ転送命令を多く含む非能率的な目的コードになってしまいます。</p>
+  <p>そこでコード生成系は、レジスタの内容を記憶しておいて不要なデータ転送命令を削除するなど、レジスタを効率よく使うための<strong>レジスタ割当て(register allocation)</strong>を行います。一般に最善のレジスタ割当てを求める問題はNP困難であることが知られているため、実用上は発見的な（ヒューリスティックな）手法が使われます。</p>
+  <p><strong>表管理(記帳)</strong>は、原始プログラム中の全データ対象（変数・関数など）に関する情報を<strong>記号表(symbol table)</strong>に記入する仕事です。変数が整数か実数か、配列の大きさはいくつか、関数の引数の数はいくつか、といった情報を保持します。この情報収集は1つのフェーズだけでなく複数のフェーズにまたがって進みます。たとえば字句解析系が識別子<code>MAX</code>を発見すると、未登録であれば記号表にまず登録し、その後<code>integer MAX</code>という宣言を構文解析・意味解析の過程で見つけると、記号表の<code>MAX</code>のエントリに「整数型」という情報を追記します。収集された情報は型誤りの検出や暗黙の型変換の判断（意味解析, semantic analysis）など、多くのフェーズで利用されます。</p>
+  <p><strong>誤り処理</strong>は、フェーズごとに検出できる誤りの種類が異なる点が特徴です。字句解析系は字句の綴り誤り、構文解析系は構文上の誤り、中間コード生成系は不適切な型の被演算子、コード最適化系は到達不能な文の検出、コード生成系は目的機械の1語に収まらない定数、表管理（記帳）は多重宣言された識別子、というように各フェーズが自分の担当領域の誤りを検出し、誤り処理系(error handler)に報告します。誤り処理系はできるだけ処理を先のフェーズへ進められるように調整しながら、適切なメッセージを生成します。</p>
+  <div class="beginner-key">最低限ここだけ覚える: レジスタ割当てはNP困難なので発見的手法を使う。表管理（記号表）は複数フェーズにまたがって情報を蓄積・利用する。誤り処理はフェーズごとに担当する誤りの種類が異なる。</div>
+
+  <h3>通し例: int foo(int x){ int y = x*x; return y+2; } を一気に追う</h3>
+  <p>ここまでのフェーズを、原文が最後に示す具体例で一気通貫にたどってみます。原始プログラムは次の関数です。</p>
+  <pre><code>int foo(int x) {
+    int y = x * x;
+    return y + 2;
+}</code></pre>
+  <p><strong>字句解析:</strong> このプログラムは、<code>int</code>（手掛かり語）、<code>foo</code>（識別子）、<code>(</code>、<code>int</code>、<code>x</code>（識別子）、<code>)</code>、<code>{</code>、<code>int</code>、<code>y</code>（識別子）、<code>=</code>、<code>x</code>、<code>*</code>、<code>x</code>、<code>;</code>、<code>return</code>（手掛かり語）、<code>y</code>、<code>+</code>、<code>2</code>（定数）、<code>;</code>、<code>}</code>という字句の列に分解されます。</p>
+  <p><strong>構文解析:</strong> この字句列から、関数定義（指定子リストint・名前foo・パラメータリスト・複合文からなる）という構文構造が組み立てられます。パラメータリストには「int x」というパラメータが1つ、複合文の中には「int y」の変数宣言（初期値<code>x*x</code>）と<code>return y+2</code>という文が含まれる、という解析木が構成されます（補足: 節点同士の正確な枝分かれはテキストだけでは再現しきれないため、詳しい形はページ画像で確認してください）。</p>
+  <img class="figure" src="images/selected_figures/03_03_syntax_tree_expression_1_p028.png" alt="解析木のイメージ図（式の構文木の一般形）" loading="lazy">
+  <p><strong>コード生成（最適化前）:</strong> 原文が示す、まだ最適化されていない目的コードは次の通りです。</p>
+  <pre><code>_foo: push ebp
+      mov  ebp, esp
+      sub  esp, 4
+      mov  eax, 8[ebp]
+      imul eax, 8[ebp]
+      mov  -4[ebp], eax
+      mov  eax, -4[ebp]
+      add  eax, 2
+      mov  esp, ebp
+      pop  ebp
+      ret</code></pre>
+  <p>ここで<code>8[ebp]</code>は引数<code>x</code>の値が置かれている番地、<code>-4[ebp]</code>は局所変数<code>y</code>のために確保された番地を指します（この「なぜ8とか-4なのか」というスタックフレームの仕組みは、次回の言語処理系（２）でアドレス付きで詳しく扱います）。<code>eax</code>に<code>x</code>を読み込み、自分自身を掛けて<code>x*x</code>を計算し、それを<code>y</code>の場所に書き込み、読み直してから<code>+2</code>して<code>eax</code>に戻す、という素直だが冗長な流れになっています。</p>
+  <p><strong>コード最適化後:</strong> 局所変数<code>y</code>をメモリに書き戻さずレジスタ<code>eax</code>上だけで扱うように書き換えると、次のように圧縮できます。</p>
+  <pre><code>_foo: mov  eax, 4[esp]
+      imul eax, eax
+      add  eax, 2
+      ret</code></pre>
+  <p>スタックフレームを作る<code>push ebp</code>/<code>mov ebp,esp</code>/<code>sub esp,4</code>/<code>mov esp,ebp</code>/<code>pop ebp</code>すら丸ごと省略され、引数<code>x</code>を<code>esp</code>相対の<code>4[esp]</code>から直接読み、レジスタだけで<code>x*x+2</code>を計算して<code>ret</code>するだけの4命令にまで縮んでいます。この「メモリへの読み書きを減らし、フレーム構築すら省く」という発想は、言語処理系（５）で学ぶ最適化技法の先取りにあたります。</p>
+  <div class="exam-link-box"><strong>過去問とのつながり:</strong> 2023年・2024年の金子先生パートの過去問（記憶再現メモ）はいずれも「最適化前後のアセンブリコードの穴埋め」という形式で出題されており、この通し例で示した「最適化前のフレーム構築を含むコード」と「最適化後の圧縮されたコード」の対応関係そのものが出題対象です。ただし過去問で使われた具体的な関数（2023年: <code>f(a,b){int c=a*2-1; return c+b;}</code>、2024年: <code>int foo(int a,int b){if(a&gt;=0 &amp;&amp; a&lt;b) b=a; return b;}</code>）はこの回のfoo例そのものではないため、命令の並び自体は改めて自力で導出する必要があります（根拠: ユーザー提供の過去問メモ）。</div>
+  <div class="beginner-key">最低限ここだけ覚える: 同じ関数でも「最適化前（フレーム構築込みの素直な変換）」と「最適化後（レジスタだけで済ませる圧縮版）」の2種類のアセンブリが存在し、両者を対応づけて読めることが重要。</div>
+
+  <div class="mistake"><strong>よくある間違い:</strong> (1) 「コンパイラ」と「翻訳系」を同義語だと思ってしまう（コンパイラは翻訳系のうち目的言語がアセンブリ/機械語のものに限られる特殊ケース）。(2) 「コード最適化」を必ず存在する必須フェーズだと誤解する（原文に「必ずあるとは限らない」と明記されている）。(3) 「フェーズ」と「パス」を同じ概念だと思ってしまう（パスは複数フェーズをまとめた実行単位で、フェーズそのものとは別の概念）。(4) A/B*Cのような式の結合順序がどの言語でも同じだと思い込む（CやFortranは(A/B)*C、APLはA/(B*C)というように言語依存）。(5) レジスタ割当てが常に最善解を求められる問題だと誤解する（NP困難なので発見的手法が使われる）。</div>
+
+  <div class="generated-content lecture-summary">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span>
+    <p><strong>この回のまとめ:</strong> コンパイラは目的言語がアセンブリ・機械語である翻訳系であり、内部は字句解析→構文解析→中間コード生成→（コード最適化）→コード生成という一直線のフェーズに分かれ、表管理（記号表）と誤り処理がそれを横断的に支えます。字句は(型,値)のペア、構文解析の成果物は解析木、中間コードの基本形は3番地コード「A := B op C」、最適化は局所最適化（共通部分式の削除・ループ不変式の移動など）が代表例、コード生成ではレジスタ割当てが鍵になります。最後に見た<code>foo</code>関数の例が示すとおり、同じソースからでも「最適化前の素直なコード」と「最適化後の圧縮されたコード」の両方が生成されうる、という点が次回以降のアセンブリ読解の土台になります。</p>
+  </div>
+
+  <p class="note">原文（全ページのテキストと画像）は <a href="md/sources/1.md">md/sources/1.md</a> を参照してください。</p>
+</section>
+
+<section class="lecture-header" id="lec-source2" data-title="金子先生パート第2回: 実行時メモリモデルと関数呼出しスタックフレーム">
+  <h2>言語処理系（２）: 実行時メモリモデルと関数呼出しスタックフレームを0から理解する</h2>
+
+  <div class="generated-content lecture-overview">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-high">信頼度: 高</span>
+    <p><strong>この回は何を学ぶか:</strong> コンパイラが生成する目的コード（アセンブリ）が、実行時にどんなメモリ配置・レジスタ・命令の上で動くのかという「実行環境モデル」を学びます。具体的には(1) 80486を想定したメモリ領域の区分（コード領域・大域データ領域・ヒープ・スタック）、(2) CPUの汎用レジスタ（<code>eax</code>〜<code>edi</code>）とベースポインタ<code>ebp</code>・スタックポインタ<code>esp</code>・命令ポインタ<code>eip</code>の役割、(3) 算術・移動・比較・ジャンプ・スタック操作・関数呼出しの各アセンブリ命令、そして(4) 関数呼出し時に<code>push</code>/<code>call</code>/<code>ret</code>によってスタック上に「関数フレーム」がどう積み上がり、どう解体されるかを学びます。</p>
+    <p><strong>なぜ学ぶのか:</strong> ユーザー提供の過去問メモによれば、2023年・2024年とも金子先生パートの最初の大問は「アセンブリコードの穴埋め」＋「あるラベル時点でのスタックとeaxレジスタの値を答える」という形式で出題されています。この回で学ぶ「引数・戻り番地・旧ebpがどの順でスタックに積まれるか」「<code>8[ebp]</code>や<code>-4[ebp]</code>がなぜその番地を指すのか」という仕組みを数値で追えるようになることが、過去問実績上もっとも重要な得点源になります。</p>
+  </div>
+
+  <div class="intuition-box"><strong>全体像:</strong> 関数を呼び出すという行為は、「呼び出し元が自分の作業台（スタック）の上に、引数・戻り先の目印(戻り番地)・呼び出し元のベース位置(旧ebp)を積み重ね、呼ばれた関数がその上にさらに自分の作業スペース（局所変数の領域）を積む」という操作の連続です。関数が終わるとき、この積み重ねを逆順にきれいに片付けて（<code>mov esp,ebp</code>→<code>pop ebp</code>→<code>ret</code>）、呼び出し元に戻ります。スタックは「後入れ先出し（LIFO）」の積み木であり、<code>esp</code>は常に「積み木の一番上」を指すポインタ、<code>ebp</code>は「今実行中の関数の作業台の基準点」を指すポインタだとイメージすると、あらゆる<code>n[ebp]</code>という番地表記が「基準点からどれだけずれた場所か」を表しているだけだと理解できます。</div>
+
+  <h3>実行時メモリの区分: どこに何が置かれるか</h3>
+  <p>80486（32ビットアドレス空間、バイト単位アクセス）を想定した実行時メモリは、大きく<strong>OS領域</strong>（OS専用）と<strong>ユーザ領域</strong>（プログラム実行用）に分かれます。ユーザ領域はさらに、命令列を格納する<strong>コード領域</strong>と、データを格納する<strong>データ領域</strong>に分かれ、データ領域は用途によって次の3つに区分されます。</p>
+  <ul>
+    <li><strong>大域データ領域</strong>: プログラム全体で共有される大域変数を置く場所。</li>
+    <li><strong>ヒープ</strong>: 実行時に動的に生成される変数（<code>malloc</code>等で確保するデータ）を置く場所。</li>
+    <li><strong>スタック</strong>: 局所変数や関数呼出しのための「関数フレーム」を置く場所。</li>
+  </ul>
+  <p>アドレス空間は下位番地<code>0x00000000</code>から上位番地<code>0xffffffff</code>まで広がっており、一般にコード領域・大域データ領域が低い番地側、ヒープが低い番地から上へ伸び、スタックが高い番地から下へ伸びるという配置がとられます（補足: 具体的な領域の上下配置は原文の図の通りの概略で、実際のOS実装では詳細が異なる場合があります）。この回で最も重要なのは、関数呼出しのたびに使われる<strong>スタック</strong>の動きです。</p>
+  <img class="figure" src="images/selected_figures/06_06_runtime_memory_2_p004.png" alt="実行時メモリ領域: OS領域・コード領域・大域データ領域・ヒープ・スタックの配置" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: 局所変数と関数呼出しの管理情報はスタックに、大域変数は大域データ領域に、動的確保のデータはヒープに置かれる。</div>
+
+  <h3>CPUとレジスタ: eax・ebp・esp・eipの役割</h3>
+  <p>CPUはメモリから命令を読み込み（フェッチ）、実行します。ALU（算術論理演算装置）が計算を担当し、レジスタはCPU内部にある高速な記憶装置です。この回で使う主なレジスタは次の3種類です。</p>
+  <ul>
+    <li><strong>汎用レジスタ（32ビット長）</strong>: <code>eax, ebx, ecx, edx, esi, edi</code> の6本が演算命令のオペランドとして使われます。このうち<code>ebp</code>（ベースポインタ, base pointer）は現在実行中の関数フレームの基準番地を、<code>esp</code>（スタックポインタ, stack pointer）はスタックの最上位（次にpushされる番地の1つ手前）を保持する特別な役割を持ちます。</li>
+    <li><strong>条件フラグ（1ビット長）</strong>: 演算結果に応じて変化するフラグ。<code>Z</code>（ゼロフラグ）・<code>S</code>（符号フラグ）などがあり、<code>cmp</code>命令の結果や条件分岐命令の判定に使われます。</li>
+    <li><strong>命令ポインタ（32ビット長）</strong>: <code>eip</code>。CPUが次に実行すべき命令が格納されている番地を保持します。</li>
+  </ul>
+  <p>関数呼出しの理解で特に重要なのは<code>ebp</code>と<code>esp</code>の使い分けです。<code>esp</code>は<code>push</code>/<code>pop</code>のたびに自動的に動く「スタックの現在地」、<code>ebp</code>は関数の先頭で<code>esp</code>の値をコピーして固定した「その関数専用の基準点」です。関数の実行中に<code>esp</code>は一時変数のpush/popなどで動くことがありますが、<code>ebp</code>は関数の間ずっと同じ値を保つため、引数や局所変数へのアクセスは動かない<code>ebp</code>を基準にした相対番地（例: <code>8[ebp]</code>）で行うのが安全です。</p>
+  <div class="beginner-key">最低限ここだけ覚える: espは「今のスタックの先端」、ebpは「今の関数の基準点（関数の間は不変）」、eaxは「計算結果や戻り値を運ぶ主役レジスタ」。</div>
+
+  <h3>アセンブリ命令の基本文法とメモリ番地表記</h3>
+  <p>アセンブリコードは「ラベル：命令名 第1オペランド, …, 第nオペランド」という形の行の並びです。オペランドは最大3個までで、汎用レジスタ・メモリ番地・整数定数のいずれかに限られます。メモリ番地は「ラベル」または「汎用レジスタ＋相対番地」の形で書かれます。たとえば<code>8[ebp]</code>は「<code>ebp</code>の値に8を足した番地」、<code>-4[ebp]</code>は「<code>ebp</code>の値から4を引いた番地」を意味します。</p>
+  <p>この回で使う命令の種類と、各命令の意味は次の通りです。</p>
+  <ul>
+    <li><strong>算術命令</strong>: <code>add, sub, imul</code>（2項、第2オペランドを第1オペランドに演算して第1に格納）、<code>neg, dec, inc</code>（単項）。例: <code>add eax, ebx</code>は「eaxにebxを加算」。</li>
+    <li><strong>移動命令</strong>: <code>mov</code>（第2オペランドの値を第1オペランドに格納。ただし2つのオペランドを同時にメモリ番地にすることはできない）。例: <code>mov ebp, esp</code>は「ebpにespの値をコピー」。</li>
+    <li><strong>比較命令</strong>: <code>cmp</code>（第1から第2を減算した結果でフラグだけを更新。第1&gt;第2ならZ=0,S=0、第1=第2ならZ=1,S=0、第1&lt;第2ならZ=0,S=1）。</li>
+    <li><strong>ジャンプ命令</strong>: <code>jmp</code>（無条件）、<code>jg/jge/je/jne/jl/jle</code>（条件付き、直前の<code>cmp</code>のフラグを見て分岐）。分岐が成立すると<code>eip</code>にラベルの番地が格納されます。</li>
+    <li><strong>スタック操作命令</strong>: <code>push</code>（オペランドの値をスタック先頭に積み、<code>esp</code>が4減る）、<code>pop</code>（スタック先頭の値をオペランドに取り出し、<code>esp</code>が4増える）。</li>
+    <li><strong>関数呼出し・リターン命令</strong>: <code>call</code>（現在の<code>eip</code>の次の番地＝戻り番地をスタックに積み、指定されたラベルの番地を<code>eip</code>に設定）、<code>ret</code>（スタック先頭から戻り番地を取り出して<code>eip</code>に設定）。</li>
+  </ul>
+  <img class="figure" src="images/selected_figures/07_07_call_stack_2_p021.png" alt="callとretによるスタックとeipの動き" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: pushはespを4減らして値を積む、popはespを4増やして値を取り出す。callは戻り番地をpushしてジャンプ、retは戻り番地をpopしてジャンプする、という意味でcall/retはpush/popの特殊版。</div>
+
+  <h3>関数フレームの一般形</h3>
+  <p>ある関数<code>f</code>のアセンブリコードは、次の共通の骨格（テンプレート）に従います（<code>Nlocal</code>は局所変数の合計サイズ）。</p>
+  <pre><code>_f:   push ebp
+      mov  ebp, esp
+      sub  esp, Nlocal
+      本体の実行
+Lret: mov  esp, ebp
+      pop  ebp
+      ret</code></pre>
+  <p>そして、関数呼出し<code>f(e1, e2, ..., en)</code>を行う側（呼び出し元）のアセンブリコードは、次の骨格に従います。</p>
+  <pre><code>enを計算し、結果をスタックに積む
+en-1を計算し、結果をスタックに積む
+...
+e1を計算し、結果をスタックに積む
+call _f
+add  esp, n * 4</code></pre>
+  <p>ここで重要なのは、<strong>引数は右から左の順にスタックに積まれる</strong>という点です（<code>en</code>から先に積み、最後に<code>e1</code>を積む）。したがって呼出し直後のスタック上では、一番後に積んだ<code>e1</code>が最も<code>esp</code>に近い（浅い）位置に、<code>en</code>が最も深い位置に置かれます。呼出しが終わったあと、呼び出し元は<code>add esp, n*4</code>によって積んだ<code>n</code>個の引数の分（<code>n*4</code>バイト）を自分でスタックから取り除きます（この方式を<strong>呼出し元によるスタック片付け</strong>と呼びます）。</p>
+  <div class="beginner-key">最低限ここだけ覚える: 引数はen,en-1,...,e<sub>1</sub>の順（右から左）に積む。呼び出し後、呼び出し元がadd esp,n*4で自分で後片付けする。</div>
+
+  <h3>数値で追う: int foo(int x){ int y=x*x; return y+2; } のスタック推移</h3>
+  <p>ここからが最重要パートです。原文の<code>foo</code>関数を、呼び出し元が<code>foo(5)</code>として呼び出す場面を、<strong>自分で仮の番地を割り当てて</strong>1命令ずつ手で追ってみます（補足: 以下の番地はすべて説明のために私が設定した仮の値であり、実際のOSが割り当てる番地とは異なります。値の推移の“仕組み”を確認することが目的です）。</p>
+  <p>アセンブリコードは次の通りです。</p>
+  <pre><code>呼び出し元:      push 5
+                 call _foo
+Ret:             add  esp, 4
+
+_foo:            push ebp
+                 mov  ebp, esp
+                 sub  esp, 4
+                 mov  eax, 8[ebp]
+                 imul eax, 8[ebp]
+                 mov  -4[ebp], eax
+                 mov  eax, -4[ebp]
+                 add  eax, 2
+                 mov  esp, ebp
+                 pop  ebp
+                 ret</code></pre>
+  <p><code>push 5</code>を実行する直前、呼び出し元の<code>esp = 0x0012FF20</code>、<code>ebp = 0x0012FF50</code>（呼び出し元自身の基準点）だったとします。ここから1命令ずつ、<code>esp</code>・<code>ebp</code>・<code>eax</code>の値と、スタックの中身（アドレスとその中身）がどう変化するかを表にします。</p>
+  <table>
+    <thead><tr><th>実行後の命令</th><th>esp</th><th>ebp</th><th>eax</th><th>新たにできた/更新されたメモリ内容</th></tr></thead>
+    <tbody>
+      <tr><td>(実行前)</td><td>0x0012FF20</td><td>0x0012FF50</td><td>不定</td><td>—</td></tr>
+      <tr><td>push 5</td><td>0x0012FF1C</td><td>0x0012FF50</td><td>不定</td><td>[0x0012FF1C] = 5 （引数x）</td></tr>
+      <tr><td>call _foo</td><td>0x0012FF18</td><td>0x0012FF50</td><td>不定</td><td>[0x0012FF18] = 0x00401030（戻り番地、Ret行の番地と仮定）／eipが_fooの先頭へ</td></tr>
+      <tr><td>push ebp</td><td>0x0012FF14</td><td>0x0012FF50</td><td>不定</td><td>[0x0012FF14] = 0x0012FF50（呼び出し元の旧ebp）</td></tr>
+      <tr><td>mov ebp, esp</td><td>0x0012FF14</td><td>0x0012FF14</td><td>不定</td><td>ebpがfoo自身の基準点になる</td></tr>
+      <tr><td>sub esp, 4</td><td>0x0012FF10</td><td>0x0012FF14</td><td>不定</td><td>局所変数yの領域を1つ確保（まだ値は不定）</td></tr>
+      <tr><td>mov eax, 8[ebp]</td><td>0x0012FF10</td><td>0x0012FF14</td><td>5</td><td>8[ebp]=0x0012FF14+8=0x0012FF1C の値5を読む＝引数xそのもの</td></tr>
+      <tr><td>imul eax, 8[ebp]</td><td>0x0012FF10</td><td>0x0012FF14</td><td>25</td><td>eax = 5 * 5 = 25（x*x）</td></tr>
+      <tr><td>mov -4[ebp], eax</td><td>0x0012FF10</td><td>0x0012FF14</td><td>25</td><td>-4[ebp]=0x0012FF14-4=0x0012FF10 に25を書き込む＝局所変数y</td></tr>
+      <tr><td>mov eax, -4[ebp]</td><td>0x0012FF10</td><td>0x0012FF14</td><td>25</td><td>yの値25を読み直す</td></tr>
+      <tr><td>add eax, 2</td><td>0x0012FF10</td><td>0x0012FF14</td><td>27</td><td>eax = 25 + 2 = 27（戻り値y+2）</td></tr>
+      <tr><td>mov esp, ebp</td><td>0x0012FF14</td><td>0x0012FF14</td><td>27</td><td>局所変数領域を破棄（espをebpまで戻す）</td></tr>
+      <tr><td>pop ebp</td><td>0x0012FF18</td><td>0x0012FF50</td><td>27</td><td>[0x0012FF14]の旧ebpを読み戻し、呼び出し元の基準点を復元</td></tr>
+      <tr><td>ret</td><td>0x0012FF1C</td><td>0x0012FF50</td><td>27</td><td>[0x0012FF18]の戻り番地をeipへ、呼び出し元のRet行に戻る</td></tr>
+      <tr><td>add esp, 4</td><td>0x0012FF20</td><td>0x0012FF50</td><td>27</td><td>積んだ引数5の分を後片付け（元の位置に復帰）</td></tr>
+    </tbody>
+  </table>
+  <p>この表から読み取れる、過去問で問われうるポイントは次の3つです。第一に、<code>8[ebp]</code>が引数<code>x</code>を指すのは、<code>ebp</code>より8バイト先（<code>ebp+4</code>に戻り番地、<code>ebp+8</code>に引数）という積み順の結果にすぎない、ということ。第二に、<code>-4[ebp]</code>が局所変数<code>y</code>を指すのは、<code>ebp</code>を確定させた直後に<code>sub esp,4</code>で確保した領域が<code>ebp</code>のすぐ下（<code>ebp-4</code>）にできるから、ということ。第三に、<code>eax</code>は関数の計算結果・戻り値を運ぶレジスタとして一貫して使われ、最後の<code>eax=27</code>が呼び出し元にそのまま戻り値として渡される、ということです。</p>
+  <p><strong>補足（過去問形式の練習）:</strong> 仮に「<code>mov -4[ebp], eax</code>を実行した直後（<code>y</code>への書き込み直後）のスタックの最上位4つとeaxの値を答えよ」と問われた場合、上の表から、<code>esp=0x0012FF10</code>を先頭に、<code>[0x0012FF10]=25</code>（局所変数y）、<code>[0x0012FF14]=旧ebp(0x0012FF50)</code>、<code>[0x0012FF18]=戻り番地(0x00401030)</code>、<code>[0x0012FF1C]=5</code>（引数x）、<code>eax=25</code>、と読み取れます。実際の過去問では番地は与えられず「上から4つのスタックの中身」を記号や値で埋める形式が多いので、番地そのものより「どの順で何が積まれているか」という並び自体を覚えておくことが得点に直結します。</p>
+  <div class="exam-link-box"><strong>過去問とのつながり:</strong> ユーザー提供の過去問メモによれば、2024年は<code>int foo(int a,int b){...}</code>形式の関数について「冗長なアセンブリコードの穴埋め」「L3まで進んだ時点でのスタック（最上位espから4つ分）とeaxの値」「最適化後の穴埋め」が出題され、2023年は<code>f(a,b){int c=a*2-1; return c+b;}</code>について同様に「アセンブリの穴埋め」「あるラベル（L1）直前のスタックとeaxの状態」が出題されています（根拠: ユーザー提供の過去問メモ）。上の表で示した「push→call→push ebp→mov ebp,esp→sub esp,N」という積み上げの型と、「8[ebp]=第1引数、-4[ebp]=最初の局所変数」という読み方を、出題された具体的な関数に当てはめて自力で再現できるようにしておくことが重要です（配点・出題形式は年度により変わりうるため、この型を機械的に適用する練習が推定される対策として有効です）。</div>
+  <div class="beginner-key">最低限ここだけ覚える: 積み順は「引数(呼び出し元がpush)→戻り番地(call)→旧ebp(push ebp)→局所変数(sub esp,N)」。8[ebp]=第1引数、12[ebp]=第2引数、-4[ebp]=最初の局所変数、という対応をそのまま覚える。</div>
+
+  <h3>再帰呼出しでスタックが積み重なる様子: fact(3)を追う</h3>
+  <p>関数フレームの考え方は再帰呼出しでもそのまま成り立ちます。原文の階乗関数</p>
+  <pre><code>int fact(int n) {
+    if (n == 0) return 1;
+    else return n * fact(n-1);
+}</code></pre>
+  <p>のアセンブリは次の通りです。</p>
+  <pre><code>_fact: push ebp
+       mov  ebp, esp
+       cmp  8[ebp], 0    ; n == 0
+       jne  L2
+       mov  eax, 1       ; 戻り値1
+       jmp  L1
+L2:    mov  eax, 8[ebp]  ; n-1
+       sub  eax, 1
+       push eax
+       call _fact        ; 再帰呼出し
+       add  esp, 4
+       imul eax, 8[ebp]  ; (n-1の結果) * n
+L1:    pop  ebp
+       ret</code></pre>
+  <p><strong>補足（自作の数値例）:</strong> これを<code>fact(3)</code>として呼び出した場合、再帰は<code>fact(3)→fact(2)→fact(1)→fact(0)</code>と3段深くなり、<code>fact(0)</code>が<code>n==0</code>で<code>eax=1</code>を返すのを起点に、<code>fact(1)=1*1=1</code>、<code>fact(2)=1*2=2</code>、<code>fact(3)=2*3=6</code>という順に呼び出し元へ計算結果が伝播します。<code>fact(0)</code>の実行に入った直後（<code>mov ebp,esp</code>直後）の時点でスタック上には4段分のフレームが積み重なっており、仮に<code>fact(3)</code>呼出し直前の<code>esp=0x0012FF80</code>から出発すると、次のような並びになります（アドレスは仮設定・4バイトずつ減少）。</p>
+  <table>
+    <thead><tr><th>アドレス</th><th>中身</th><th>所属</th></tr></thead>
+    <tbody>
+      <tr><td>0x0012FF50 ← esp/ebp(fact(0))</td><td>fact(1)の旧ebp</td><td>fact(0)のフレーム先頭</td></tr>
+      <tr><td>0x0012FF54</td><td>戻り番地（fact(1)内のadd esp,4へ）</td><td>fact(0)呼出し時にcallが積んだもの</td></tr>
+      <tr><td>0x0012FF58</td><td>0（n=0）</td><td>fact(0)の引数（8[ebp]でアクセス）</td></tr>
+      <tr><td>0x0012FF5C ← ebp(fact(1))</td><td>fact(2)の旧ebp</td><td>fact(1)のフレーム先頭</td></tr>
+      <tr><td>0x0012FF60</td><td>戻り番地（fact(2)内のadd esp,4へ）</td><td>fact(1)呼出し時にcallが積んだもの</td></tr>
+      <tr><td>0x0012FF64</td><td>1（n=1）</td><td>fact(1)の引数</td></tr>
+      <tr><td>0x0012FF68 ← ebp(fact(2))</td><td>fact(3)の旧ebp</td><td>fact(2)のフレーム先頭</td></tr>
+      <tr><td>0x0012FF6C</td><td>戻り番地（fact(3)内のadd esp,4へ）</td><td>fact(2)呼出し時にcallが積んだもの</td></tr>
+      <tr><td>0x0012FF70</td><td>2（n=2）</td><td>fact(2)の引数</td></tr>
+      <tr><td>0x0012FF74 ← ebp(fact(3))</td><td>呼び出し元の旧ebp</td><td>fact(3)のフレーム先頭</td></tr>
+      <tr><td>0x0012FF78</td><td>戻り番地（呼び出し元へ）</td><td>fact(3)呼出し時にcallが積んだもの</td></tr>
+      <tr><td>0x0012FF7C</td><td>3（n=3）</td><td>fact(3)の引数</td></tr>
+    </tbody>
+  </table>
+  <p>この表を下から読むと「呼び出すたびに、引数→戻り番地→旧ebpの3点セットが1段ずつ積み増される」という規則性が視覚的にわかります。<code>fact</code>には局所変数がないため<code>sub esp,N</code>が現れず、1回の呼出しあたりの積み増しはちょうど12バイト（引数4＋戻り番地4＋旧ebp4）です。<code>fact(0)</code>で<code>eax=1</code>が確定した後は、<code>ret</code>で1段ずつ戻りながら<code>imul eax,8[ebp]</code>（自分の<code>n</code>を掛ける）を実行するため、<code>eax</code>は<code>1→1→2→6</code>と更新されて最終的に<code>3! = 6</code>が呼び出し元に返ります。</p>
+  <img class="figure" src="images/selected_figures/08_08_recursive_stack_frame_2_p031.png" alt="再帰呼出し時にスタックへ複数のフレームが積み重なる様子" loading="lazy">
+  <div class="beginner-key">最低限ここだけ覚える: 再帰呼出しでは「引数→戻り番地→旧ebp」の3点セットが呼出しのたびに1段ずつ積み増される。再帰の底（基底ケース）で確定した値が、retのたびにimul等で1段ずつ計算結果に反映されながら戻っていく。</div>
+
+  <h3>局所変数のスコープ、一時変数、レジスタ退避</h3>
+  <p>関数呼出しの引数は<code>第1引数=8[ebp]、第2引数=12[ebp]</code>のように、積まれた順に4バイトずつ増えるオフセットでアクセスされます。局所変数の番地は関数ごとに個別に決定され、使用領域を小さく抑えるために、<strong>スコープが重ならない局所変数どうしは同じ番地を再利用（重ねて割当て）</strong>できます。たとえば複合文<code>{ ... }</code>の中で宣言された変数は、その複合文を抜けた時点でスコープが終わるため、以降の別の複合文の変数に同じ番地を再利用してもプログラムの意味は変わりません。</p>
+  <p>計算の途中結果を一時的に保持するために使われる<strong>一時変数</strong>は、プログラマが明示的に宣言する変数と違って「スコープ」という概念を持ちません。一時変数の割当てと解放が他の変数のスコープをまたいで交錯することはないため、通常の局所変数と同様の方法（スタック上の番地割当て）で扱うことができます。</p>
+  <p>関数呼出しをまたいでレジスタの値を保護する必要がある場合、その退避の責任を呼び出す側と呼ばれる側のどちらが持つかという取り決めがあります。</p>
+  <ul>
+    <li><strong>関数側退避(callee-saved)レジスタ</strong>: 呼び出し元がまだ使っている可能性のあるレジスタ。呼ばれた関数の側が、実行開始前に自分でスタックへ退避し、終了前に復元する責任を持ちます。</li>
+    <li><strong>呼出し側退避(caller-saved)レジスタ</strong>: 呼び出し元が現在使用中のレジスタ。呼び出し元の側が、関数呼出しの前に自分でスタックへ退避しておく責任を持ちます。呼ばれた関数の側はこのレジスタを自由に上書きしてよいことになります。</li>
+  </ul>
+  <p>原文には<code>eax</code>レジスタは呼出し側退避（caller-saved）である、と明記されています。実際、これまでの<code>foo</code>や<code>fact</code>の例でも、関数は戻り値を<code>eax</code>に入れたまま<code>ret</code>しており、呼び出し元は「呼出し後の<code>eax</code>には自分の戻り値が入っている」と期待して読み取っています。もし<code>eax</code>を関数呼出しの前に何か大事な値のために使っていたなら、呼び出す側が自分でその値を退避しておかなければならない、という意味になります。</p>
+  <div class="mistake"><strong>よくある間違い:</strong> (1) <code>esp</code>と<code>ebp</code>の役割を混同する（<code>esp</code>は関数の実行中も動く「今の先端」、<code>ebp</code>は関数の間ずっと固定の「基準点」）。(2) 引数が<code>e1, e2, ..., en</code>の順（左から右）に積まれると思い込む（実際は<code>en</code>から<code>e1</code>へ、右から左の順に積まれる）。(3) <code>push</code>のたびに<code>esp</code>が増えると勘違いする（スタックは高い番地から低い番地へ伸びるため、<code>push</code>で<code>esp</code>は4減り、<code>pop</code>で4増える）。(4) <code>8[ebp]</code>が常に「引数」を指すと丸暗記し、局所変数がある場合は<code>-4[ebp]</code>のように負のオフセットになることを見落とす。(5) callee-savedとcaller-savedを取り違える（<code>eax</code>は呼出し側退避＝caller-saved）。</div>
+
+  <div class="generated-content lecture-summary">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span>
+    <p><strong>この回のまとめ:</strong> 80486の実行環境モデルでは、スタックが局所変数と関数フレームの置き場所になります。関数呼出しは「呼び出し元が引数を右から左の順にpushし、callで戻り番地をpushしてジャンプ」「呼ばれた側がpush ebp/mov ebp,espで基準点を作り、sub espで局所変数領域を確保」という手順でフレームを積み、終了時は「mov esp,ebpで局所変数領域を破棄、pop ebpで基準点を復元、retで戻り番地へジャンプ」「呼び出し元がadd esp,n*4で引数の後片付け」という手順で解体します。この結果、<code>8[ebp]</code>が第1引数、<code>12[ebp]</code>が第2引数、<code>-4[ebp]</code>が最初の局所変数を指すという規則性が生まれます。再帰呼出しでは、この「引数→戻り番地→旧ebp」の3点セットが呼出しの深さだけ積み重なります。この積み上げ・解体の手順を、実際のアドレスと値の推移として自分の手で書き出せるようになることが、過去問対策上もっとも重要です。</p>
+  </div>
+
+  <p class="note">原文（全ページのテキストと画像）は <a href="md/sources/2.md">md/sources/2.md</a> を参照してください。</p>
+</section>

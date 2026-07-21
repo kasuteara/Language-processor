@@ -1,0 +1,440 @@
+<section class="lecture-header" id="lec-source3" data-title="金子先生パート第3回: 文（if・while・for）のコード生成">
+  <h2>言語処理系（３）: 制御構造（if・while・for）はどうアセンブリになるのか、0から理解する</h2>
+
+  <div class="generated-content lecture-overview">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-high">信頼度: 高</span>
+    <p><strong>この回は何を学ぶか:</strong> C言語のような高級言語で書かれた「文」（宣言文・複合文・if文・while文・for文・式文・代入式）が、コンパイラの中でどのようにcmp／jcc（条件分岐）／jmp（無条件分岐）とラベルの組み合わせに変換されるかを、決まった「型（テンプレート）」として学びます。</p>
+    <p><strong>なぜ学ぶのか:</strong> ここで学ぶテンプレートは、次回（言語処理系４）で扱う式のコード生成、さらに次々回（言語処理系５）で扱う最適化の「素材」そのものです。最適化前のベースとなるアセンブリコードがどう組み立てられるかを知らないと、最適化がどこにどう効いているのかも理解できません。過去問のアセンブリ穴埋め問題は、まさにこのベースコードの組み立てを問う形式で出題されています。</p>
+  </div>
+
+  <div class="intuition-box"><strong>全体像:</strong> if・while・forは、見た目は違っても骨格は同じです。「条件を計算する→条件が成り立たない側で、あるラベルへジャンプする（＝本体をスキップする）→本体を実行する→（ループなら先頭に戻るジャンプを入れる）→最後にラベルを置く」。この1本の骨格に、forなら「初期化e<sub>1</sub>」と「更新e<sub>3</sub>（continue文の飛び先）」が追加されるだけ、と捉えると、5つのテンプレートを丸暗記せずに導出できます。</div>
+
+  <h3>1. 宣言文と複合文: ローカル変数はどこに置かれるか</h3>
+  <p>局所変数（関数の中で宣言される変数）は、実行時にはメモリ上のスタックフレームの中の決まった位置（<code>ebp</code>からの相対番地、例えば<code>8[ebp]</code>や<code>-4[ebp]</code>）に割り当てられます。宣言文 <code>int x = 10;</code> のように初期値がある場合は、その初期値をメモリへ書き込むコード（<code>mov n[ebp], 10</code>）が1つ生成されます。初期値がない宣言（例えば <code>int y;</code>）は、番地の割り当てが決まるだけで、実行時に何か命令が出るわけではありません（コード生成量はゼロ）。</p>
+  <p>複合文 <code>{ d1 ... dn s1 ... sm }</code> は「宣言d<sub>1</sub>〜dnの初期化」を先にすべて行い、続けて「文s<sub>1</sub>〜smの実行」を順番に行う、という単純な構造です。複合文の終わりでは、d<sub>1</sub>〜dnとして使われていた局所変数の領域を解放しますが、これは物理的にメモリを消すという意味ではなく、「その領域を以降の宣言のために再利用できるようにする」という意味です。</p>
+  <div class="beginner-key">最低限ここだけ覚える: 宣言文は初期化があるときだけ1つのmov命令。複合文は「d<sub>1</sub>〜dnの初期化→s<sub>1</sub>〜smの実行」の順で、最後に変数領域が再利用可能になる。</div>
+
+  <h3>2. if文のコード生成: 条件は「否定」で分岐する</h3>
+  <p>if文で最初につまずきやすいのが、「条件が成り立つときにジャンプする」のではなく「条件が成り立たないときにジャンプする（本体をスキップする）」という発想です。単純な <code>if (e) s</code> は次の形になります。</p>
+  <img class="figure" src="images/selected_figures/09_09_if_flow_3_p005.png" alt="if文の制御フロー図（eを計算し、偽ならラベルL1へ分岐、真なら本体sを実行してL1に合流する）" loading="lazy">
+  <pre><code>eを計算，偽ならL1へ分岐
+sの実行
+L1:</code></pre>
+  <p>if-else形 <code>if (e) s1 else s2</code> はs<sub>1</sub>実行後に、s<sub>2</sub>をスキップして合流点L2へ飛ぶための<code>jmp L2</code>が追加され、ラベルが2つ（L1: else部の入口、L2: 合流点）になります。</p>
+  <pre><code>eを計算，偽ならL1へ分岐
+s1の実行
+jmp  L2
+L1: s2の実行
+L2:</code></pre>
+  <p>自分の手で確かめてみましょう。<code>score</code>（<code>8[ebp]</code>に割当て）を使い、<code>if (score &gt;= 60) grade = 1; else grade = 0;</code>（<code>grade</code>は<code>-4[ebp]</code>）という自作の例を考えます。条件「score&gt;=60」の否定は「score&lt;60」なので、否定条件で分岐する<code>jl</code>（未満なら分岐）を使い、次のようになります。</p>
+  <pre><code>cmp  8[ebp], 60
+jl   L1
+mov  -4[ebp], 1
+jmp  L2
+L1: mov  -4[ebp], 0
+L2:</code></pre>
+  <div class="mistake"><strong>よくある間違い:</strong> 「真ならL1へ」と条件の向きを逆にしてしまう間違いが典型的です。正しくは「偽（条件が成り立たない）ならL1へ」であり、L1以降に続く本体こそが「条件不成立時に実行すべきでない」コードです。if-else形でs<sub>1</sub>実行後の<code>jmp L2</code>を書き忘れる間違いも頻出です。これを忘れると、s<sub>1</sub>を実行した後にそのままL1（s<sub>2</sub>の先頭）へ処理が落ちてしまい、s<sub>2</sub>まで実行されてしまいます。</div>
+  <div class="beginner-key">最低限ここだけ覚える: if(e)sは「偽ならL1へ」の1分岐＋ラベル1つ。if(e)s<sub>1</sub> else s<sub>2</sub>は「偽ならL1へ」＋「s<sub>1</sub>の後にL2へjmp」＋L1:s<sub>2</sub>＋L2:、で分岐2つ＋ラベル2つ。</div>
+
+  <h3>3. while文: 条件判定を先頭に置くループ</h3>
+  <p>while文 <code>while (e) s</code> は、if文の骨格に「本体実行後にもう一度先頭へ戻るjmp」を加えたものと考えられます。</p>
+  <pre><code>L1: eを計算，偽ならL2へ分岐
+sの実行
+jmp  L1
+L2:</code></pre>
+  <p>break文とcontinue文は、それぞれ決まったラベルへの無条件ジャンプとして生成されます。while文では、break文は「ループを完全に抜ける」ので終了ラベルL2へ、continue文は「次の周回の条件判定からやり直す」ので条件判定のラベルL1へジャンプします。</p>
+  <pre><code>break文    ⇒  jmp  L2
+continue文  ⇒  jmp  L1</code></pre>
+  <p>自作例として、<code>cnt</code>（<code>-8[ebp]</code>）を使った <code>while (cnt &lt; 5) cnt += 2;</code> を考えます。継続条件「cnt&lt;5」の否定「cnt&gt;=5」で分岐するので<code>jge</code>を使います。</p>
+  <pre><code>L1: cmp  -8[ebp], 5
+jge  L2
+add  -8[ebp], 2
+jmp  L1
+L2:</code></pre>
+  <div class="beginner-key">最低限ここだけ覚える: while(e)sは「L1:条件判定→偽ならL2→本体→L1へjmp→L2」。break→ループ終了ラベル、continue→条件判定ラベル、という対応をwhileでは確実に区別する。</div>
+
+  <h3>4. for文: whileに「初期化」と「更新」を足したもの</h3>
+  <p>for文 <code>for (e1; e2; e3) s</code> は、while文の骨格に「ループ前に1回だけ実行する初期化e<sub>1</sub>」と「毎周回、本体の後に実行する更新e<sub>3</sub>」を追加したものです。更新e<sub>3</sub>の直前に置かれるラベルL2が、for文におけるcontinue文の飛び先になります。</p>
+  <img class="figure" src="images/selected_figures/10_10_for_flow_3_p028.png" alt="for文の制御フロー図（e1の初期化→L1でe2を判定し偽ならL3へ→本体sを実行→L2でe3の更新→L1へ戻る）" loading="lazy">
+  <pre><code>e1の計算
+L1: e2を計算，偽ならL3へ分岐
+sの実行
+L2: e3の計算
+jmp  L1
+L3:</code></pre>
+  <p>break文・continue文の飛び先は、while文とは異なりL3・L2になります。</p>
+  <pre><code>break文    ⇒  jmp  L3
+continue文  ⇒  jmp  L2</code></pre>
+  <p>自作例として、10から1まで減らしながら合計する <code>for (k = 10; k &gt; 0; k--) total += k;</code>（<code>k</code>は<code>-4[ebp]</code>、<code>total</code>は<code>8[ebp]</code>）を考えます。継続条件「k&gt;0」の否定「k&lt;=0」で分岐するので<code>jle</code>を使います。</p>
+  <pre><code>mov  -4[ebp], 10
+L1: cmp  -4[ebp], 0
+jle  L3
+mov  eax, -4[ebp]
+add  8[ebp], eax
+L2: sub  -4[ebp], 1
+jmp  L1
+L3:</code></pre>
+  <p>この処理を頭の中でトレースすると、k=10,9,...,1の10回本体が実行され、totalには初期値に10+9+...+1=55が加算されます。k=0になった時点で<code>jle L3</code>が成立し、ループを抜けます。</p>
+  <div class="mistake"><strong>よくある間違い:</strong> while文のbreak/continueの飛び先（L1,L2）とfor文のそれ（L3,L2）を混同しやすい点に注意してください。for文はラベルがL1,L2,L3の3つになり、whileより1つ多くなります。</div>
+  <div class="beginner-key">最低限ここだけ覚える: for(e<sub>1</sub>;e<sub>2</sub>;e<sub>3</sub>)sは e<sub>1</sub>(初期化)→L1:e<sub>2</sub>判定→偽ならL3→s本体→L2:e<sub>3</sub>(更新、continueの飛び先)→L1へjmp→L3(breakの飛び先)、の5パーツ構成。</div>
+
+  <h3>5. 式文と代入式: 「計算して捨てる」か「計算して格納する」か</h3>
+  <p>式文 <code>e;</code> は、eを計算するだけで、結果をどこにも格納しません（副作用のためだけに評価する文）。代入式 <code>v = e</code> は、eを計算した結果Rを、<code>mov loc(v), R</code>で変数vの場所（<code>loc(v)</code>）に書き込みます。</p>
+  <p>多重代入 <code>v1 = v2 = ... = vn = e;</code> では、eの計算は1回だけ行い、その結果Rを右から左へ複数のmov命令でコピーします。eを毎回計算し直すわけではありません。</p>
+  <pre><code>eの計算（結果R）
+mov  loc(vn), R
+mov  loc(vn-1), R
+...
+mov  loc(v1), R</code></pre>
+  <p>自作例として、<code>p = q = r - 1;</code>（<code>p</code>:<code>8[ebp]</code>, <code>q</code>:<code>12[ebp]</code>, <code>r</code>:<code>-4[ebp]</code>、結果はeaxに残す）を考えると、次のようになります。</p>
+  <pre><code>mov  eax, -4[ebp]
+sub  eax, 1
+mov  12[ebp], eax
+mov  8[ebp], eax</code></pre>
+  <div class="mistake"><strong>よくある間違い:</strong> 多重代入で「rを1回引くのを毎回繰り返す」（＝r-1を2回計算する）と誤解しやすいですが、正しくは計算は1回だけ行い、その結果を複数の変数へコピーするだけです。</div>
+  <div class="beginner-key">最低限ここだけ覚える: 式文は「計算して捨てる」。単純代入は「計算結果をmov loc(v),Rで書く」。多重代入はeを1回計算し、その結果を右から左へ複数movでコピーする。</div>
+
+  <h3>6. 演習: 制御構文を入れ子にして組み立ててみる</h3>
+  <p>ここまでのテンプレートは、外側の骨格の「本体sの位置」に、内側の骨格をそのまま代入することで入れ子にできます。原資料の演習問題１（<code>while (x != 0) if (x &gt; 0) x--; else x++;</code>）はこの入れ子構造の代表例で、L1〜L4まで段階的にラベルを埋めていく構成になっています（詳細な全ページの穴埋め過程は<code>md/sources/3.md</code>を参照してください）。</p>
+  <p>ここでは別の自作例で同じ考え方を練習します。<code>for (i = 0; i &lt; 3; i++) if (i == 1) skip++; else total += i;</code>（<code>i</code>:<code>-4[ebp]</code>, <code>skip</code>:<code>-8[ebp]</code>, <code>total</code>:<code>8[ebp]</code>）を考えると、外側のforテンプレートの「sの実行」の位置に、内側のif-elseテンプレートをそのまま展開します。</p>
+  <pre><code>mov  -4[ebp], 0
+L1: cmp  -4[ebp], 3
+jge  L3
+cmp  -4[ebp], 1
+jne  L4
+add  -8[ebp], 1
+jmp  L5
+L4: mov  eax, -4[ebp]
+add  8[ebp], eax
+L5:
+L2: add  -4[ebp], 1
+jmp  L1
+L3:</code></pre>
+  <p>外側のforのラベル(L1,L2,L3)と、内側のif-elseのラベル(L4,L5)が重複しないように番号をずらしている点がポイントです。試験のアセンブリ穴埋め問題でも、この「外側のテンプレートに内側のテンプレートをそのまま代入する」考え方で、どんなに深く入れ子になっても機械的に組み立てられます。</p>
+
+  <div class="exam-link-box"><strong>過去問とのつながり:</strong> 2023年の過去問メモには「[3][1]のアセンブリコードを覗き穴的最適化したものを次に示す。空欄を埋めよ（shl命令、dec命令、スタックフレームの除去が行われていました）」という記述があります。「[3][1]」が本資料３（言語処理系（３））の演習問題１を指している可能性はありますが、断定はできません（推定）。いずれにせよ、最適化問題は必ず「最適化前のベースコード」を前提とするため、本回で学ぶif/while/forのテンプレートを正確に組み立てられることが、言語処理系（５）の覗き穴最適化の問題を解く前提になります。</div>
+
+  <div class="generated-content lecture-summary">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span>
+    <p><strong>この回のまとめ:</strong> if・while・forはすべて「条件を計算する→条件不成立側で分岐する→本体を実行する→（ループなら先頭へ戻る）」という同じ骨格の変種です。forはwhileに「初期化e<sub>1</sub>」と「更新e<sub>3</sub>（continueの飛び先）」を足したものと考えると、5つのテンプレートを暗記しなくても導出できます。break/continueの飛び先ラベルはwhileとforで異なる（while: break→L2, continue→L1／for: break→L3, continue→L2）ため、混同しないよう注意してください。式文・代入式・多重代入は、これらの制御構文の「本体s」の中身として組み合わさります。</p>
+  </div>
+
+  <p class="note">原文（全ページのテキストと画像）は <a href="md/sources/3.md">md/sources/3.md</a> を参照してください。</p>
+</section>
+
+<section class="lecture-header" id="lec-source4" data-title="金子先生パート第4回: 算術式のコード生成とレジスタ数見積り">
+  <h2>言語処理系（４）: 算術式のコード生成アルゴリズムと必要レジスタ数の見積り</h2>
+
+  <div class="generated-content lecture-overview">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-high">信頼度: 高</span>
+    <p><strong>この回は何を学ぶか:</strong> 二項算術式 <code>e1 . e2</code> をできるだけ少ない命令・少ないレジスタで計算するための「計算順序の型」（RSL型・RL型・R型・LR型・L型）を判定する表４．１と、各部分式の計算に必要なレジスタ数r(e)を見積もる表４．２の使い方を、実際の式に手を動かして適用しながら学びます。</p>
+    <p><strong>なぜ学ぶのか:</strong> 2024年の過去問メモに「汎用レジスタ3つが使える場面において{(a-1)*(b-2)+(c-3)*(e-4)*(d-5)}*{(e)-(f-6)}の推測レジスタ数と命令型を聞かれました。授業資料の表を覚えていれば解けると思います」とあり、また2023年メモにも「RSL型、RL型などのコード生成アルゴリズムと必要なレジスタ数を問う問題」への言及があります。本資料の既存の出題予測でも「必要レジスタ数の見積もり」はS級（毎年に近い頻度）と分類されており、表４．１・表４．２そのものが直接の出題対象になった実績があります。</p>
+  </div>
+
+  <div class="intuition-box"><strong>全体像:</strong> 基本方針は「レジスタを多く必要とする側を先に計算する」ことです。片方をレジスタに残したまま、もう片方を計算すれば、余計なメモリ退避（一時変数tmpへの読み書き）を避けられます。両方が同じだけレジスタを必要とし、しかもそれが上限Nに達しているときだけ、片方の結果を一時変数に退避せざるを得ません（RSL型）。この「大きい方を先に、両方満杯なら退避」という発想を持っていれば、表を丸暗記しなくても再現できます。</div>
+
+  <h3>1. なぜ計算順序が性能を左右するのか</h3>
+  <p>二項算術演算子（+, -, *など）に対応するアセンブリ命令instは、通常「レジスタと、もう一方のオペランド（レジスタまたはメモリ）」という形をとります。<code>e1 . e2</code>を計算する基本手順は「e<sub>1</sub>の値をレジスタRにロードし、Rを第1オペランド、e<sub>2</sub>の値を第2オペランドとしてinstを実行する」というものです。例えば<code>x+y</code>は次のようになります。</p>
+  <pre><code>mov  R, loc(x)
+add  R, loc(y)</code></pre>
+  <p>ここで、もしe<sub>1</sub>の値がすでに計算済みでレジスタR′に入っているなら、わざわざRにロードし直す必要はありません。例えば<code>a*b+y</code>では、a*bの結果をそのまま使い回せます。</p>
+  <pre><code>mov  R', loc(a)
+imul R', loc(b)
+add  R', loc(y)</code></pre>
+  <p>しかし、e<sub>1</sub>・e<sub>2</sub>の両方が「計算が必要な式」（変数や定数そのものではない）である場合は話が変わります。<code>a*b+x*y</code>をそのまま素朴に計算すると、a*bの結果とx*yの結果を両方レジスタに残しておく必要があり、レジスタが足りなければ一時変数（tmp、メモリ上の一時領域）への退避が発生します。この「レジスタをどう使い回すか」が、この回で学ぶ表の存在理由です。</p>
+  <div class="beginner-key">最低限ここだけ覚える: 片方の計算結果をレジスタに残したまま使い回せれば、命令数もレジスタ数も減らせる。両方の計算結果を同時に保持する必要がある式ほど、多くのレジスタと工夫が必要になる。</div>
+
+  <h3>2. 可換演算と非可換演算</h3>
+  <p><code>e1 . e2 = e2 . e1</code>が成り立つ演算（+, *など）を可換演算、成り立たない演算（-など）を非可換演算と呼びます。この違いは、計算順序を選べるかどうかに直結します。可換演算なら、e<sub>1</sub>とe<sub>2</sub>のどちらを先に計算してもよい（順序を入れ替えても最終的な値は変わらない）ため、レジスタの都合で自由に順序を選べます。非可換演算では、演算命令（inst R<sub>1</sub>, R<sub>2</sub>）を実行する際に「どちらがR<sub>1</sub>（第1オペランド）でどちらがR<sub>2</sub>（第2オペランド）か」を正しく保つ必要があり、選べる自由度が下がります。</p>
+  <p>この「N（利用可能なレジスタ数）」「r(e<sub>1</sub>), r(e<sub>2</sub>)（各部分式に必要なレジスタ数）」「演算子の可換性」の3つの組み合わせによって計算順序が決まる、というのがこの回の中心テーマです。ただし1つだけ特別なルールがあり、<code>r(e1)=r(e2)=N</code>のとき（両方がレジスタを使い切る場合）は、可換・非可換によらず常にe<sub>2</sub>から先に計算します。これは非可換演算のときに正しい順序を保証するための安全策で、可換演算のときもこのルールに合わせておけば統一的に扱えます。</p>
+
+  <h3>3. コード生成の5類型（RSL型・RL型・R型・LR型・L型） — 表４．１</h3>
+  <p>算術式<code>e1 . e2</code>のコード生成には、次の5つの型があります。</p>
+  <ul>
+    <li><strong>RSL型:</strong> e<sub>2</sub>を計算（結果R<sub>2</sub>）→ 一時変数tmpに退避 → e<sub>1</sub>を計算（結果R<sub>1</sub>）→ <code>inst R1, tmp</code>。両方がレジスタを使い切るとき（r(e<sub>1</sub>)=r(e<sub>2</sub>)=N）に使う、最も手間のかかる型。</li>
+    <li><strong>RL型:</strong> e<sub>2</sub>を計算（結果R<sub>2</sub>）→ e<sub>1</sub>を計算（結果R<sub>1</sub>）→ <code>inst R1, R2</code>。退避なしで両方の結果をレジスタに残せる場合。</li>
+    <li><strong>R型:</strong> e<sub>2</sub>を計算（結果R<sub>2</sub>）→ <code>inst R2, loc(v)</code>（e<sub>1</sub>は変数/定数v）。可換演算限定。</li>
+    <li><strong>LR型:</strong> e<sub>1</sub>を計算（結果R<sub>1</sub>）→ e<sub>2</sub>を計算（結果R<sub>2</sub>）→ <code>inst R1, R2</code>。RL型とは逆に、e<sub>1</sub>を先に計算する。</li>
+    <li><strong>L型:</strong> e<sub>1</sub>を計算（結果R<sub>1</sub>）→ <code>inst R1, loc(v)</code>（e<sub>2</sub>は変数/定数v）。</li>
+  </ul>
+  <p>これらの型を、r(e<sub>1</sub>)とr(e<sub>2</sub>)の関係（Nと等しいか、0より大きくN未満か、0か）、そして演算の可換性によって振り分ける表が表４．１です。</p>
+  <img class="figure" src="images/selected_figures/11_11_codegen_table_4_p014.png" alt="表4.1 算術式e1・e2のコード生成型（行:r(e1)の区分、列:r(e2)の区分、セル:RSL/RL/R/LR/L型の判定）" loading="lazy">
+  <div class="formula-box">
+    <h5>表４．１ 算術式 e<sub>1</sub> . e<sub>2</sub> のコード生成型</h5>
+    <table>
+      <tr><th></th><th>r(e<sub>2</sub>)=N</th><th>0&lt;r(e<sub>2</sub>)&lt;N</th><th>r(e<sub>2</sub>)=0</th></tr>
+      <tr><th>r(e<sub>1</sub>)=N</th><td>RSL</td><td>LR</td><td>L</td></tr>
+      <tr><th>0&lt;r(e<sub>1</sub>)&lt;N</th><td>RL</td><td>RL or LR</td><td>L</td></tr>
+      <tr><th>r(e<sub>1</sub>)=0（非可換）</th><td>RL</td><td>RL</td><td>L</td></tr>
+      <tr><th>r(e<sub>1</sub>)=0（可換）</th><td>R</td><td>R</td><td>L or R</td></tr>
+    </table>
+  </div>
+  <p>表の読み方のコツは次の通りです。r(e<sub>1</sub>)=0（変数や定数そのもの）の行が2種類あるのは、r(e<sub>1</sub>)=0のときにR型（e<sub>1</sub>をロードせずにloc(v)のまま演算オペランドとして使う型）が選べるかどうかが、可換性に依存するためです。可換演算なら<code>inst R2, loc(v)</code>で正しい結果になりますが、非可換演算では演算の順序が変わってしまうため、この最も簡潔なR型は使えず、代わりにe<sub>1</sub>もレジスタにロードするRL型を使います。</p>
+  <div class="mistake"><strong>よくある間違い:</strong> R型は「可換演算のときのみ」使えるという条件を見落とし、非可換演算（a-bなど）にもR型を当てはめてしまう間違いが典型的です。表を見るときは必ず「r(e<sub>1</sub>)=0」の行が可換か非可換かを先に確認してください。</div>
+
+  <h3>4. 必要レジスタ数の見積り — 表４．２（この講義独自の方式に注意）</h3>
+  <p>表４．１を使うには、まずr(e<sub>1</sub>)とr(e<sub>2</sub>)の値（各部分式の計算に必要なレジスタ数）がわかっていなければなりません。これを見積もるのが表４．２です。</p>
+  <div class="mistake"><strong>特に注意（この講義独自の方式）:</strong> 一般的なコンパイラの教科書で紹介されるSethi-Ullman法では、変数や定数などの「葉」に必要なレジスタ数を1として数えます。しかし本講義の表４．１・表４．２では、<strong>変数・定数（葉）はr=0からスタートします</strong>。これは一般的なSethi-Ullman式の数え方とは異なる、本講義独自の見積り方式です。試験でこの表を使う際は、必ずこの「葉はr=0」というルールで計算してください。一般的な教科書の数え方（葉はr=1）を混同すると、表の対応関係がずれて誤答につながります。</div>
+  <div class="formula-box">
+    <h5>表４．２ 算術式 e<sub>1</sub> . e<sub>2</sub> の使用レジスタ数の見積り r(e<sub>1</sub> . e<sub>2</sub>)</h5>
+    <table>
+      <tr><th></th><th>r(e<sub>2</sub>)=N</th><th>0&lt;r(e<sub>2</sub>)&lt;N</th><th>r(e<sub>2</sub>)=0</th></tr>
+      <tr><th>r(e<sub>1</sub>)=N</th><td>N</td><td>N</td><td>N</td></tr>
+      <tr><th>0&lt;r(e<sub>1</sub>)&lt;N</th><td>N</td><td>RL: max(r(e<sub>1</sub>)+1,r(e<sub>2</sub>))<br>LR: max(r(e<sub>1</sub>),r(e<sub>2</sub>)+1)</td><td>r(e<sub>1</sub>)</td></tr>
+      <tr><th>r(e<sub>1</sub>)=0（非可換）</th><td>N</td><td>max(2, r(e<sub>2</sub>))</td><td>1</td></tr>
+      <tr><th>r(e<sub>1</sub>)=0（可換）</th><td>N</td><td>r(e<sub>2</sub>)</td><td>1</td></tr>
+    </table>
+  </div>
+  <p>この表は表４．１と行・列の構造が完全に対応しています。つまり「表４．１でどの型になるか判定した上で、表４．２の同じセルの式でレジスタ数を求める」という2段階の作業になります。r(e)は、eが変数または定数（葉）ならr(e)=0、そうでなければ子の型に応じて表４．２の式を再帰的に適用して求めます。</p>
+
+  <h3>5. 実践: 表４．１・表４．２を自分の手で式に適用してみる</h3>
+  <p>ここからは、原資料には出てこない自作の式を使って、表の使い方を最初から最後まで手を動かして確認します。<strong>N=2</strong>（利用可能な汎用レジスタはeax, ebxの2本）とします。</p>
+
+  <p><strong>例1: RL型・L型が混在する式</strong> <code>(p+q)*(u-v) + t*w</code> を考えます。</p>
+  <p>まず葉（p, q, u, v, t, w）はすべてr=0です。次に、部分式ごとにボトムアップで型とレジスタ数を求めます。</p>
+  <ul>
+    <li><code>p+q</code>: r(e<sub>1</sub>)=r(p)=0（可換）, r(e<sub>2</sub>)=r(q)=0 → 表４．１で「r(e<sub>1</sub>)=0(可換)」×「r(e<sub>2</sub>)=0」＝<strong>L or R</strong>。表４．２の同セルは<strong>1</strong>。ここではL型を選び、r(p+q)=1。</li>
+    <li><code>u-v</code>: r(e<sub>1</sub>)=r(u)=0（非可換）, r(e<sub>2</sub>)=r(v)=0 → 「r(e<sub>1</sub>)=0(非可換)」×「r(e<sub>2</sub>)=0」＝<strong>L</strong>、レジスタ数<strong>1</strong>。r(u-v)=1。</li>
+    <li><code>t*w</code>: p+qと同様に可換の葉同士なので<strong>L or R</strong>、r(t*w)=1。</li>
+    <li><code>(p+q)*(u-v)</code>: e<sub>1</sub>=(p+q)でr(e<sub>1</sub>)=1、e<sub>2</sub>=(u-v)でr(e<sub>2</sub>)=1。N=2なのでどちらも「0&lt;r&lt;N」列・行 → 表４．１は<strong>RL or LR</strong>。表４．２は RL: max(1+1,1)=2、LR: max(1,1+1)=2、どちらでも<strong>2</strong>。ここではRL型を選びます。</li>
+    <li>最後に <code>((p+q)*(u-v)) + (t*w)</code>: e<sub>1</sub>の r=2=N、e<sub>2</sub>の r=1（0&lt;r&lt;N）→ 表４．１で「r(e<sub>1</sub>)=N」×「0&lt;r(e<sub>2</sub>)&lt;N」＝<strong>LR型</strong>。表４．２は行r(e<sub>1</sub>)=Nなので常に<strong>N=2</strong>。</li>
+  </ul>
+  <p>型がすべて決まったので、実際にコードを組み立てます（RL型の内部手順「e<sub>2</sub>の計算(結果R<sub>2</sub>)→e<sub>1</sub>の計算(結果R<sub>1</sub>)→inst R<sub>1</sub>,R<sub>2</sub>」、LR型の内部手順「e<sub>1</sub>の計算(結果R<sub>1</sub>)→e<sub>2</sub>の計算(結果R<sub>2</sub>)→inst R<sub>1</sub>,R<sub>2</sub>」に従います）。</p>
+  <pre><code>; e1 = (p+q)*(u-v)  ※RL型: e2=(u-v)を先に計算
+mov  eax, loc(u)
+sub  eax, loc(v)        ; u-v の結果 → eax
+mov  ebx, loc(p)
+add  ebx, loc(q)        ; p+q の結果 → ebx
+imul ebx, eax           ; (p+q)*(u-v) の結果 → ebx （これがトップ式のR1）
+; e2 = t*w
+mov  eax, loc(t)
+imul eax, loc(w)        ; t*w の結果 → eax （これがトップ式のR2）
+; トップ式は LR型なので、最後に inst R1, R2
+add  ebx, eax           ; 最終結果 → ebx</code></pre>
+  <p>eax・ebxの2本だけで、退避（tmp）なしに最後まで計算できていることが確認できます。</p>
+
+  <p><strong>例2: RSL型が必要になる式</strong> <code>(a+b)*(c+d) - (e+f)*(g+h)</code>（N=2のまま）を考えます。</p>
+  <p>例1と同じ要領で、<code>(a+b)*(c+d)</code>も<code>(e+f)*(g+h)</code>も、内部はRL型（またはLR型）でr=2（=N）になります。問題はトップの<code>e1 - e2</code>で、e<sub>1</sub>もe<sub>2</sub>も<strong>r=N=2</strong>になってしまう点です。表４．１で「r(e<sub>1</sub>)=N」×「r(e<sub>2</sub>)=N」のセルを見ると<strong>RSL型</strong>で、表４．２は<strong>N=2</strong>です。RSL型は「e<sub>2</sub>を計算→一時変数tmpに退避→e<sub>1</sub>を計算→<code>inst R1, tmp</code>」という手順で、e<sub>2</sub>の計算結果をいったんメモリに逃がす必要があります。これは、e<sub>1</sub>もe<sub>2</sub>も2本のレジスタをフルに使うため、e<sub>2</sub>の結果をレジスタに残したままe<sub>1</sub>を計算するスペースがない（RL型やLR型のようにはできない）からです。</p>
+  <pre><code>; e2 = (e+f)*(g+h) を先に計算（RSL型なのでe2から）
+mov  eax, loc(g)
+add  eax, loc(h)
+mov  ebx, loc(e)
+add  ebx, loc(f)
+imul ebx, eax             ; (e+f)*(g+h) の結果 → ebx
+mov  tmp, ebx              ; 一時変数へ退避（ここがRSL型の"S"）
+; e1 = (a+b)*(c+d) を計算
+mov  eax, loc(c)
+add  eax, loc(d)
+mov  ebx, loc(a)
+add  ebx, loc(b)
+imul ebx, eax              ; (a+b)*(c+d) の結果 → ebx
+; inst R1, tmp
+sub  ebx, tmp               ; 最終結果 → ebx</code></pre>
+  <p>補足: 表４．２の「0&lt;r(e<sub>1</sub>)&lt;N」×「r(e<sub>2</sub>)=N」セルの値が一律Nになっている理由は、eを計算する途中で一時的にN本のレジスタを使い切ることがあるためだと理解すると納得しやすくなります（この説明は原資料に明記された式の意味を筆者が補足したものです）。</p>
+
+  <h3>6. 関数呼出し・論理式・戻り値のコード生成</h3>
+  <p><strong>関数呼出し</strong> <code>f(e1, e2, ..., en)</code> では、各引数の計算結果はスタックに積まれます。各引数の計算に必要なレジスタ数の最大値<code>max(r(e1),...,r(en))</code>で足りそうに見えますが、呼び出される関数の内部でどれだけレジスタを使うかはコンパイラ側からは分からないため、安全のため<strong>r(f(e<sub>1</sub>,...,en))=N</strong>（利用可能な全レジスタを使うと仮定）と見積もります。</p>
+  <p><strong>論理式のコード生成</strong>（4.5）では、「式eを計算し、結果が真（または偽）ならラベルLへ分岐する」という形が基本になります。</p>
+  <pre><code>eの計算（結果R）
+cmp  R, 0
+jne  L</code></pre>
+  <p>eが比較演算 <code>e1 &gt;= e2</code> のような形であれば、cmpとjccを直接使ってより効率的に生成できます。ここでも計算順序の工夫があり、e<sub>2</sub>を先に計算してR<sub>2</sub>に、e<sub>1</sub>を後に計算してR<sub>1</sub>に置き、<code>cmp R1, R2 / jge L</code>としますが、もし可換な比較に読み替えられるなら、分岐命令の条件そのものを入れ替える（<code>jge</code>を<code>jle</code>にする）ことで<code>cmp R2, R1</code>の順に計算しても正しく判定できます。自作例として<code>if (p*q &gt;= r-s)</code>を考えると、次の2通りのコードはどちらも正しい判定になります。</p>
+  <pre><code>; 素直な順序
+e2(r-s)の計算 → R2
+e1(p*q)の計算 → R1
+cmp  R1, R2
+jge  L
+; 条件を入れ替えた順序（R1,R2の役割を交換）
+e2(r-s)の計算 → R2
+e1(p*q)の計算 → R1
+cmp  R2, R1
+jle  L</code></pre>
+  <p>論理演算 <code>e1 &amp;&amp; e2</code> の場合、「結果が偽ならL」は「e<sub>1</sub>が偽ならL」「e<sub>2</sub>が偽ならL」という2段の判定に、「結果が真ならL」は「e<sub>1</sub>が偽なら別ラベルL′へ（全体をスキップ）」「e<sub>2</sub>が真ならL」「L′:」という3段の判定になります（短絡評価の考え方そのものです）。</p>
+  <p><strong>戻り値のコード生成</strong>（4.6）では、<code>return e;</code>は基本的に「eを計算し（結果R）、<code>mov eax, R</code>で戻り値レジスタeaxに移し、関数末尾のLretへjmp」という形になりますが、eの計算結果が最初からeaxに入っていれば、この<code>mov eax, R</code>を省略できます。これを実現するため、RL型のような計算では「e<sub>2</sub>の計算はできるだけeax以外のレジスタへ（非eaxモード）」「e<sub>1</sub>の計算はできるだけeaxへ（eaxモード）」という向きを意識してコード生成します。自作例として<code>return (a+b) - (c*d);</code>（RL型: e<sub>1</sub>=a+b, e<sub>2</sub>=c*d）を考えると、次のように最後のmov命令を省略できます。</p>
+  <pre><code>; e2 = c*d をeax以外へ（非eaxモード）
+mov  ebx, loc(c)
+imul ebx, loc(d)
+; e1 = a+b をeaxへ（eaxモード）
+mov  eax, loc(a)
+add  eax, loc(b)
+sub  eax, ebx        ; 結果は最初からeaxに残る → mov eax,Rが不要
+jmp  Lret</code></pre>
+
+  <div class="exam-link-box"><strong>過去問とのつながり:</strong> 2024年の過去問メモに「汎用レジスタ3つが使える場面において{(a-1)*(b-2)+(c-3)*(e-4)*(d-5)}*{(e)-(f-6)}の推測レジスタ数と命令型を聞かれました」とあります（根拠: 2024年過去問メモ原文）。この式自体を本ページで解いて「これが正解」と示すことはしませんが、本節の例1・例2で示した手順（葉から順にボトムアップでr(e)を求め、表４．１で型、表４．２でレジスタ数を確定していく）をそのままこの式にも適用できるはずです。N=3の場合も表の構造は同じなので、ぜひ自分の手でこの過去問の式をトレースしてみてください。2023年メモの「RSL型、RL型などのコード生成アルゴリズムと必要なレジスタ数を問う問題」という記述、および本サイトの既存の出題予測でも「必要レジスタ数の見積もり」はS級と位置づけられており、出題実績は高いと考えられます。</div>
+
+  <div class="mistake"><strong>よくある間違い・つまずきポイント:</strong>
+    <ul>
+      <li>葉（変数・定数）のr(e)を1からではなく0から数え始める、という本講義独自のルールを忘れ、一般的なSethi-Ullman法（葉はr=1）と混同してしまう。</li>
+      <li>R型を非可換演算に誤って適用してしまう（R型は可換演算限定）。</li>
+      <li>「0&lt;r(e<sub>1</sub>)&lt;N かつ 0&lt;r(e<sub>2</sub>)&lt;N」のセルでRL型とLR型のどちらでも正しい場合があることを見落とし、片方しか正解がないと思い込む。</li>
+      <li>RSL型が必要になる条件（r(e<sub>1</sub>)=r(e<sub>2</sub>)=N）を見落とし、退避命令（一時変数へのmov）を書き忘れる。</li>
+    </ul>
+  </div>
+
+  <div class="generated-content lecture-summary">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span>
+    <p><strong>この回のまとめ:</strong> 算術式のコード生成は「レジスタを多く必要とする側を先に計算し、その結果をできるだけレジスタに残したまま使い回す」という発想に基づきます。表４．１（コード生成型: RSL/RL/R/LR/L）と表４．２（必要レジスタ数の見積り）は行・列の構造が対応しており、常にセットで使います。本講義独自の重要な注意点として、変数・定数（葉）はr=0からカウントする点（一般的なSethi-Ullman法とは異なる）を必ず覚えてください。関数呼出しの引数はr=Nと安全側に見積もり、戻り値のコード生成ではeaxモード／非eaxモードの工夫でmov命令を1つ省略できます。</p>
+  </div>
+
+  <p class="note">原文（全ページのテキストと画像）は <a href="md/sources/4.md">md/sources/4.md</a> を参照してください。</p>
+</section>
+
+<section class="lecture-header" id="lec-source5" data-title="金子先生パート第5回: 覗き穴最適化・定数畳込み・生存解析">
+  <h2>言語処理系（５）: 最適化（覗き穴式最適化・定数畳込み・レジスタ変数・関数フレーム省略・生存解析）</h2>
+
+  <div class="generated-content lecture-overview">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-high">信頼度: 高</span>
+    <p><strong>この回は何を学ぶか:</strong> 言語処理系（３）（４）のテンプレートに従って素朴に生成されたアセンブリコードには、冗長な命令や無駄な計算が含まれます。この回では、そうしたコードを整理・削減する6つの技法（覗き穴式最適化・定数計算の畳込み・分岐命令の最適化・レジスタ変数・関数フレームの省略・生存解析）を学びます。</p>
+    <p><strong>なぜ学ぶのか:</strong> 本サイトの既存の出題予測で「覗き穴最適化」はS級（毎年に近い頻度）に分類されており、2023年の過去問メモにも「[3][1]のアセンブリコードを覗き穴的最適化したものを次に示す。空欄を埋めよ（shl命令、dec命令、スタックフレームの除去が行われていました）」という具体的な出題記録があります。最適化前後のコードを見比べて空欄を埋める形式の出題が実績として確認できるため、本回はS級の重点分野です。</p>
+  </div>
+
+  <div class="intuition-box"><strong>全体像:</strong> 最適化は「命令の並びを走査し、決まったパターンを見つけたら、より短い・速い命令列に置き換える」という単純な操作の繰り返しです（覗き穴式最適化）。1回の置換で別の新しいパターンが生まれることがあるため、これ以上変化しなくなるまで繰り返し適用します。覗き穴式最適化がローカルな書き換えであるのに対し、レジスタ変数・関数フレームの省略・生存解析は「関数全体を見渡した」もう一段上の最適化です。</div>
+
+  <h3>1. 覗き穴式最適化とは何か</h3>
+  <p>覗き穴式最適化（peephole optimization）は、生成されたアセンブリコードの中の「小さな窓（覗き穴）」越しに、隣接する数命令だけを見て、決まったパターンに一致すれば、より短い・効率的な命令列に置き換える、という手法です。単純な操作ですが、コンパイラの出力コードは機械的に生成されるため冗長なパターンが大量に残っており、この単純な走査・照合・置換だけで実際にはかなりの効果があります。置換によって新たな冗長パターンが生まれることもあるため、コードがそれ以上変化しなくなるまで繰り返します。</p>
+  <div class="beginner-key">最低限ここだけ覚える: 覗き穴式最適化は「隣接する少数の命令を見て、パターンに一致したら置き換える」を、変化がなくなるまで繰り返す手法。</div>
+
+  <h3>2. 覗き穴式最適化の5つの基本パターン</h3>
+  <img class="figure" src="images/selected_figures/12_12_peephole_optimization_5_p005.png" alt="覗き穴式最適化の例（int foo(int x){int y=x*x; return y+2;}に対する未最適化のアセンブリコードと、冗長命令削除の対象箇所）" loading="lazy">
+  <p>原資料で挙げられている代表的なパターンを、自作の例で1つずつ確認します（変数・レジスタは原資料とは別の組み合わせにしています）。</p>
+
+  <h4>パターン1: 冗長命令の削除</h4>
+  <p>結果を変えない演算（0を足す、1を掛けるなど）や、自分自身への代入は削除できます。ただし、フラグの変化や符号拡張を利用している場合は削除できないことがあるため注意が必要、と原資料は明記しています。</p>
+  <pre><code>; before
+add  edx, 0
+imul ecx, 1
+mov  ebx, ebx
+; after（3命令とも削除できる）
+</code></pre>
+  <p>また、メモリに書き込んだ直後に同じ場所から読み戻す命令や、同じメモリを続けて読む2命令目も冗長です。</p>
+  <pre><code>; before
+mov  -8[ebp], eax
+mov  eax, -8[ebp]     ; ← eaxはすでにこの値。2命令目は冗長
+; after
+mov  -8[ebp], eax</code></pre>
+
+  <h4>パターン2: 専用命令による置換</h4>
+  <p>汎用的な演算命令が、より短い専用命令に置き換えられる場合があります。</p>
+  <pre><code>; before          ; after
+add  [edi], 1      inc  [edi]
+sub  ecx, 1        dec  ecx
+imul edx, 8        shl  edx, 3    ; 8 = 2^3 なので3ビットシフトに置換</code></pre>
+
+  <h4>パターン3: 移動命令後の置換</h4>
+  <p>ある値をメモリに書き込んだ直後にそのメモリを読む命令があれば、メモリを読まずに元のレジスタをそのまま使うよう置換できます。</p>
+  <pre><code>; before
+mov  -12[ebp], ecx
+imul edx, -12[ebp]
+; after
+mov  -12[ebp], ecx
+imul edx, ecx</code></pre>
+
+  <h4>パターン4: 冗長な分岐命令の削除</h4>
+  <p>ジャンプ先が直後のラベルであるような無条件ジャンプ（<code>jmp L1; L1:</code>）は、そのまま削除できます。</p>
+  <pre><code>; before
+jmp  L1
+L1: ...
+; after
+L1: ...</code></pre>
+  <p>補足: 原資料には、条件分岐の直後に無条件分岐があり、その無条件分岐の飛び先の直後に条件分岐の飛び先ラベルが来る、というより複雑なパターン（<code>jcc L2 / jmp L3 / L2:</code>を<code>jcc L3</code>に短縮するような形）も示されていますが、原文のレイアウト抽出が崩れており正確な条件までは本ページの範囲では確定できません。詳しくは原資料のp009（<code>md/sources/5.md</code>）の図を直接確認してください。</p>
+
+  <h4>パターン5: 到達不能命令の削除</h4>
+  <p>無条件ジャンプの直後で、かつどこからも参照されないコードは、絶対に実行されないため削除できます。</p>
+  <pre><code>; before
+jmp  L4
+add  ebx, 3
+neg  ebx
+L5:
+; after
+jmp  L4
+L5:</code></pre>
+  <div class="mistake"><strong>よくある間違い:</strong> 「冗長そうに見える命令」を機械的にすべて削除してよいと考えがちですが、原資料は「フラグ変化や符号拡張を利用している場合は注意」と明記しています。例えば<code>add eax, 0</code>は値を変えなくてもフラグレジスタは変化するため、直後にそのフラグを使う命令（jccなど）があれば単純には削除できません。</div>
+
+  <h3>3. 定数計算の畳込みとループ不変式の移動</h3>
+  <p>コンパイル時に値が確定する計算（定数どうしの演算）は、実行時に計算せず、コンパイル時に計算してしまってコードに直接埋め込むことができます。例えば<code>c = 60 * 60 * 24;</code>は、実行時には計算されず次のようになります。</p>
+  <pre><code>mov  loc(c), 86400</code></pre>
+  <p>この畳込みは、一度代入されたら値が変わらない「定数変数」についても適用できますが、原資料はポインタ変数経由で書き換えられている可能性があるため注意が必要だと述べています。</p>
+  <p>また、ループの中で毎回同じ値になる計算（ループ不変式）は、ループの外に移動できます。ループ内で<code>k</code>と<code>m</code>が変化しないなら、次のように書き換えられます。</p>
+  <pre><code>; before
+while (i &lt; n) { z = k * m + i; ... i++; }
+; after
+tmp = k * m;
+while (i &lt; n) { z = tmp + i; ... i++; }</code></pre>
+  <div class="beginner-key">最低限ここだけ覚える: 定数どうしの演算はコンパイル時に計算して埋め込む（畳込み）。ループの中で値が変わらない計算はループの外に出す（移動）。ただしポインタ経由の書き換えの可能性には要注意。</div>
+
+  <h3>4. 分岐命令の最適化（鎖状分岐）</h3>
+  <p>条件分岐の飛び先ラベルの直後に、無条件分岐だけが置かれている場合（＝そのラベルに来ても、結局別の場所へさらに飛ぶだけの場合）、最初の条件分岐の飛び先を、その無条件分岐の飛び先そのものに書き換えることで、実行時に無駄な「二段飛び」を1段に減らせます。</p>
+  <pre><code>; before
+jne  L1
+...
+L1: jmp  L2
+...
+; after（このjneの飛び先だけをL2に直接書き換える。L1: jmp L2 自体は他から参照されていれば残す）
+jne  L2
+...
+L1: jmp  L2
+...</code></pre>
+
+  <h3>5. レジスタ変数: 参照回数で優先順位をつける</h3>
+  <p>関数本体の計算で使い切らずに余ったレジスタがあれば、頻繁に読み書きされる局所変数や引数をメモリではなくレジスタに割り当てることで、メモリアクセスを減らせます。どの変数を優先的にレジスタへ割り当てるかは、その変数の参照回数（代入・参照の合計回数）の見積りに基づきます。原資料の見積りルールは次の通りです。</p>
+  <ul>
+    <li>代入は1回、参照は1回とカウントする。</li>
+    <li>ループ中の参照は、ループの反復回数をKとして推定する。</li>
+    <li>条件文（if）中の参照は、両方の分岐が均等な確率で実行されると仮定し、<code>(eでの参照回数) + ((s1での参照回数)+(s2での参照回数))/2</code>のように按分する。</li>
+  </ul>
+  <p>この方法を、自作の例 <code>while (i &lt; limit) { total = total + step; i = i + step; }</code>（ループ回数をKとする）に適用してみます。while文の条件はループ本体がK回実行されるなら、真と判定される回数がK回、偽と判定されて抜ける回数が1回で、合計<strong>K+1回</strong>評価されます。</p>
+  <ul>
+    <li><code>i</code>: 条件<code>i &lt; limit</code>で毎回参照（K+1回）。本体の<code>i = i + step</code>では1回参照＋1回代入（2回）がK回。合計 (K+1) + 2K = <strong>3K+1</strong>。</li>
+    <li><code>limit</code>: 条件でのみK+1回参照、代入はなし。合計 <strong>K+1</strong>。</li>
+    <li><code>total</code>: 本体の<code>total = total + step</code>で1回参照＋1回代入（2回）がK回。合計 <strong>2K</strong>。</li>
+    <li><code>step</code>: 本体の2つの式でそれぞれ1回ずつ参照（2回）がK回。合計 <strong>2K</strong>。</li>
+  </ul>
+  <p>このように、ループ中で条件式に使われる変数（この例ではi, limit）は「K+1回」、更新のように読み書き両方が発生する変数は「2回×反復回数」として数える、という数え方が一貫していることが確認できます。参照回数が最も多いと見積もられた変数から優先的にレジスタへ割り当てます。</p>
+  <div class="mistake"><strong>よくある間違い:</strong> ループの反復回数Kを条件式の評価回数と取り違え、条件式の参照回数もK回（K+1回ではなく）と数えてしまう間違いが起きやすいです。ループはK回実行されても、継続判定自体はK回の「継続」判定＋1回の「終了」判定＝K+1回行われる点に注意してください。</div>
+
+  <h3>6. 関数フレームの省略</h3>
+  <p>通常、関数の先頭では<code>push ebp; mov ebp, esp</code>でスタックフレームを作り、末尾で<code>mov esp, ebp; pop ebp</code>で元に戻します。しかし、関数の実行中に<code>esp</code>（スタックポインタ）の値が変化しない（局所変数の追加や関数呼出しによるpushがない、など）場合は、このフレーム作成・破棄そのものを省略でき、代わりに<code>ebp</code>相対のアドレスをすべて<code>esp</code>相対のアドレスに置き換えます。</p>
+  <p>自作例として、局所変数を持たない2引数の関数 <code>int g(int a, int b) { return a + b; }</code> を考えます。フレームあり版は次の通りです。</p>
+  <pre><code>_g: push ebp
+    mov  ebp, esp
+    mov  eax, 8[ebp]
+    add  eax, 12[ebp]
+    mov  esp, ebp
+    pop  ebp
+    ret</code></pre>
+  <p>フレームを省略すると<code>push ebp; mov ebp, esp; mov esp, ebp; pop ebp</code>の4命令が消えるだけでなく、番地の基準がずれるため、<strong>オフセットの数値そのものも4だけ小さく</strong>なります（<code>push ebp</code>がなくなった分、呼出し直後の<code>esp</code>は元の<code>ebp</code>より4バイト上にあるため）。</p>
+  <pre><code>_g: mov  eax, 4[esp]
+    add  eax, 8[esp]
+    ret</code></pre>
+  <div class="mistake"><strong>よくあるつまずき（重要）:</strong> フレームを省略する際、原資料の例（<code>int foo(int x){int y=x*x; return y+2;}</code>）では局所変数y用に<code>sub esp,4</code>で4バイト確保しており、その4バイトがちょうど<code>push ebp</code>省略分を相殺するため、<strong>xのオフセットの数値は8[ebp]→8[esp]のまま変わりません</strong>（p022〜023）。一方、本ページの自作例のように局所変数がなく<code>sub esp</code>を行わない関数では、オフセットは4だけ減ります（8[ebp]→4[esp]）。「フレーム省略＝オフセット4減らす」と機械的に覚えるのではなく、局所変数用に確保する<code>sub esp</code>の量によってオフセットの変化幅が変わる、という点を理解しておく必要があります。</div>
+
+  <h3>7. 生存解析: 使われない代入を消す</h3>
+  <p>ある変数への代入の後、その値が一度も参照されずに（別の値で上書きされるなどして）失われるなら、その代入自体を削除できます。これが生存解析（変数が「生きている」区間を解析し、生きていない代入・割当てを取り除く手法）です。</p>
+  <p>自作例として <code>int h(int x) { int y = x + 1; y = x * 2; return y; }</code> を考えます。最初の<code>y = x + 1;</code>は、次の行で<code>y</code>がすぐに上書きされ、一度も参照されないまま失われるので、生存解析によって丸ごと削除できます。</p>
+  <pre><code>; before（yへの最初の代入を含む素朴なコード、フレーム省略済みとする）
+mov  eax, 4[esp]
+add  eax, 1
+mov  ebx, eax      ; y = x+1 だが、一度も読まれずに次で上書きされる（＝死んだ代入）
+mov  eax, 4[esp]
+imul eax, 2
+mov  ebx, eax      ; y = x*2
+mov  eax, ebx
+ret
+; after（生存解析で死んだ代入を除去し、さらに覗き穴式最適化でmov eax,ebxも整理）
+mov  eax, 4[esp]
+imul eax, 2
+ret</code></pre>
+  <p>この例のように、生存解析と覗き穴式最適化は組み合わせて使われることが多く、原資料の演習問題２（<code>md/sources/5.md</code>のp025〜p032）でも、覗き穴式最適化→関数フレームの省略→生存解析、という順番で段階的にコードが整理されていく様子が示されています。</p>
+  <div class="beginner-key">最低限ここだけ覚える: 一度も参照されずに上書き・消滅する代入は、生存解析によって削除できる。最適化は「覗き穴式最適化→フレーム省略→生存解析」のように複数の技法を順番に重ねがけすることが多い。</div>
+
+  <div class="exam-link-box"><strong>過去問とのつながり:</strong> 2023年メモの「[3][1]のアセンブリコードを覗き穴的最適化したものを次に示す。空欄を埋めよ（shl命令、dec命令、スタックフレームの除去が行われていました）」は、本回のパターン2（専用命令による置換、imul→shl相当・dec相当）、および6.関数フレームの省略が組み合わさって出題されたことを示しています（根拠: 2023年過去問メモ原文）。本サイトの既存の出題予測でも「覗き穴最適化」はS級と位置づけられており、最適化前後のコードを見比べて空欄を埋める形式に備え、本ページの5パターンと関数フレーム省略の「オフセットが変わる場合／変わらない場合」の違いを正確に説明できるようにしておくことを推奨します。</div>
+
+  <div class="mistake"><strong>GC/ICCアルゴリズムについて（正直な報告）:</strong> 2024年の過去問メモには「CGアルゴリズム,ICCアルゴリズムで色を塗る問題（ソースコードは出ませんでした）」、2023年メモには「GCアルゴリズムとICCアルゴリズムの挙動を問う問題」という記述があり、出題実績自体はあると考えられます。しかし、本ページが参照している言語処理系（３）（４）（５）の資料（<code>md/sources/3.md</code>, <code>4.md</code>, <code>5.md</code>）の中には、GC（グラフ彩色によるレジスタ割当てと推測されます）やICCのアルゴリズムに関する記述は見当たりませんでした。捏造を避けるため、本ページではこの内容の解説は行いません。おそらく別回（本担当範囲外の資料）で扱われている内容と考えられるため、該当する原資料の該当ページを別途確認してください。</div>
+
+  <div class="generated-content lecture-summary">
+    <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span>
+    <p><strong>この回のまとめ:</strong> 最適化は「覗き穴式最適化（隣接命令のパターン置換を収束するまで繰り返す）」「定数計算の畳込みとループ不変式の移動」「分岐命令の鎖状短縮」「レジスタ変数（参照回数に基づく優先割当て）」「関数フレームの省略（espが不変なら可能、オフセットの変化幅はsub espの量次第）」「生存解析（使われない代入の削除）」の6つの技法から成ります。覗き穴最適化と必要レジスタ数の見積り（言語処理系４）は特に出題実績が高く、実際に手を動かしてbefore/afterのアセンブリコードを書けるようにしておくことが重要です。GC/ICCアルゴリズムは出題実績がある一方、本担当資料（３・４・５）内には記述が見当たらないため、他の回の資料を確認する必要があります。</p>
+  </div>
+
+  <p class="note">原文（全ページのテキストと画像）は <a href="md/sources/5.md">md/sources/5.md</a> を参照してください。</p>
+</section>

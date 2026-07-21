@@ -1,0 +1,109 @@
+<section id="top">
+<h1>言語処理系 テスト対策完全版</h1>
+<p><strong>生成日:</strong> 2026-07-12 / <strong>テスト日:</strong> 未指定<br>
+<strong>資料数:</strong> 12件（授業資料）＋2件（過去問メモ） / <strong>授業回ごとの0から理解する解説:</strong> 12本（原文356ページはフォルダ内<code>md/sources/</code>に保存、要約せず全文保管）<br>
+<strong>過去問:</strong> 2年分（2023・2024）の記憶再現メモを分析済み<br>
+<strong>未判読箇所:</strong> md/sources/の原文抽出で完全な抽出失敗は0件。フォントエンコーディング起因の文字化けが185箇所あり（原本画像で確認可能、詳細は「未判読・要確認」参照）<br>
+<strong>担当:</strong> 山井先生パート（形式言語・オートマトン・構文解析の理論）／金子先生パート（コンパイラのコード生成・実行時モデル・最適化の実践）</p>
+</section>
+
+<section id="how" class="band">
+<h2>0. 本書の使い方</h2>
+<div class="callout note">
+<strong>このサイトの構成</strong>
+<p>上から順に「戦略 → 学習プラン → 出題予測 → 過去問分析 → 過去問完全解答 → 公式チートシート → O×・短答フレーズ → 直前15分復習 → 最終チェックリスト → 授業回ごとの0から理解する解説」の順に並んでいます。試験直前は上から、初めて学ぶ／じっくり理解したいときは一番下の「授業回ごとの0から理解する解説」から読んでください。授業資料の原文（全356ページ・画像付き、要約なし）はHTMLには埋め込まず、フォルダ内<code>md/sources/</code>に保存し、各回の解説末尾からリンクしています。</p>
+</div>
+<ul>
+<li><strong>左上のモード切り替え</strong>: 「かみ砕き付き」（既定）はAI生成の戦略サマリー・出題予測・各回のまとめボックスを含めて表示します。「原文のみ」に切り替えると、それらAI生成の要約・予測ボックスを隠し、解説本文と過去問メモの引用中心の表示になります（授業資料の原文全ページはこのモードでも表示されません。原文はmd/sources/を直接参照してください）。「直前モード」は「最低限ここだけ覚える」だけを優先表示し、Bランク以下の内容を折りたたみます。</li>
+<li><strong>AND検索</strong>: 複数の単語をスペース区切りで入れると、すべてを含む箇所だけをハイライトします。</li>
+<li><strong>⚙ AI生成バッジ</strong>: このサイトの解説・戦略・予測・過去問解答はすべてAIが授業資料と過去問メモから生成したものです。信頼度（高/中/低）を必ず併記しています。原文（原資料からそのまま転記した部分）とは別レイヤーとして区別してください。</li>
+<li><strong>過去問メモについての注意</strong>: 過去問は原本ではなく、受講者の記憶を頼りにした再現メモです（2023年・2024年の2年分）。出題文言の完全一致は保証されません。「傾向」として扱ってください。</li>
+</ul>
+</section>
+
+<section id="strategy" class="band">
+<h2>1. 試験戦略サマリー <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span></h2>
+<div class="callout warning">
+<strong>この戦略の根拠</strong>
+<p>2023年・2024年の過去問メモ（記憶再現、原本ではない）2年分の出題内容と、授業資料での強調度・分量を根拠にしています。過去問メモが再現できなかった問題は反映されていません。「出ない」と断定するものではなく、時間配分の目安として使ってください。目標点は既定値の80点を想定しています。</p>
+</div>
+
+<div class="grid two" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+<div class="strategy-box">
+<h3>山井先生パートの勝ち筋（形式言語・構文解析）</h3>
+<p>正規表現・オートマトン変換・曖昧な文法・First/Follow・LR(1)を「手順で解く」練習に寄せる。用語の暗記だけでは得点にならない。</p>
+<ol>
+<li>正規表現は「含む」「含まない」「末尾条件」の3パターンに分解して覚える。</li>
+<li>NFA/DFAは図だけで考えず、状態集合を表で機械的に作る。</li>
+<li>First/Follow/Directorは固定手順で集合を更新する（First→Follow→Directorの順）。</li>
+<li>LRはclosureとGOTOを機械的に書く。先読み記号の伝播を落とさない。</li>
+</ol>
+</div>
+<div class="strategy-box">
+<h3>金子先生パートの勝ち筋（コード生成・実行時モデル）</h3>
+<p>C関数・アセンブリ・スタック・eax・最適化・レジスタ数を「実行状態の表」で1命令ずつ追う。図を見て分かった気になるのが最も危険。</p>
+<ol>
+<li>引数・戻り値がどの相対番地（esp/ebpからの距離）にあるかを先に書く。</li>
+<li>各命令の後のeaxとスタックを1行ずつ更新する表を作る。</li>
+<li>覗き穴最適化は「消せるmov」「掛け算のshl化」「dec化」「不要なジャンプ・フレーム」を探す。</li>
+<li>式の必要レジスタ数は式木を作り、葉から根に向かって数える。</li>
+</ol>
+</div>
+</div>
+
+<h3>優先順位テーブル（S+ / S / A / B / C）</h3>
+<table>
+<tr><th>優先度</th><th>トピック</th><th>出題確率</th><th>配点幅の目安</th><th>直近年度実績</th><th>対応授業回</th></tr>
+<tr><td><span class="badge badge-splus">S+</span></td><td>正規表現（含む/含まない/末尾条件）</td><td>非常に高い</td><td>大</td><td>2023・2024両年で出題</td><td><a href="#lec-202603">202603</a></td></tr>
+<tr><td><span class="badge badge-splus">S+</span></td><td>ε-NFA/NFA→DFA変換</td><td>非常に高い</td><td>大</td><td>2023・2024両年で出題</td><td><a href="#lec-202603">202603</a></td></tr>
+<tr><td><span class="badge badge-splus">S+</span></td><td>曖昧な文法・構文木（if-then-else, i+i*i型）</td><td>非常に高い</td><td>中〜大</td><td>2023・2024両年で出題</td><td><a href="#lec-202604">202604</a></td></tr>
+<tr><td><span class="badge badge-splus">S+</span></td><td>First / Follow（/ Director）</td><td>非常に高い</td><td>中〜大</td><td>2023・2024両年で出題</td><td><a href="#lec-202605">202605</a></td></tr>
+<tr><td><span class="badge badge-splus">S+</span></td><td>実行時メモリ・スタックフレーム・アセンブリ穴埋め（esp/ebp/eax）</td><td>非常に高い</td><td>大</td><td>2023・2024両年で出題</td><td><a href="#lec-source2">言語処理系（２）</a> / <a href="#lec-source3">（３）</a></td></tr>
+<tr><td><span class="badge badge-s">S</span></td><td>LR(1) closure・GOTO・解析表</td><td>高い</td><td>中〜大</td><td>2023・2024両年で言及</td><td><a href="#lec-202606">202606</a></td></tr>
+<tr><td><span class="badge badge-s">S</span></td><td>覗き穴最適化</td><td>高い</td><td>中</td><td>2023・2024両年で出題</td><td><a href="#lec-source5">言語処理系（５）</a></td></tr>
+<tr><td><span class="badge badge-s">S</span></td><td>必要レジスタ数の見積もり（コード生成表）</td><td>高い</td><td>中</td><td>2023・2024両年で出題</td><td><a href="#lec-source4">言語処理系（４）</a></td></tr>
+<tr><td><span class="badge badge-a">A</span></td><td>逆ポーランド記法</td><td>中程度</td><td>小〜中</td><td>2024年のみ確認</td><td><a href="#lec-202604">202604</a></td></tr>
+<tr><td><span class="badge badge-a">A</span></td><td>GC/ICCアルゴリズム（コード生成の彩色系アルゴリズム）</td><td>中程度（内容の確証は弱い）</td><td>中</td><td>2023・2024両年で言及があるが名称・手順の記憶が曖昧</td><td>原資料要確認</td></tr>
+<tr><td><span class="badge badge-b">B</span></td><td>最右導出</td><td>低〜中（推定）</td><td>小</td><td>2024年のみ確認</td><td><a href="#lec-202604">202604</a></td></tr>
+<tr><td><span class="badge badge-b">B</span></td><td>RL文法（正規/線形文法、詳細不明・推定）</td><td>低〜中（推定）</td><td>小</td><td>2024年のみ、内容詳細不明</td><td><a href="#lec-202601">202601</a>付近</td></tr>
+<tr><td><span class="badge badge-b">B</span></td><td>構文図式・EBNF</td><td>低〜中</td><td>小</td><td>2023年のみ確認</td><td><a href="#lec-202604">202604</a></td></tr>
+<tr><td><span class="badge badge-b">B</span></td><td>チョムスキー階層・チューリングマシン・停止性問題</td><td>過去問記録は弱いが授業構成上の比重は大きい</td><td>不明</td><td>過去問メモに直接記録なし</td><td><a href="#lec-202602">202602</a></td></tr>
+</table>
+
+<div class="callout danger">
+<strong>捨ててもよい可能性がある範囲（ただし「出ない」と断定はしない）</strong>
+<p>過去問メモに出現しておらず、授業資料上も分量が少ない補助的なトピック（各回の導入・歴史的経緯の説明など）は、時間が足りない場合は後回しにしてよい。ただし記述式・穴埋め以外の小問（用語説明など）で出る可能性はゼロではない。</p>
+</div>
+</section>
+
+<section id="plan" class="band">
+<h2>2. 学習プラン <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span></h2>
+<p>試験日が未指定のため、残り日数別に3プラン＋長期プランを用意する。</p>
+
+<h3>残り1日プラン</h3>
+<table>
+<tr><th>時間帯</th><th>学習内容</th><th>目標時間</th><th>達成目標</th></tr>
+<tr><td>直前</td><td>S+ランクすべて（正規表現、NFA/DFA、曖昧な文法、First/Follow、実行時メモリ/スタック）と直前15分復習</td><td>1日集中</td><td>S+の過去問型を見て手が止まらない</td></tr>
+</table>
+
+<h3>残り3日プラン</h3>
+<table>
+<tr><th>日付</th><th>学習内容</th><th>目標時間</th><th>達成目標</th></tr>
+<tr><td>1日目</td><td>S+の理論側（正規表現、NFA/DFA、曖昧な文法/構文木、First/Follow）</td><td>3〜4時間</td><td>過去問型の正規表現・NFA変換が自力で書ける</td></tr>
+<tr><td>2日目</td><td>S+の実践側（実行時メモリ・スタック・アセンブリ穴埋め）＋Sランク（LR(1)、覗き穴最適化、レジスタ数）</td><td>3〜4時間</td><td>アセンブリ穴埋めとLR closureが解ける</td></tr>
+<tr><td>3日目</td><td>過去問完全解答を時間を計って解く＋弱点だけ復習＋直前15分復習</td><td>2〜3時間</td><td>過去問形式を時間内に解き切れる</td></tr>
+</table>
+
+<h3>残り7日プラン</h3>
+<table>
+<tr><th>日付</th><th>学習内容</th><th>目標時間</th><th>達成目標</th></tr>
+<tr><td>1〜2日目</td><td>山井先生パート全範囲（202601〜202607）の0から理解する解説を通読</td><td>各2時間</td><td>各回の「なぜ学ぶか」「最低限ここだけ覚える」を説明できる</td></tr>
+<tr><td>3〜4日目</td><td>金子先生パート全範囲（（１）〜（５））の0から理解する解説を通読</td><td>各2時間</td><td>スタック/eax追跡とコード生成の手順を再現できる</td></tr>
+<tr><td>5日目</td><td>公式・定義チートシートとO×・短答フレーズ集を暗記</td><td>2〜3時間</td><td>白紙にチートシートを再現できる</td></tr>
+<tr><td>6日目</td><td>過去問完全解答を自力で解く（2023/2024両方）</td><td>3時間</td><td>過去問型をすべて解ける</td></tr>
+<tr><td>7日目</td><td>弱点の再確認＋直前15分復習＋最終チェックリスト</td><td>2時間</td><td>チェックリストが全部埋まる</td></tr>
+</table>
+
+<h3>残り8日以上プラン</h3>
+<p>上記7日プランの前に、授業回ごとの0から理解する解説を1回ずつ丁寧に読み、「よくある間違い」を確認する期間を追加する。過去問演習は複数周（最低2周）行う。</p>
+</section>

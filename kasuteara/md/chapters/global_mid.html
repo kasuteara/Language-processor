@@ -1,0 +1,562 @@
+<section id="prediction" class="band">
+<h2>⚙ 出題予測 <span class="badge badge-ai">⚙ AI生成</span></h2>
+<p>過去問メモ2年分（2023・2024）と授業資料の強調表現・演習量から、直前対策の優先順位を判定する。過去問メモは記憶再現なので、問題文の完全一致は仮定しない。</p>
+<div class="callout note">
+<strong>A/Bランクの判定基準（このセクション内での運用）</strong>
+<p>過去問での言及が1回のみの項目はAとBに分かれる。具体的な問題文・条件まで記憶再現メモに残っている場合（例: 逆ポーランド記法の具体式）はA、設問名や単語だけの言及で条件が不明な場合（例: 「最右導出の問題」「RL文法(3)」）はBとした。B判定の項目は本文中に「推定」と明記している。</p>
+</div>
+
+<div class="prediction-card splus" id="pred-regex" data-title="正規表現（S+）">
+<h3><span class="badge badge-splus">S+</span> 正規表現</h3>
+<p class="source">根拠: 2023年メモ[1.1]「4の倍数となる2進数」「0と1をどちらも含む数」、2024年メモ「00か11を含む」「00,11を含まない」。両年とも大問1番目に出題。授業資料<a href="#lec-202603">202603</a>。</p>
+<table>
+<tr><th>条件</th><th>解答の型</th></tr>
+<tr><td>00または11を含む</td><td><code>(0+1)*00(0+1)* + (0+1)*11(0+1)*</code></td></tr>
+<tr><td>00,11を含まない</td><td><code>(01)*(ε+0) + (10)*(ε+1)</code></td></tr>
+<tr><td>0と1をどちらも含む</td><td><code>(0+1)*0(0+1)*1(0+1)* + (0+1)*1(0+1)*0(0+1)*</code></td></tr>
+<tr><td>4の倍数の2進数</td><td><code>(0+1)*00</code>（0そのものを含めるかは出題条件を優先）</td></tr>
+</table>
+</div>
+
+<div class="prediction-card splus" id="pred-nfa-dfa" data-title="ε-NFA/NFA→DFA変換（S+）">
+<h3><span class="badge badge-splus">S+</span> ε-NFA/NFA→DFA変換</h3>
+<p class="source">根拠: 2023年メモ[1.2]「第三回授業資料の有限オートマトンの項目に記載されている例と同一のものが出題」、2024年メモ「ε動作なしNFAをDFA(状態最小化はしない)に変換せよ（授業資料と同じオートマトンでした）」。授業資料<a href="#lec-202603">202603</a>の例がそのまま出る可能性が高い。</p>
+<p>ε-closureを使ってε-NFAをεなしNFAに直し、その後は部分集合構成法でDFAに変換する。<strong>状態最小化はしない</strong>という条件は2024年メモに明記されている（2023年メモのε-NFA変換設問には状態最小化の可否についての記載はない）。</p>
+</div>
+
+<div class="prediction-card splus" id="pred-ambiguous" data-title="曖昧な文法・構文木（S+）">
+<h3><span class="badge badge-splus">S+</span> 曖昧な文法・構文木</h3>
+<p class="source">根拠: 2023年メモ[2.2]「i+i*iを表す二つの構文木」、2024年メモ「if C then if C then S else Sに対する2つの構文木」。授業資料<a href="#lec-202604">202604</a>。</p>
+<p>同じ文字列に対して2通り以上の構文木が描けることを示す。dangling-else型（if-then-else）と演算子優先順位欠如型（i+i*i）の2パターンを両方練習する。</p>
+</div>
+
+<div class="prediction-card splus" id="pred-first-follow" data-title="First/Follow/Director（S+）">
+<h3><span class="badge badge-splus">S+</span> First / Follow / Director</h3>
+<p class="source">根拠: 2023年メモ[3.1]「First(E′), Follow(T)を求めよ」（標準的な式文法）、2024年メモ「First(T),Follow(T′)をもとめよ」。授業資料<a href="#lec-202605">202605</a>。</p>
+<p>2年連続で同系統の式文法（<code>E→TE'</code>, <code>E'→+TE'|ε</code>, <code>T→FT'</code>, <code>T'→*FT'|ε</code>, <code>F→(E)|i</code>）が使われている。First/Followの計算手順を機械的に再現できるようにする。</p>
+</div>
+
+<div class="prediction-card splus" id="pred-runtime-stack" data-title="実行時メモリ・スタック・アセンブリ穴埋め（S+）">
+<h3><span class="badge badge-splus">S+</span> 実行時メモリ・スタックフレーム・アセンブリ穴埋め</h3>
+<p class="source">根拠: 2023年メモ[1][2]（C関数からのアセンブリ穴埋め、L1直前のスタック/eax状態）、2024年メモ（int foo関数のアセンブリ穴埋め、L3までのスタック/eax状態）。両年とも金子先生パートの最初の大問。授業資料<a href="#lec-source2">言語処理系（２）</a>・<a href="#lec-source3">（３）</a>。</p>
+<p>関数の引数・戻りアドレスの積み方、esp/ebpの動き、各命令後のeaxの値を1命令ずつ表にして追う練習が最も点差を生む。</p>
+</div>
+
+<div class="prediction-card s" id="pred-lr" data-title="LR(1) closure・解析（S）">
+<h3><span class="badge badge-s">S</span> LR(1) closure・GOTO・解析表</h3>
+<p class="source">根拠: 2023年メモ[3.2]「LR(1)文法について（詳細不明だが課題を解けていれば解答可能）」、2024年メモ「E→E+・Tのclosureをもとめよ」。授業資料<a href="#lec-202606">202606</a>。</p>
+<p>closure(I)とGOTO(I,X)を機械的に導出する練習をする。2023年は詳細不明だが「課題を解いていれば解ける」水準の出題だったとのコメントがあるため、演習問題の再現を優先する。</p>
+</div>
+
+<div class="prediction-card s" id="pred-peephole" data-title="覗き穴最適化（S）">
+<h3><span class="badge badge-s">S</span> 覗き穴最適化</h3>
+<p class="source">根拠: 2023年メモ[3]「shl命令、dec命令、スタックフレームの除去」、2024年メモ「最適化後の穴埋め」。授業資料<a href="#lec-source5">言語処理系（５）</a>。</p>
+<p>冗長mov削除、乗算のshl化、減算のdec化、不要スタックフレーム除去、ジャンプ短縮の5パターンを暗記する。</p>
+</div>
+
+<div class="prediction-card s" id="pred-register" data-title="必要レジスタ数の見積もり（S）">
+<h3><span class="badge badge-s">S</span> 必要レジスタ数の見積もり</h3>
+<p class="source">根拠: 2023年メモ[4]「RSL型、RL型などのコード生成アルゴリズムと必要なレジスタ数」、2024年メモ「汎用レジスタ3つが使える場面での推測レジスタ数と命令型」。授業資料<a href="#lec-source4">言語処理系（４）</a>。</p>
+<p>式木を作り、葉（変数・定数）のレジスタ数を0として、講義資料の表４．１（型判定）・表４．２（レジスタ数見積り）を下から積み上げて適用する手順を再現する（一般的なSethi-Ullman式の「葉=1」とは異なる講義独自の方式なので注意）。</p>
+</div>
+
+<div class="prediction-card a" id="pred-rpn" data-title="逆ポーランド記法（A）">
+<h3><span class="badge badge-a">A</span> 逆ポーランド記法</h3>
+<p class="source">根拠: 2024年メモのみ「(A-B^(C^D))-(E*F)を逆ポーランド記法で示せ」。2023年メモには確認できず。授業資料<a href="#lec-202604">202604</a>。</p>
+<p>演算子をオペランドの後ろに置く。べき乗の結合則に注意して優先順位通りに変換する。</p>
+</div>
+
+<div class="prediction-card a" id="pred-gc-icc" data-title="GC/ICCアルゴリズム（A・信頼度低）">
+<h3><span class="badge badge-a">A</span> GC/ICCアルゴリズム（コード生成の彩色系アルゴリズム）</h3>
+<p class="source">根拠: 2023年メモ[5]「GCアルゴリズムとICCアルゴリズムの挙動」、2024年メモ「CGアルゴリズム,ICCアルゴリズムで色を塗る問題」。2年連続で言及があるが、名称表記が「GC」「CG」で年により揺れており、記憶再現メモだけでは正式名称・手順の確証が弱い。</p>
+<p class="note">補足: 出現回数だけならSランクに相当するが、内容の確証が弱いためAとして扱う。原資料の該当ページ（コード生成アルゴリズムの回）で正式名称と手順を必ず確認すること。</p>
+</div>
+
+<div class="prediction-card b" id="pred-misc-theory" data-title="最右導出・RL文法（B・推定）">
+<h3><span class="badge badge-b">B</span> 最右導出・RL文法</h3>
+<p class="source">根拠: 2024年メモのみ「最右導出の問題」「RL文法(3)についての問題」。詳細不明のため推定。</p>
+<p class="note">補足: 「RL文法」が何を指すか記憶再現メモからは確定できない（正規文法・右線形文法などの可能性）。授業資料で該当箇所を確認すること。</p>
+</div>
+
+<div class="prediction-card b" id="pred-ebnf" data-title="構文図式・EBNF（B）">
+<h3><span class="badge badge-b">B</span> 構文図式・EBNF</h3>
+<p class="source">根拠: 2023年メモ[2.1]のみ「次の構文図式で表されるEBNFを記述しなさい」。2024年メモには確認できず。授業資料<a href="#lec-202604">202604</a>。</p>
+<p>分岐は選択、ループは反復、直列は連接として読み替える。</p>
+</div>
+
+<div class="prediction-card b" id="pred-tm" data-title="チョムスキー階層・チューリングマシン（B）">
+<h3><span class="badge badge-b">B</span> チョムスキー階層・チューリングマシン・停止性問題</h3>
+<p class="source">根拠: 過去問メモ2年分に直接的な出題記録なし。ただし授業資料<a href="#lec-202602">202602</a>で1回分を丸ごと使う主要トピックであり、章末まとめや構成上の重みは大きい。</p>
+<p class="note">補足: 過去問での再現実績が無いことは「出ない」ことを意味しない。用語説明・短答での出題可能性は残る。</p>
+</div>
+</section>
+
+<section id="past-analysis" class="band">
+<h2>過去問分析 <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-mid">信頼度: 中</span></h2>
+<p>過去問メモ2件（<a href="md/past_exams/yamai_kaneko_2023_final_memo.md">2023年メモ</a> / <a href="md/past_exams/kaneko_yamai_2024_final.md">2024年メモ</a>）を完全MD化し、設問ごとに対応する授業資料回と紐づけた。両方とも「山井先生」「金子先生」で別々の出題という構成は2年連続で確認できる（「書き込み式冊子」という配布形式への言及は2023年メモのみで、2024年メモには配布形式の記述はない）。</p>
+<table>
+<tr><th>年度</th><th>山井先生パート設問数</th><th>金子先生パート設問数</th><th>備考</th></tr>
+<tr><td>2023</td><td>大問3つ（正規表現×2, ε-NFA変換, EBNF, 曖昧な文法, First/Follow, LR(1)）</td><td>大問5つ（アセンブリ穴埋め, スタック/eax, 覗き穴最適化, レジスタ数, GC/ICC）</td><td>書き込み式冊子で出題</td></tr>
+<tr><td>2024</td><td>正規表現×2, 最右導出, 構文木, First/Follow, LR closure, ε-NFA→DFA, RL文法, 逆ポーランド</td><td>アセンブリ穴埋め＋スタック/eax（1問に統合）, レジスタ数, GC/ICC</td><td>記憶再現メモ、大問区切り不明瞭</td></tr>
+</table>
+<div class="callout warning">
+<strong>頻出トピック（2年連続で確認できたもの）</strong>
+<ul>
+<li>正規表現（0,1のみのアルファベット、含む/含まない/末尾条件）</li>
+<li>ε-NFA/NFA→DFA変換（第3回資料と同一の例が出題される傾向）</li>
+<li>曖昧な文法の構文木2通り</li>
+<li>First/Follow（同系統の式文法）</li>
+<li>実行時メモリ・スタック・アセンブリ穴埋め（esp/ebp/eax）</li>
+<li>覗き穴最適化・必要レジスタ数</li>
+<li>GC/ICCアルゴリズム（ただし名称表記に揺れあり）</li>
+</ul>
+</div>
+</section>
+
+<section id="past-answers" class="band">
+<h2>過去問完全解答 <span class="badge badge-ai">⚙ AI生成</span></h2>
+<p>以下は記憶再現メモに基づく復元問題への解法である。実際の問題文・条件と異なる場合は、出題された条件を優先して解き直すこと。</p>
+<div class="grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;">
+<figure><img class="figure" src="images/past_exams/yamai_kaneko_2023_final_memo_p001.png" alt="2023期末メモp1" loading="lazy"><figcaption>2023期末メモ p1</figcaption></figure>
+<figure><img class="figure" src="images/past_exams/yamai_kaneko_2023_final_memo_p002.png" alt="2023期末メモp2" loading="lazy"><figcaption>2023期末メモ p2</figcaption></figure>
+<figure><img class="figure" src="images/past_exams/yamai_kaneko_2023_final_memo_p003.png" alt="2023期末メモp3" loading="lazy"><figcaption>2023期末メモ p3</figcaption></figure>
+<figure><img class="figure" src="images/past_exams/kaneko_yamai_2024_final_p001.png" alt="2024期末メモp1" loading="lazy"><figcaption>2024期末メモ p1</figcaption></figure>
+<figure><img class="figure" src="images/past_exams/kaneko_yamai_2024_final_p002.png" alt="2024期末メモp2" loading="lazy"><figcaption>2024期末メモ p2</figcaption></figure>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 1.1 / 2024] 正規表現</h3>
+<p><strong>問題文（記憶再現）:</strong> 「4の倍数となる2進数」「0と1をどちらも含む数」（2023）／「00か11(もしくはその両方)を含む」「00,11を含まない」（2024）を表す正規表現を書け。演算子は*・・（連接、省略可）・+のみ、文字は0と1のみ。</p>
+<p><strong>分類:</strong> exact（原資料の定義から機械的に導出可能）</p>
+<p><strong>対応範囲:</strong> <a href="#lec-202603">授業資料202603</a></p>
+<p><strong>解答:</strong></p>
+<table>
+<tr><th>条件</th><th>解答</th></tr>
+<tr><td>4の倍数の2進数</td><td><code>(0+1)*00</code></td></tr>
+<tr><td>0と1をどちらも含む</td><td><code>(0+1)*0(0+1)*1(0+1)* + (0+1)*1(0+1)*0(0+1)*</code></td></tr>
+<tr><td>00または11を含む</td><td><code>(0+1)*00(0+1)* + (0+1)*11(0+1)*</code></td></tr>
+<tr><td>00,11を含まない</td><td><code>(01)*(ε+0) + (10)*(ε+1)</code></td></tr>
+</table>
+<p><strong>解き方:</strong> 「含む」型は <code>Σ*（条件）Σ*</code>、「末尾条件」型は末尾を固定、「含まない」型は0と1が交互にしか並べない列挙で作る。</p>
+<p><strong>なぜそうなるか:</strong> 正規表現は集合演算（和・連接・閉包）の組み合わせなので、条件を「その部分文字列が存在する集合」と読み替えると機械的に組み立てられる。</p>
+<p><strong>よくある誤答:</strong> 「4の倍数」を10進数の直感で考えて末尾桁を1桁だけ固定してしまう（2進数では下2桁が00である必要がある）。</p>
+<p><strong>次に解くべき類題:</strong> 「3の倍数」「奇数個の1を含む」など閉包演算が絡む正規表現。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 1.2 / 2024] ε-NFA/NFA→DFA変換</h3>
+<p><strong>問題文（記憶再現）:</strong> 与えられたε-動作つきNFAをε-動作無しNFAに変換しなさい（2023、第3回授業資料と同一の例）／ε動作なしNFAをDFA（状態最小化はしない）に変換しなさい（2024、授業資料と同じオートマトン）。</p>
+<p><strong>分類:</strong> derived（変換手順は原資料に明示、具体的な状態集合は与えられた図に依存）</p>
+<p><strong>対応範囲:</strong> <a href="#lec-202603">授業資料202603</a></p>
+<p><strong>解答:</strong> 具体的な状態集合は出題されたNFAの図に依存するため一意の解答は示せない（derived）。ただし変換後のDFAは必ず「NFAの状態の部分集合」を状態とし、受理状態は元の受理状態を1つでも含む集合になる、という性質は共通して成り立つ。</p>
+<p><strong>解き方:</strong> (1) 各状態のε-closureを求める。(2) 入力記号ごとにε-closureを経由した遷移先集合を作る。(3) 元の受理状態をε-closureに含む状態を新しい受理状態にする。(4) NFA→DFAは部分集合構成法で、状態集合ごとに0/1の遷移先集合を作り、新しい集合が出なくなるまで繰り返す。</p>
+<p><strong>なぜそうなるか:</strong> NFAの「同時に複数の状態にいられる」性質を、DFAでは「状態の集合」という1つの状態として表現しなおすため。</p>
+<p><strong>よくある誤答:</strong> ε-closureに自分自身を含め忘れる／受理状態の判定を「集合の代表元だけ」で見てしまう。</p>
+<p><strong>次に解くべき類題:</strong> DFAの最小化（今回は問われていないが、区別できない状態をまとめる練習をしておくと理解が深まる）。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 2.2 / 2024] 曖昧な文法の構文木</h3>
+<p><strong>問題文（記憶再現）:</strong> 文法 E→E+E|E*E|(E)|i について「i+i*i」を表す二つの構文木を書け（2023）／S→if C then S|if C then S else S について「if C then if C then S else S」に対する2つの構文木を書け（2024）。</p>
+<p><strong>分類:</strong> exact</p>
+<p><strong>対応範囲:</strong> <a href="#lec-202604">授業資料202604</a></p>
+<p><strong>解答の考え方:</strong> i+i*i型は「+を先に適用する木」と「*を先に適用する木」の2通り。if-then-else型は「elseが外側のifに付く木」と「elseが内側のifに付く木（dangling-else）」の2通り。</p>
+<p><strong>解き方:</strong> 根から生成規則を展開し、葉を左から読んで元の文字列と一致することを確認しながら2通り描く。</p>
+<p><strong>なぜそうなるか:</strong> 文法に優先順位・結合規則が組み込まれていないため、同じ文字列に複数の導出木が対応してしまう（曖昧性の定義そのもの）。</p>
+<p><strong>よくある誤答:</strong> 2通りのうち1通りしか描かない、非終端記号と終端記号の対応を取り違える。</p>
+<p><strong>次に解くべき類題:</strong> 曖昧な文法を曖昧でない文法に書き換える問題（優先順位を文法規則で表現する）。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 3.1 / 2024] First / Follow</h3>
+<p><strong>問題文（記憶再現）:</strong> 文法 E→TE′, E′→+TE′|ε, T→FT′, T′→*FT′|ε, F→(E)|i について First(E′), Follow(T) を求めよ（2023）／First(T), Follow(T′) を求めよ（2024）。</p>
+<p class="note">補足: 2024年メモには文法規則そのものの記載がなく「First(T),Follow(T′)をもとめよ」という設問文のみが残っている。上記文法（2023年メモに明記されたもの）と同一の式文法が使われたという前提は推定であり、断定ではない。</p>
+<p><strong>分類:</strong> exact（2023年の文法を前提とする場合）</p>
+<p><strong>対応範囲:</strong> <a href="#lec-202605">授業資料202605</a></p>
+<p><strong>解答:</strong> <code>First(E') = { +, ε }</code>, <code>Follow(T) = { +, ), ⊣ }</code>（⊣は入力終端記号）。<code>First(T) = { (, i }</code>, <code>Follow(T') = Follow(T) = { +, ), ⊣ }</code>。</p>
+<p><strong>解き方:</strong> Firstは規則を左から展開し最初に現れる終端記号を集める（εを生成しうる非終端はさらに次を見る）。Followは「その非終端の直後に来られる終端記号」を、開始記号には入力終端記号⊣を追加しながら求める。</p>
+<p><strong>なぜそうなるか:</strong> Firstは「その記号列を展開したときに最初に現れうる終端記号」を求める操作なので規則を左から辿ればよく、Followは「その非終端の直後に置かれうる終端記号」なので、その非終端が出現するすべての文脈を集めて後続記号を集約する必要がある。εを生成しうる規則があると、その非終端が構文上「消える」場合があるため、後続の First/Follow をさらに伝播させる必要が生じる。</p>
+<p><strong>よくある誤答:</strong> εがFirstに含まれる非終端の場合にFollowを合成し忘れる。</p>
+<p><strong>次に解くべき類題:</strong> 同じ文法でのDirector集合・予測解析表の作成。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2024] closure（LR(1)）</h3>
+<p><strong>問題文（記憶再現）:</strong> E→E+・T のclosureを求めよ。</p>
+<p><strong>分類:</strong> derived</p>
+<p><strong>対応範囲:</strong> <a href="#lec-202606">授業資料202606</a></p>
+<p><strong>解答:</strong> 具体的な生成規則（TやFの定義）は使用する文法定義に依存するため一意の解答は示せない（derived）。ただしclosureの結果は必ず「元の項 E→E+・T」に加えて「点の直後の非終端Tを左辺に持つすべての生成規則を、点が先頭にある形で追加したもの」、さらにその追加項の点の直後が非終端であれば同様に再帰追加したものを含む、という構造になる。</p>
+<p><strong>解き方:</strong> 点（・）の直後が非終端Tなので、Tの生成規則を点が先頭にある形で追加する。さらに追加された項の点の直後が非終端であれば、その生成規則も追加する。新しい項が増えなくなったら終了。</p>
+<p><strong>なぜそうなるか:</strong> LRオートマトンの状態は「構文解析がどこまで進み、次に何が来るか」を表す項の集合である。点の直後が非終端Bのとき、次にBを展開する可能性があるなら、Bの生成規則も「まだ何も読んでいない状態」として同じ状態に含めておく必要があるため、closureで再帰的に追加する。</p>
+<p><strong>よくある誤答:</strong> 1段階だけ展開して、追加した項の点の直後をさらに展開し忘れる（再帰的に閉じていない）。</p>
+<p><strong>次に解くべき類題:</strong> GOTO(I,X)の計算、SLR解析表の作成。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 3.2] LR(1)文法</h3>
+<p><strong>問題文（記憶再現）:</strong> 詳細不明。2023年メモ本人のコメントでは「LR(1)文法の回の課題を解けていれば解答可能」とのみ記載。</p>
+<p><strong>分類:</strong> unsafe（生成しない）</p>
+<p class="note">根拠なし: 問題文の詳細が記憶再現メモに残っていないため、模範解答は作成しない。授業資料<a href="#lec-202606">202606</a>の演習問題を解き直すことを推奨する。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2024] 逆ポーランド記法</h3>
+<p><strong>問題文（記憶再現）:</strong> (A-B^(C^D))-(E*F) を逆ポーランド記法で示せ。</p>
+<p><strong>分類:</strong> derived（べき乗の結合則を授業資料の慣例に合わせる必要がある）</p>
+<p><strong>対応範囲:</strong> <a href="#lec-202604">授業資料202604</a></p>
+<p><strong>解答例:</strong> べき乗<code>^</code>を右結合とすると <code>A B C D ^ ^ - E F * -</code>。</p>
+<p><strong>解き方:</strong> 括弧内の演算を先に変換し、演算子をオペランドの直後に移す。優先順位が異なる場合は内側から外側に処理する。</p>
+<p><strong>なぜそうなるか:</strong> 逆ポーランド記法（後置記法）は演算子を両オペランドの直後に置くことで、括弧や優先順位規則がなくても計算順序が一意に定まる表記法だから。式の構文木でいえば、根を最後にたどる後行順（postorder）で記号を読んだ結果に一致する。</p>
+<p><strong>よくある誤答:</strong> べき乗の結合則（右結合か左結合か）を確認せずに変換してしまう。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 1 / 2024] C関数→アセンブリ穴埋め</h3>
+<p><strong>問題文（記憶再現）:</strong> C言語の関数（2023: <code>f(a,b){int c=a*2-1; return c+b}</code> / 2024: <code>int foo(int a,int b){if(a&gt;=0 &amp;&amp; a&lt;b) b=a; return b;}</code>）から得られた冗長なアセンブリコードの空欄を選択肢から選んで埋める。</p>
+<p><strong>分類:</strong> derived（原資料のアセンブリ命令パターンを適用すれば埋まるが、具体的な選択肢は年度依存）</p>
+<p><strong>対応範囲:</strong> <a href="#lec-source2">言語処理系（２）</a> / <a href="#lec-source3">（３）</a></p>
+<p><strong>解答:</strong> 2024年メモに残る最適化後の骨格は下記の通り（記憶再現メモからの原文再現）。2023年の穴埋めの具体的な中身は記憶再現メモに残っていないため一意の解答は示せない（derived）。</p>
+<pre><code>_foo:
+  mov eax, 4[esp]
+  cmp eax, 0
+  jl L1
+  cmp eax, 8[esp]
+  jl L2
+L1:
+  mov eax, 8[esp]
+L2:
+  ret</code></pre>
+<p><strong>解き方:</strong> 引数の相対番地（4[esp], 8[esp]など）を先に特定し、比較・分岐命令が何を判定しているか日本語化してから、選択肢の中でその意味に合う命令を選ぶ。</p>
+<p><strong>なぜそうなるか:</strong> 関数の引数は呼び出し規約に従って決まった相対番地（esp/ebpからのオフセット）に積まれ、if文の条件分岐は「条件が成立しない場合に対応するブロックを飛び越すジャンプ命令」として実装されるため、番地と分岐条件を先に日本語化すれば、あとは命令の意味に対応する選択肢を機械的に選ぶだけでよい。</p>
+<p><strong>よくある誤答:</strong> 分岐条件を逆に読む（jlとjge等の取り違え）。</p>
+<p><strong>次に解くべき類題:</strong> for文・while文の制御フローに対する同種の穴埋め。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 2 / 2024] ラベル直前のスタック/eax状態</h3>
+<p><strong>問題文（記憶再現）:</strong> 直前の関数のアセンブリで、あるラベル（2023: L1直前 / 2024: L3まで進んだ時点）におけるスタック（最上位esp）とeaxレジスタの値を埋める。</p>
+<p><strong>分類:</strong> derived</p>
+<p><strong>対応範囲:</strong> <a href="#lec-source2">言語処理系（２）</a></p>
+<p><strong>解答:</strong> 具体的な数値は問題ごとの関数・ラベル位置に依存するため一意の解答は示せない（derived）。ただし「call命令の直前に戻りアドレスがpushされる」「push/popのたびにespが4バイト単位で増減する」という積み上げルールは共通して成り立つため、これに沿って命令ごとの表を作れば一意に求まる。</p>
+<p><strong>解き方:</strong> 関数呼び出し時に積まれる戻りアドレス・引数の順番を先に書き出し、命令を1つずつ実行した状態でespとeaxを更新していく表を作る。</p>
+<p><strong>なぜそうなるか:</strong> x86の呼び出し規約では、call命令が戻りアドレスを自動的にpushし、以降はpush/popの命令ごとにespが加減算されるという規則で一貫して動作するため、命令列を先頭から順に適用するだけでスタックとレジスタの状態を機械的に再現できる。</p>
+<p><strong>よくある誤答:</strong> push/pop/call/retでespが変化するタイミングを取り違える。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 3 / 2024] 覗き穴最適化</h3>
+<p><strong>問題文（記憶再現）:</strong> アセンブリコードを覗き穴的最適化したものの空欄を埋める。shl命令、dec命令、スタックフレームの除去が行われている（2023）。</p>
+<p><strong>分類:</strong> derived</p>
+<p><strong>対応範囲:</strong> <a href="#lec-source5">言語処理系（５）</a></p>
+<p><strong>解答:</strong> 具体的な空欄の中身は元のアセンブリコードに依存するため一意の解答は示せない（derived）。ただし2023年メモに明記された「shl命令への置換」「dec命令への置換」「スタックフレームの除去」という3種の書き換えパターンは確実に対策すべき出題形式である。</p>
+<p><strong>解き方:</strong> 前後2〜3命令を窓として見て、「同じ値の再代入」「2の累乗の乗除算」「不要なフレーム確保・解放」を探し、shl/decなどの短い命令に置き換える。</p>
+<p><strong>なぜそうなるか:</strong> 覗き穴最適化は命令列全体の意味を変えずに、限られた窓（数命令）の中で「より短い等価な命令」に置き換える局所最適化だから。例えば2倍の乗算は1ビット左シフト（shl）と数学的に等価であり、1減算はdec命令1つで表現できるため、意味を保ったまま命令数・実行時間を削減できる。</p>
+<p><strong>よくある誤答:</strong> 意味が変わっていないかを確認せずに命令を短縮してしまう。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 4 / 2024] 必要レジスタ数</h3>
+<p><strong>問題文（記憶再現）:</strong> RSL型・RL型などのコード生成アルゴリズムと必要レジスタ数を問う（2023）／汎用レジスタ3つの場面で <code>{(a-1)*(b-2)+(c-3)*(e-4)*(d-5)}*{(e)-(f-6)}</code> の推測レジスタ数と命令型を問う（2024）。</p>
+<p><strong>分類:</strong> derived</p>
+<p><strong>対応範囲:</strong> <a href="#lec-source4">言語処理系（４）</a></p>
+<p><strong>解答:</strong> 講義資料の表４．１（型判定）・表４．２（レジスタ数見積り、r(e)は変数・定数でr(e)=0から始める講義独自の方式）を手順どおりに適用すると、2024年の式 <code>{(a-1)*(b-2)+(c-3)*(e-4)*(d-5)}*{(e)-(f-6)}</code>（N=3）は次のようになる。</p>
+<table>
+<tr><th>部分式</th><th>型</th><th>r</th></tr>
+<tr><td>a-1, b-2, c-3, e-4, d-5, f-6（葉同士の非可換演算）</td><td>L</td><td>1</td></tr>
+<tr><td>(a-1)*(b-2)</td><td>RLまたはLR（r(e<sub>1</sub>)=r(e<sub>2</sub>)=1で同値）</td><td>2</td></tr>
+<tr><td>(c-3)*(e-4)</td><td>RLまたはLR（r(e<sub>1</sub>)=r(e<sub>2</sub>)=1で同値）</td><td>2</td></tr>
+<tr><td>((c-3)*(e-4))*(d-5)</td><td>LR（r=2の側を先に計算）</td><td>2</td></tr>
+<tr><td>左の大項全体（上記2つの和）</td><td>RLまたはLR（r(e<sub>1</sub>)=r(e<sub>2</sub>)=2で同値）</td><td>3（=N）</td></tr>
+<tr><td>右の大項 (e)-(f-6)</td><td>RL（r(e<sub>1</sub>)=0の非可換演算）</td><td>2</td></tr>
+<tr><td>全体（左の大項×右の大項）</td><td>LR（r(e<sub>1</sub>)=N=3の行は列によらず値N）</td><td>3（=N）</td></tr>
+</table>
+<p class="note">⚙ AI生成・信頼度: 中。全体の必要レジスタ数は3（N=3ちょうど）で、表４．１上はr(e<sub>1</sub>)=N・r(e<sub>2</sub>)&lt;Nのマス（このマスはLRであり、r(e<sub>1</sub>)=r(e<sub>2</sub>)=Nのときだけに使うRSLではない）に該当するため、退避（RSL型）は不要という結論になる。過去問メモ自体には模範解答が残っておらず、この表はサイト側が講義資料の表４．１・４．２を機械的に適用して再計算したものである（一般的なSethi-Ullman式「葉=1、左右同数ならn+1」とは異なる講義独自の方式のため、混同しないこと）。試験本番では必ず講義資料の表４．１・表４．２を使って自分で再計算すること。</p>
+<p><strong>なぜそうなるか:</strong> 講義の方式ではr(e)は「その式を計算する間に同時に保持しておく必要がある最大レジスタ本数」を表し、変数・定数はすでに1本のレジスタまたはメモリにある値として扱うためr=0から始まる。部分式を組み合わせる際は、必要本数が多い側を先に計算し1本の結果に畳んでから少ない側を計算する（LR/RL型の選択）ことで、退避なしで済む必要本数を最小化できる。</p>
+<p><strong>よくある誤答:</strong> 変数・定数の葉をr=1から数えてしまう（正しくはr=0から）。左右の必要数が同数のときにn+1になる規則を、両方がN（使用可能な最大数）に達している場合にも適用してしまう（その場合はNのまま、RSL型で退避が必要になる）。</p>
+</div>
+
+<div class="past-exam-q">
+<h3>[2023 5 / 2024] GC/ICCアルゴリズム</h3>
+<p><strong>問題文（記憶再現）:</strong> GCアルゴリズムとICCアルゴリズムの挙動を問う（2023、コードなし）／CGアルゴリズム,ICCアルゴリズムで色を塗る問題（2024、ソースコードなし）。</p>
+<p><strong>分類:</strong> unsafe寄り（derivedとしても弱い）</p>
+<p class="note">根拠なし: 記憶再現メモだけでは正式なアルゴリズム名・手順が確定できない。模範解答は作成しない。原資料のコード生成アルゴリズムの回を必ず確認し、「どの対象に色・印を付けるか」を表にする練習をすること。</p>
+</div>
+</section>
+
+<section id="predicted-practice" class="band soft">
+<h2>予測演習問題 <span class="badge badge-ai">⚙ AI生成</span></h2>
+<div class="callout warning">
+<strong>この問題集について</strong>
+<p>ここに載っている問題は、上の「過去問完全解答」に載っている実際の過去問（記憶再現）とは別物である。過去問メモ2年分で確認された出題パターン・トピック（出題予測セクションのランク付けを根拠にする）を踏まえて、AIが新規に作成した練習問題であり、本番の試験問題そのものではない。的中を保証するものではなく、「同じ考え方が使えるかどうか」を自己確認するための教材として使うこと。各問題には出題予測との対応関係（ランク）を明記した。解答は<code>詳細</code>を開くまで隠れる。</p>
+</div>
+
+<div class="past-exam-q" id="pp-01">
+<h3>予測問題1: 正規表現 <span class="badge badge-splus">S+</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-regex">正規表現（S+）</a>。過去問メモで「4の倍数」「00/11を含む・含まない」型が2年連続で出題されているため、同系統の別条件を出題形式として練習する。</p>
+<p><strong>問題:</strong> アルファベットを{0,1}とし、使える演算子は<code>*</code>・<code>・</code>（連接、省略可）・<code>+</code>のみとする。次の条件を表す正規表現をそれぞれ書け。</p>
+<ol>
+<li>3個以上連続する1を含む2進数列</li>
+<li>先頭が<code>00</code>で始まり、末尾が<code>11</code>で終わる2進数列（長さ4以上）</li>
+</ol>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong></p>
+<ol>
+<li><code>(0+1)*111(0+1)*</code></li>
+<li><code>00(0+1)*11</code></li>
+</ol>
+<p><strong>解き方:</strong> (1)は「特定の部分文字列を含む」型なので <code>Σ*（条件）Σ*</code> の形に当てはめる。(2)は先頭・末尾の条件を固定し、間を <code>(0+1)*</code>（任意の0/1列、0回以上）で埋める。</p>
+<p><strong>よくある誤答:</strong> (1)で「1が3個」を「ちょうど3個」と読み違え、<code>0*1110*</code> のように前後を0だけに限定してしまう（「含む」なので前後に1が来てもよい）。(2)で最小長（<code>0011</code>）だけを想定し、間の任意列 <code>(0+1)*</code> を書き忘れる。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-02">
+<h3>予測問題2: ε-NFA/NFA→DFA変換 <span class="badge badge-splus">S+</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-nfa-dfa">ε-NFA/NFA→DFA変換（S+）</a>。過去問メモでは「授業資料と同じオートマトン」が出題されているため、変換手順そのものを別のオートマトンで練習する。</p>
+<p><strong>問題:</strong> 次のε-NFAを (1) ε動作なしNFAに変換し、(2) 部分集合構成法でDFAに変換せよ（状態最小化はしなくてよい）。アルファベットは{0,1}。</p>
+<pre><code>状態: q0(開始), q1, q2, q3, q4(受理)
+q0 -ε-> q1
+q1 -0-> q1,  q1 -1-> q1,  q1 -ε-> q2
+q2 -0-> q3
+q3 -1-> q4
+q4 -0-> q4,  q4 -1-> q4</code></pre>
+<p class="note">補足: これは「文字列のどこかに部分文字列 01 を含む」という正規表現 Σ*01Σ* に対応する標準的な構成（Thompson構成法）の一例である。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong></p>
+<p>(1) ε-closureは ecl(q<sub>0</sub>)={q<sub>0</sub>,q<sub>1</sub>,q<sub>2</sub>}, ecl(q<sub>1</sub>)={q<sub>1</sub>,q<sub>2</sub>}, ecl(q<sub>2</sub>)={q<sub>2</sub>}, ecl(q<sub>3</sub>)={q<sub>3</sub>}, ecl(q<sub>4</sub>)={q<sub>4</sub>}。これを使って開始状態のε-closureからεなしNFAの遷移を作る。</p>
+<p>(2) 部分集合構成法でDFAを構成すると次の5状態になる（Aが開始状態、D・Eが受理状態）。</p>
+<table>
+<tr><th>DFA状態</th><th>元のNFA状態集合</th><th>0</th><th>1</th><th>受理か</th></tr>
+<tr><td>A</td><td>{q<sub>0</sub>,q<sub>1</sub>,q<sub>2</sub>}</td><td>B</td><td>C</td><td>×</td></tr>
+<tr><td>B</td><td>{q<sub>1</sub>,q<sub>2</sub>,q<sub>3</sub>}</td><td>B</td><td>D</td><td>×</td></tr>
+<tr><td>C</td><td>{q<sub>1</sub>,q<sub>2</sub>}</td><td>B</td><td>C</td><td>×</td></tr>
+<tr><td>D</td><td>{q<sub>1</sub>,q<sub>2</sub>,q<sub>4</sub>}</td><td>E</td><td>D</td><td>○</td></tr>
+<tr><td>E</td><td>{q<sub>1</sub>,q<sub>2</sub>,q<sub>3</sub>,q<sub>4</sub>}</td><td>E</td><td>D</td><td>○</td></tr>
+</table>
+<p><strong>解き方:</strong> 開始状態Aのε-closureから出発し、0と1それぞれについて「遷移先をすべて集めてε-closureを取る」操作を、新しい状態集合が出なくなるまで繰り返す。元の受理状態q<sub>4</sub>を含む集合が新しいDFAの受理状態になる。</p>
+<p><strong>検算のヒント:</strong> 文字列 <code>"010"</code> はA→B→D→Eと遷移し、Eは受理状態なので受理される（"010"は"01"を含むので正しい）。文字列 <code>"11"</code> はA→C→Cで受理されない（"11"は"01"を含まないので正しい）。</p>
+<p><strong>よくある誤答:</strong> ε-closureを取る際に自分自身を含め忘れる。状態集合の一部が既出の集合と一致することに気づかず、同じ意味のDFA状態を重複して作ってしまう。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-03">
+<h3>予測問題3: 曖昧な文法・構文木 <span class="badge badge-splus">S+</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-ambiguous">曖昧な文法・構文木（S+）</a>。過去問メモの「i+i*i」「if-then-else」型と同じ構造を、別の演算子で練習する。</p>
+<p><strong>問題:</strong> 次の曖昧な文法を考える。<code>E → E - E | E / E | i</code>。この文法から「<code>i - i / i</code>」を導出する2通りの構文木を描け。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong> 2通りの木は次の2つの構造に対応する。</p>
+<ul>
+<li>木1: <code>i - (i / i)</code>（Eが最初に <code>E→E-E</code> で分割され、右側のEがさらに <code>E→E/E</code> に展開される）</li>
+<li>木2: <code>(i - i) / i</code>（Eが最初に <code>E→E/E</code> で分割され、左側のEがさらに <code>E→E-E</code> に展開される）</li>
+</ul>
+<p><strong>解き方:</strong> 「i-i/i」という文字列に対して、根からどちらの生成規則（E→E-EかE→E/E）を先に適用するかで2通りの導出が作れることを確認し、それぞれ根から葉まで展開して木を描く。</p>
+<p><strong>なぜそうなるか:</strong> 文法に演算子の優先順位・結合則が組み込まれていないため、同じ文字列に対して「-を先に分ける導出」と「/を先に分ける導出」の両方が可能になる。しかも-と/は非可換な演算なので、木1と木2は計算結果まで異なる（i=3のとき木1は3-1=2、木2は2/3）という点で、単なる見た目の違いではなく実質的な曖昧性であることが分かる。</p>
+<p><strong>よくある誤答:</strong> 2通りの木のうち1通りしか描かない。非終端記号Eと終端記号iの対応関係を取り違え、葉がすべてiになっていない木を描いてしまう。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-04">
+<h3>予測問題4: First / Follow <span class="badge badge-splus">S+</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-first-follow">First/Follow/Director（S+）</a>。過去問メモの<code>E→TE'</code>系文法とは別の文法で、First/Followの計算手順そのものを練習する。</p>
+<p><strong>問題:</strong> 次の文法について、First(A), First(B), First(S), Follow(A), Follow(B) を求めよ。</p>
+<pre><code>S → A B
+A → a A | ε
+B → b B | c</code></pre>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong></p>
+<ul>
+<li>First(A) = { a, ε }</li>
+<li>First(B) = { b, c }</li>
+<li>First(S) = { a, b, c }</li>
+<li>Follow(A) = { b, c }</li>
+<li>Follow(B) = { ⊣ }（⊣は入力終端記号）</li>
+</ul>
+<p><strong>解き方:</strong> First(A)はA→aA（先頭a）とA→ε（εそのもの）から{a,ε}。First(B)はB→bB（先頭b）とB→c（先頭c）から{b,c}。First(S)は、S→ABでAがεを生成しうるので、First(A)からεを除いたもの({a})とFirst(B)({b,c})を合わせて{a,b,c}になる。Follow(A)は、S→ABでAの直後にBが来るのでFirst(B)={b,c}をそのまま使う（Bはεを生成しないので、Follow(S)を追加する必要はない）。Follow(B)は、S→ABでBが末尾にあり、B→bBでもBが末尾にあるので、結局Follow(S)（＝{⊣}、Sは開始記号なので入力終端記号を含む）がそのままFollow(B)になる。</p>
+<p><strong>よくある誤答:</strong> First(S)を求める際、AがεになりうることをFirst(B)と合成し忘れ、First(S)={a}だけにしてしまう。Follow(B)を求める際、B→bBの右辺にBが末尾に現れることを見落とし、Follow(B)の計算が不完全になる。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-05">
+<h3>予測問題5: 実行時メモリ・スタックフレーム <span class="badge badge-splus">S+</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-runtime-stack">実行時メモリ・スタック・アセンブリ穴埋め（S+）</a>。過去問メモのint foo(int a,int b)型と同じ形式の別の関数で、スタック追跡そのものを練習する。</p>
+<p><strong>問題:</strong> 次のC言語の関数を考える。</p>
+<pre><code>int g(int x, int y) {
+  int z = x + y;
+  return z * 2;
+}</code></pre>
+<p><code>g(3, 5)</code> を呼び出したとき、<code>mov ebp, esp</code>（プロローグ）の直後における、x・yそれぞれのebpからの相対アドレス（オフセット）を答えよ。また、<code>return</code>の直前のeaxの値を求めよ。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong> 呼び出し規約（cdecl、引数は右から左にpush）に従うと、<code>push y; push x; call g</code>の順で積まれる。<code>call</code>で戻りアドレスがpushされ、その後プロローグで<code>push ebp; mov ebp, esp</code>が実行されるので、ebp基準では次のようになる。</p>
+<table>
+<tr><th>アドレス</th><th>内容</th></tr>
+<tr><td>[ebp]</td><td>呼び出し元のebp（保存された値）</td></tr>
+<tr><td>[ebp+4]</td><td>戻りアドレス</td></tr>
+<tr><td>[ebp+8]</td><td>x</td></tr>
+<tr><td>[ebp+12]</td><td>y</td></tr>
+</table>
+<p>eaxの値は、z = x + y = 3 + 5 = 8、戻り値は z * 2 = 16。よって<code>return</code>直前のeax = 16。</p>
+<p><strong>解き方:</strong> 引数は右から左にpushされる（cdecl）ため、最後にpushされた引数（この場合x）が戻りアドレスの直後、つまりebpから見て最も近い位置（[ebp+8]）に来る。次にpushされたy（最初にpushされた側）はその上（[ebp+12]）に来る。数値は関数の処理をそのまま計算すればよい。</p>
+<p><strong>よくある誤答:</strong> 引数の積まれる順序を左から右（x,yの順）だと勘違いし、xとyのオフセットを逆にしてしまう。[ebp]と[ebp+4]の役割（保存されたebpと戻りアドレス）を混同する。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-06">
+<h3>予測問題6: LR closure <span class="badge badge-s">S</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-lr">LR(1) closure・GOTO・解析表（S）</a>。過去問メモのE→E+・T型とは別の文法（括弧の対応を数える文法）でclosureの計算手順を練習する。</p>
+<p><strong>問題:</strong> 次の文法を考える。<code>S' → S</code>, <code>S → aSb | ε</code>。項 <code>[S' → ・S]</code> のclosureを求めよ。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong> closure({[S′→・S]}) = { [S′→・S], [S→・aSb], [S→・] }</p>
+<p><strong>解き方:</strong> 出発点の項<code>[S'→・S]</code>は点の直後が非終端Sなので、Sの生成規則をすべて点が先頭にある形で追加する。S→aSbは<code>[S→・aSb]</code>として追加、S→ε（右辺が空）は<code>[S→・]</code>として追加（点の位置がそのまま右辺の末尾になる）。追加された2項はどちらも点の直後が非終端でない（aは終端記号、[S→・]は点の直後に何もない）ため、これ以上の追加は発生せず、ここでclosureは停止する。</p>
+<p><strong>よくある誤答:</strong> 右辺が空の生成規則（S→ε）を、closureで追加すべき項として扱い忘れる。あるいは追加した<code>[S→・aSb]</code>の点の直後（終端記号a）に対しても再帰的に生成規則を追加しようとしてしまう（closureで追加するのは点の直後が非終端記号のときだけ）。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-07">
+<h3>予測問題7: 覗き穴最適化 <span class="badge badge-s">S</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-peephole">覗き穴最適化（S）</a>。過去問メモのshl/dec/フレーム除去パターンを、別のコード片で練習する。</p>
+<p><strong>問題:</strong> 次のアセンブリコードを覗き穴最適化せよ。</p>
+<pre><code>mov eax, -4[ebp]
+mov -4[ebp], eax
+imul eax, 8
+sub eax, 1
+jmp L2
+L2:</code></pre>
+<p class="note">補足: L2ラベルはこのコード片の中では他から参照されていないものとする。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong></p>
+<pre><code>mov eax, -4[ebp]
+shl eax, 3
+dec eax</code></pre>
+<p><strong>解き方:</strong> (1) <code>mov eax,-4[ebp]</code>の直後の<code>mov -4[ebp],eax</code>は、読み出したばかりの値をそのまま同じ場所に書き戻しているだけなので削除できる。(2) <code>imul eax,8</code>は8=2³の乗算なので<code>shl eax,3</code>（3ビット左シフト）に置換できる。(3) <code>sub eax,1</code>は<code>dec eax</code>に置換できる。(4) 直後に自分自身へジャンプしているだけの<code>jmp L2 / L2:</code>は、L2が他から参照されないなら丸ごと削除できる。</p>
+<p><strong>よくある誤答:</strong> <code>mov -4[ebp],eax</code>を「値を保存する重要な命令」だと思い込み削除しない（直前に同じ場所から読み出したばかりの値を書き戻しているだけなので、意味的に何も変えていないことに注意）。フラグ変化を利用する後続命令がある場合はimul→shl、sub→decの置換で挙動が変わりうる点を確認せずに置換してしまう（この問題では後続にフラグ依存命令がないため置換可能）。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-08">
+<h3>予測問題8: 必要レジスタ数 <span class="badge badge-s">S</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-register">必要レジスタ数の見積もり（S）</a>。過去問メモの複雑な式とは別の、より小さい式で表４．１・表４．２の適用手順を練習する。</p>
+<p><strong>問題:</strong> 汎用レジスタがN=2本使える場面で、式 <code>(a+b)*(c-d)</code> の必要レジスタ数と使うべき命令型を、講義資料の表４．１・表４．２に従って求めよ。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong></p>
+<table>
+<tr><th>部分式</th><th>型</th><th>r</th></tr>
+<tr><td>a+b（葉同士の可換演算）</td><td>LまたはR</td><td>1</td></tr>
+<tr><td>c-d（葉同士の非可換演算）</td><td>L</td><td>1</td></tr>
+<tr><td>(a+b)*(c-d)（可換演算、r(e<sub>1</sub>)=r(e<sub>2</sub>)=1）</td><td>RLまたはLR（同値）</td><td>2（=N）</td></tr>
+</table>
+<p>必要レジスタ数は2（＝N）。ちょうどN本で収まり、退避（RSL型）は不要。</p>
+<p><strong>解き方:</strong> まず葉（a,b,c,dすべて）をr=0とする。a+bは可換演算で両方とも葉（r=0）なので表４．２「r(e<sub>1</sub>)=0（可換）」×「r(e<sub>2</sub>)=0」の欄からr=1。c-dは非可換演算で両方とも葉なので表４．２「r(e<sub>1</sub>)=0（非可換）」×「r(e<sub>2</sub>)=0」の欄からr=1。外側の掛け算は可換演算でr(e<sub>1</sub>)=r(e<sub>2</sub>)=1（ともに0&lt;r&lt;N）なので、表４．２「0&lt;r(e<sub>1</sub>)&lt;N」×「0&lt;r(e<sub>2</sub>)&lt;N」の欄（RL:max(r(e<sub>1</sub>)+1,r(e<sub>2</sub>)) または LR:max(r(e<sub>1</sub>),r(e<sub>2</sub>)+1)）を計算すると、どちらの式でもmax(2,1)=2となり、r=2。</p>
+<p><strong>よくある誤答:</strong> 葉をr=1から数えてしまい、最終的な必要レジスタ数を実際より多く見積もる。非可換のc-dにRL型・LR型どちらでも良いと判断してしまう（非可換の場合、左のオペランドcを先に評価しないと結果が変わってしまうため、型が限定される）。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-09">
+<h3>予測問題9: 逆ポーランド記法 <span class="badge badge-a">A</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-rpn">逆ポーランド記法（A）</a>。過去問メモの式とは別の式で変換練習する。</p>
+<p><strong>問題:</strong> 式 <code>(A+B)*(C-D)/E</code> を逆ポーランド記法で示せ。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答:</strong> <code>A B + C D - * E /</code></p>
+<p><strong>解き方:</strong> 括弧の中を先に変換する。<code>(A+B)</code>→<code>AB+</code>、<code>(C-D)</code>→<code>CD-</code>。この2つを掛け算でつなぐと<code>AB+CD-*</code>。最後にEで割るので、演算子/を末尾に置いて<code>AB+CD-*E/</code>。</p>
+<p><strong>よくある誤答:</strong> 括弧内を変換する順序を間違え、演算子の順番が入れ替わってしまう（特に非可換の-や/を含む場合はオペランドの順序を保つことが重要）。</p>
+</details>
+</div>
+
+<div class="past-exam-q" id="pp-10">
+<h3>予測問題10: チョムスキー階層（短答） <span class="badge badge-b">B・推定</span></h3>
+<p class="source">出題予測との対応: <a href="#pred-tm">チョムスキー階層・チューリングマシン（B）</a>。過去問メモに直接の出題記録はないため、出題される場合の想定形式として短答形式で練習する（推定）。</p>
+<p><strong>問題:</strong> 文脈自由文法だが正規文法では表現できない言語の例を1つ挙げ、なぜ正規文法（有限オートマトン）では表現できないのかを1文で説明せよ。</p>
+<details>
+<summary>解答を見る</summary>
+<p><strong>解答例:</strong> 例: <code>S → aSb | ε</code> が生成する言語 <code>{ aⁿbⁿ | n≥0 }</code>（aとbが同数だけ並ぶ文字列）。</p>
+<p><strong>理由:</strong> 有限オートマトン（正規文法に対応する機械）は状態数が有限であるため、「これまでに読んだaの個数」を無制限に覚えておくことができず、後半で読むbの個数がaの個数と一致するかを判定できない。</p>
+<p><strong>よくある誤答:</strong> 「aⁿbⁿ」のような例を挙げずに「文脈自由文法の方が強力だから」とだけ書いてしまい、具体例と機構上の理由（状態数が有限で無制限のカウンタを持てない）の両方を示せていない。</p>
+</details>
+</div>
+</section>
+
+<section id="cheatsheet" class="band">
+<h2>公式・定義チートシート <span class="badge badge-ai">⚙ AI生成</span><span class="badge badge-trust-high">信頼度: 高</span></h2>
+<div class="grid three" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+<div class="formula-box"><h5>正規表現</h5><p><code>r+s</code>: 和集合 / <code>rs</code>: 連接 / <code>r*</code>: 0回以上の繰り返し。「含む」は <code>Σ*（条件）Σ*</code>。</p></div>
+<div class="formula-box"><h5>ε-closure</h5><p>状態qからεだけで到達できる状態の集合。NFA→DFA変換の全ステップの起点。</p></div>
+<div class="formula-box"><h5>First/Follow</h5><p>First(α): αの導出結果の先頭に来る終端記号（εを含みうる）。Follow(A): 非終端Aの直後に来られる終端記号。開始記号のFollowには⊣を含む。</p></div>
+<div class="formula-box"><h5>LL(1)条件</h5><p>同じ非終端の複数規則のDirector集合が互いに交わらなければ、1トークン先読みで決定できる。</p></div>
+<div class="formula-box"><h5>LR closure</h5><p>点の直後が非終端Bなら、Bの生成規則を点が先頭にある形で追加。新項が増えなくなるまで繰り返す。</p></div>
+<div class="formula-box"><h5>SLR/LR/LALR</h5><p>SLRはFollow集合で還元を制限。正準LRは先読み記号付きの項。LALRはLR項を一部併合したもの（yacc/bisonで採用）。</p></div>
+<div class="formula-box"><h5>スタックフレーム</h5><p><code>esp</code>: 現在のスタック最上位。<code>ebp</code>: フレーム基準点。<code>eax</code>: 返り値によく使われる汎用レジスタ。</p></div>
+<div class="formula-box"><h5>call/ret</h5><p><code>call</code>で戻りアドレスをpush、<code>ret</code>でそれをpopしてジャンプする。</p></div>
+<div class="formula-box"><h5>覗き穴最適化の典型パターン</h5><p>冗長mov削除／乗除算のshl・shr化／±1のinc・dec化／不要スタックフレーム除去／連続ジャンプの短縮。</p></div>
+<div class="formula-box"><h5>必要レジスタ数（講義独自の表４．１・表４．２、Sethi-Ullman型の一種）</h5><p>変数・定数（葉）はr=0。可換演算でr(e<sub>1</sub>)=r(e<sub>2</sub>)（ともに0&lt;r&lt;N）ならn+1。それ以外は表４．１で型（RSL/RL/LR/R/L）を決め、表４．２の対応する式で計算する。r(e<sub>1</sub>)=r(e<sub>2</sub>)=N（両方とも使用可能な最大数に達している）の場合だけはRSL型になり、値はN（n+1にはならず退避が必要）。</p></div>
+<div class="formula-box"><h5>逆ポーランド記法</h5><p>演算子をオペランドの直後に置く。括弧不要。優先順位の低い演算子ほど後ろに出る。</p></div>
+<div class="formula-box"><h5>チョムスキー階層</h5><p>正規文法 ⊂ 文脈自由文法 ⊂ 文脈依存文法 ⊂ 句構造文法（それぞれ対応するオートマトンはDFA/NFA、PDA、線形拘束オートマトン、チューリングマシン）。</p></div>
+</div>
+</section>
+
+<section id="ox" class="band">
+<h2>O×・穴埋め・短答フレーズ集 <span class="badge badge-ai">⚙ AI生成</span></h2>
+<p>過去問に実際に出た文はそのまま掲載する。似た誤答パターンを作る場合は「⚙ AI生成」を明示し、×の理由を1文で即答できるようにする。</p>
+<table>
+<tr><th>フレーズ（原文/想定）</th><th>種別</th><th>正誤・答え</th><th>理由（1文）</th></tr>
+<tr><td>「00,11を含まない」正規表現は0と1が交互にしか並ばない列を基本とする。</td><td>短答フレーズ（原文に基づく）</td><td>○</td><td>00,11という連続を禁止すると必ず0と1が交互になるため。</td></tr>
+<tr><td>ε-NFAからDFAへの変換では最初にε-closureを求める。</td><td>短答フレーズ（原文に基づく）</td><td>○</td><td>ε-closureを求めないと、εを介して到達できる状態を取りこぼすため。</td></tr>
+<tr><td>NFAからDFAへの変換では状態数は必ずNFAの状態数以下になる。 <span class="badge badge-ai">⚙AI生成</span></td><td>O×（AI生成の誤答パターン）</td><td>×</td><td>部分集合構成法ではNFAの状態集合の部分集合がDFAの状態になるため、最大で2^n（NFAの状態数がnのとき）まで増えうる。</td></tr>
+<tr><td>First(E′)にεが含まれるとき、Follow(E′)の要素はFollow(E)にも含める必要がある。 <span class="badge badge-ai">⚙AI生成</span></td><td>O×（AI生成の確認問題）</td><td>○</td><td>εを生成しうる規則の場合、後続の文脈（Follow）を上位の非終端にも伝播させる必要があるため。</td></tr>
+<tr><td>LRのclosureでは、点の直後が終端記号のときだけ項を追加する。 <span class="badge badge-ai">⚙AI生成</span></td><td>O×（AI生成の誤答パターン）</td><td>×</td><td>closureで項を追加するのは点の直後が非終端記号のときであり、終端記号のときは追加しない。</td></tr>
+<tr><td>覗き穴最適化は「命令列全体」を一度に書き換える大域的な最適化である。 <span class="badge badge-ai">⚙AI生成</span></td><td>O×（AI生成の誤答パターン）</td><td>×</td><td>覗き穴最適化は前後数命令という局所的な窓の中だけを見て置き換える局所最適化である。</td></tr>
+<tr><td>必要レジスタ数の見積もりで左右の子の必要数が同じ場合、親の必要数は変わらない。 <span class="badge badge-ai">⚙AI生成</span></td><td>O×（AI生成の誤答パターン）</td><td>×</td><td>左右が同数でまだレジスタに余裕がある場合（0&lt;r&lt;N）は、片方を先に計算して保持する必要があるため親はn+1になる。ただし両方が使用可能な最大数Nに達している場合は、これ以上増やせずNのまま（RSL型で退避が必要）になる点に注意。</td></tr>
+<tr><td>「i+i*i」の曖昧性は、演算子の優先順位が文法規則に組み込まれていないために生じる。 <span class="badge badge-ai">⚙AI生成</span></td><td>O×（AI生成の確認問題）</td><td>○</td><td>優先順位・結合則を文法の階層構造で表現していない文法は複数の構文木を許してしまう。</td></tr>
+</table>
+</section>
+
+<section id="last15" class="band">
+<h2>直前15分復習 <span class="badge badge-ai">⚙ AI生成</span></h2>
+<div class="last15-box">
+<h3>0〜3分: S+最重要</h3>
+<p>正規表現4パターン（含む/含まない/両方含む/末尾条件）を頭の中で言えるか確認。ε-NFA→DFAは「ε-closure→部分集合構成」の2ステップだけ再確認。</p>
+<h3>3〜7分: 公式・定義</h3>
+<p>First/Followの定義（先頭に来る記号／直後に来られる記号）、LR closureの追加条件（点の直後が非終端）、esp/ebp/eaxの役割を音読する。</p>
+<h3>7〜11分: O×フレーズ</h3>
+<p>上記「O×・穴埋め・短答フレーズ集」を通読し、×の理由を1文で言えるか確認する。</p>
+<h3>11〜14分: 計算ミス防止</h3>
+<p>正規表現の「含む/含まない」を取り違えない。分岐命令（jl等）の向きを逆にしない。必要レジスタ数で「同数ならn+1」を忘れない。べき乗の結合則を確認する。</p>
+<h3>14〜15分: 最終確認</h3>
+<p>未判読・要確認セクションに残っている項目がないかだけ最後に見る。</p>
+</div>
+</section>
+
+<section id="checklist" class="band">
+<h2>最終チェックリスト <span class="badge badge-ai">⚙ AI生成</span></h2>
+<ul class="checklist" style="list-style:none;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+<li><label><input type="checkbox"> 試験戦略サマリーを読んだ</label></li>
+<li><label><input type="checkbox"> S+ランク（正規表現・NFA/DFA・曖昧な文法・First/Follow・スタック）をすべて説明できる</label></li>
+<li><label><input type="checkbox"> Sランク（LR closure・覗き穴最適化・必要レジスタ数）を解ける</label></li>
+<li><label><input type="checkbox"> 公式・定義チートシートを白紙で再現できる</label></li>
+<li><label><input type="checkbox"> O×・短答フレーズ集を3周した</label></li>
+<li><label><input type="checkbox"> 過去問完全解答を時間制限内で解いた（2023・2024両方）</label></li>
+<li><label><input type="checkbox"> よくある間違い（分岐の向き、ε-closureの見落とし等）を確認した</label></li>
+<li><label><input type="checkbox"> 直前15分復習を音読した</label></li>
+</ul>
+</section>
+
+<section id="unresolved" class="band">
+<h2>未判読・要確認箇所</h2>
+<div class="unresolved" id="unresolved-ocr">
+<strong>OCR/テキスト抽出の未判読:</strong> 完全な抽出失敗は0件。ただし202604・202605（山井先生パート、構文図式〜下向き構文解析法の回）に、PDFのフォントエンコーディング起因の文字化けが計185箇所ある（主に「は」「の」「ば」等の助詞）。各ページに原本画像を併記しているため情報は失われていない。詳細は<a href="md/unresolved_items.md">unresolved_items.md</a>参照。
+</div>
+<div class="unresolved" id="unresolved-examnote">
+<strong>過去問メモに起因する要確認事項:</strong>
+<ul>
+<li>2023年メモ[3.2] LR(1)文法の問題文詳細（記憶再現メモに残っていない、模範解答なし）。</li>
+<li>「GC/CG/ICCアルゴリズム」の正式名称・手順（年度により表記が揺れており確証が弱い、原資料要確認）。</li>
+<li>「RL文法(3)」（2024メモ）が具体的に何を指すか不明（推定表記）。</li>
+</ul>
+</div>
+</section>
