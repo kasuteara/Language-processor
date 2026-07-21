@@ -1,0 +1,1257 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>言語処理系 - 期末試験対策参考書</title>
+<style>
+:root{--ink:#1e293b;--soft:#64748b;--accent:#0f4c5c;--tint:#eef6f5;--rule:#d7e0e5;--warn:#9a5b13;--warn-bg:#fff8e8;--answer:#166534;--answer-bg:#f0fdf4;--paper:#fff;--wash:#f8fafc;--sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+*{box-sizing:border-box} html{scroll-behavior:smooth;scroll-padding-top:24px} body{margin:0;color:var(--ink);background:var(--paper);font-family:var(--sans);font-size:16px;line-height:1.9;letter-spacing:.01em}.book{display:grid;grid-template-columns:276px minmax(0,1fr);max-width:1220px;margin:0 auto}nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:28px 19px 60px;border-right:1px solid var(--rule);background:#fbfdfd;font-size:13px;line-height:1.65}.toc-title{margin:18px 0 9px;font-size:11px;color:var(--soft);font-weight:700;letter-spacing:.14em}.toc a{display:block;padding:3px 4px;color:var(--ink);text-decoration:none;border-radius:3px}.toc a:hover,.toc a.current{color:#fff;background:var(--accent)}.toc a.chap{font-weight:700;margin-top:11px}.toc a.sect{padding-left:14px;color:var(--soft);font-size:12px}.toc a.sect.current{color:#fff}#searchInput{width:100%;padding:8px 9px;border:1px solid var(--rule);border-radius:4px;background:#fff;font:inherit}#searchMeta{min-height:18px;margin-top:5px;color:var(--soft);font-size:11px}#tocToggle{display:none;width:100%;margin-bottom:8px;padding:8px;border:1px solid var(--rule);border-radius:4px;background:#fff;text-align:left;font:inherit;cursor:pointer}main{max-width:48em;padding:48px 58px 120px}.cover{margin-bottom:46px;padding-bottom:27px;border-bottom:3px solid var(--accent)}.subject{margin:0 0 6px;font-size:34px;line-height:1.25;font-weight:800;letter-spacing:.04em}.meta{margin:0;color:var(--soft);font-size:14px}.chip{display:inline-block;margin-top:15px;padding:3px 10px;border:1px solid var(--accent);border-radius:3px;color:var(--accent);font-size:12px;font-weight:700}h1.chapter{margin:94px 0 10px;padding-top:28px;border-top:1px solid var(--rule);font-size:27px;line-height:1.42;letter-spacing:.03em}h1.chapter .num{display:block;margin-bottom:9px;color:var(--accent);font-size:11px;letter-spacing:.16em}h2{margin:49px 0 15px;padding-bottom:6px;border-bottom:1px solid var(--rule);color:var(--accent);font-size:20px;line-height:1.5}h3{margin:30px 0 9px;font-size:17px;line-height:1.55}p{margin:0 0 1.4em;text-align:justify}li{margin:.3em 0}strong{color:var(--accent);font-weight:750}.intro{margin:24px 0 36px;padding:18px 22px;border-left:4px solid var(--accent);background:var(--wash)}.intro h2,.summary h2{margin:0 0 10px;padding:0;border:0;font-size:15px;letter-spacing:.07em}.summary{margin:42px 0 28px;padding:18px 22px;border:2px solid var(--accent);border-radius:4px}.def,.example,.caution{margin:23px 0;padding:14px 18px;border-radius:4px}.def{border:1px solid #b9d0ce;border-left:4px solid var(--accent);background:var(--tint)}.example{border:1px solid var(--rule);background:#fff}.caution{border-left:4px solid var(--warn);background:var(--warn-bg)}.label{display:block;margin-bottom:6px;font-size:11px;font-weight:800;letter-spacing:.12em}.def .label{color:var(--accent)}.caution .label{color:var(--warn)}.formula{margin:24px 0;padding:14px 0;overflow:auto;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);text-align:center;font-family:ui-monospace,Consolas,monospace;font-size:14px}.tablewrap{overflow-x:auto;margin:22px 0}table{width:100%;margin:0;border-collapse:collapse;font-size:13.5px;line-height:1.6}.tablewrap table{margin:0}th,td{padding:8px 9px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left;white-space:nowrap}td.wrap,th.wrap{white-space:normal}th{border:0;background:var(--accent);color:#fff;position:sticky;top:0}tbody tr:nth-child(even){background:var(--wash)}pre{margin:18px 0;padding:13px 16px;overflow:auto;border:1px solid var(--rule);border-radius:4px;background:var(--wash);font-size:13px;line-height:1.65}code{padding:1px 4px;border-radius:3px;background:var(--wash);font-family:ui-monospace,Consolas,monospace;font-size:.9em}pre code{padding:0;background:none}.exercise{margin:22px 0;padding:17px 20px;border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:4px}.exercise h3{margin:0 0 10px;font-size:16px}.origin{margin-left:8px;color:var(--soft);font-size:11px;font-weight:400}details{margin-top:13px}summary{cursor:pointer;color:var(--answer);font-weight:750;font-size:13px}.answer{margin-top:10px;padding:11px 14px;border-left:3px solid var(--answer);background:var(--answer-bg)}.rank{display:inline-block;padding:1px 6px;border-radius:2px;font-size:11px;font-weight:800;letter-spacing:.05em}.rank.s{background:#9f1239;color:#fff}.rank.a{background:var(--accent);color:#fff}.rank.b{background:#e2e8f0;color:#334155}.src{margin:20px 0 35px;padding-top:7px;border-top:1px dotted var(--rule);color:var(--soft);font-size:12px}.check{padding-left:0;list-style:none}.check li{padding-left:1.55em;position:relative}.check li::before{content:"□";position:absolute;left:0;color:var(--accent);font-weight:700}mark.hl{padding:0 1px;background:#fde68a;color:inherit}dl.gloss{margin:18px 0}dl.gloss dt{margin-top:16px;font-weight:750;color:var(--accent)}dl.gloss dd{margin:4px 0 0;color:var(--ink)}#progress{position:fixed;bottom:0;left:0;z-index:5;width:0;height:3px;background:var(--accent)}.diagram{margin:22px 0;padding:16px;overflow-x:auto;border:1px solid var(--rule);border-radius:4px;background:#fff;text-align:center}.diagram .cap{margin-top:8px;color:var(--soft);font-size:12px;text-align:left}.term{border:1px dashed var(--rule);background:var(--wash);border-radius:4px;padding:2px 6px;font-size:.92em}@media(max-width:900px){.book{grid-template-columns:1fr}nav{position:static;height:auto;padding:15px 19px;border-right:0;border-bottom:1px solid var(--rule)}#tocToggle{display:block}nav.collapsed #tocList{display:none}main{max-width:none;padding:30px 20px 80px}h1.chapter{margin-top:60px}.subject{font-size:29px}}@media print{nav,#progress{display:none!important}.book{display:block}main{max-width:none;padding:0}h1.chapter{page-break-before:always}.exercise,.def{page-break-inside:avoid}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="book">
+  <nav class="toc" id="sidebar">
+    <button id="tocToggle" aria-expanded="true">目次を開閉</button>
+    <input id="searchInput" type="search" placeholder="本文を検索（空白でAND）" aria-label="本文検索">
+    <div id="searchMeta" role="status"></div>
+    <p class="toc-title">目次</p>
+    <div id="tocList"></div>
+  </nav>
+  <main id="content">
+    <header class="cover">
+      <p class="subject">言語処理系</p>
+      <p class="meta">2026年度前期 期末試験対策参考書（増補版）</p>
+      <span class="chip">前半 第1回〜第7回 / 後半 言語処理系（1）〜（6）</span>
+    </header>
+
+    <section id="guide">
+      <h1 class="chapter" id="guide-title" style="margin-top:0;border-top:0;padding-top:0"><span class="num">GUIDE</span>はじめに</h1>
+
+      <div class="intro">
+        <h2 id="what-is-this">「言語処理系」という科目が扱っているもの</h2>
+        <p>私たちが書く <code>if</code> や <code>for</code> を含んだプログラムは、そのままではCPUには理解できない。CPUが直接実行できるのは、レジスタとメモリ番地だけを相手にする機械語という、もっと無機質な命令列である。この「人間が書いた記号列」を「機械が実行できる記号列」へ、意味を変えずに正しく移し替える仕組み全般を<strong>言語処理系</strong>と呼び、その代表がコンパイラである。この科目は、コンパイラが内部で何をしているのかを、理論と実装の両面から追いかける科目だと考えるとよい。</p>
+        <p>コンパイラの仕事は、大きく二段階に分けられる。第一段階は「入力された文字列が、対象としている言語の文法に従っているかを判定し、その構造（誰が誰の一部で、どういう優先順位で結びついているか）を明らかにする」段階である。第二段階は「明らかになった構造をもとに、実際に動く機械語（あるいはアセンブリ）を組み立てる」段階である。この科目が前半・後半の二部構成になっているのは、ちょうどこの二段階に対応している。</p>
+      </div>
+
+      <h2 id="structure">前半と後半、二つの視点</h2>
+      <p><strong>前半（山井先生パート）</strong>は、第一段階「構造を見抜く」ための理論を扱う。まず形式言語理論とチューリングマシンで「そもそも言語とは何か、計算とは何か」という土台を作り（第2回）、そこから正規表現・オートマトンによる字句解析（第3回）、そして構文木を組み立てる構文解析（第4〜6回）へと進む。抽象的な定義が多く登場するが、扱っている対象はどの回も同じで、「与えられた記号列の集合をどう定義し、どう認識するか」という一本の筋でつながっている。</p>
+      <p><strong>後半（金子先生パート）</strong>は、第二段階「構造から機械語を組み立てる」ための実装技術を扱う。x86アセンブリの基本と関数フレームの構造（言語処理系(2)）を土台に、制御構造（(3)）・算術式（(4)）のコード生成へ進み、生成したコードを効率化する最適化（(5)）で締めくくる。最後の(6)だけは毛色が変わり、コード生成で使うレジスタ割当の技術を応用したソフトウェアウォーターマーキングを扱う。前半が「木構造を作る」話だとすれば、後半は「その木を実際の命令列に変換する」話であり、両者は独立した二つの科目ではなく、一つのコンパイラを両側から見ている。</p>
+
+      <h2 id="howto">この参考書の使い方</h2>
+      <p>各章は「この回で答えられること」（到達目標）→「定義・導出過程」→「典型例のフルトレース」→「注意点」→「章末演習（解答付き）」の順に構成している。定義を眺めるだけでなく、フルトレースの表を自分の手で最初から再現できるかを基準に仕上げ具合を確認してほしい。本書は前半第1回〜第7回・後半（1）〜（6）の講義スライド全19回分、課題原文（<code>課題.txt</code>）、2023・2024年度の期末試験メモ、学生自身が提出した第5・6回の課題レポート、講義配布コード（<code>rdp.c</code>、<code>calc.l</code>／<code>calc.y</code>、<code>double.l</code> など）を突き合わせて作成した。</p>
+      <div class="caution">
+        <span class="label">過去問メモについての注記</span>
+        <p>過去問は公式なものではなく、2023年度・2024年度それぞれの受験者が記憶を頼りに再現したメモが唯一の一次資料であり、「実際の試験とは異なる部分がある」と原文中で明記されている。問題文の細部よりも、繰り返し問われている論点そのものを覚える手がかりとして使うこと。</p>
+      </div>
+
+      <h2 id="trend">出題傾向</h2>
+      <div class="tablewrap"><table><thead><tr><th>区分</th><th>問われ方</th><th>頻出論点</th></tr></thead><tbody>
+      <tr><td>前半（山井先生）</td><td>記述・図・導出過程・構文木・構文解析表のフルトレース</td><td>正規表現、ε-NFA→DFA変換、曖昧文法・dangling else、最右導出、closure、First/Follow、逆ポーランド記法</td></tr>
+      <tr><td>後半（金子先生）</td><td>選択式・穴埋め・アセンブリコードのトレース</td><td>関数フレーム（<code>ebp</code>/<code>esp</code>相対番地）、条件分岐の穴埋め、覗き穴式最適化、表4.1/4.2（コード生成型とレジスタ数）、GC/QP/QPS/CC/ICC/CP</td></tr>
+      </tbody></table></div>
+      <h2 id="priority">優先順位</h2>
+      <div class="tablewrap"><table><thead><tr><th>ランク</th><th>範囲</th><th>理由</th></tr></thead><tbody>
+      <tr><td><span class="rank s">S</span></td><td>正規表現（含む/含まない両パターン）、ε-NFA→DFA変換、曖昧文法の2構文木、First/Follow/Director、最右導出、closure、RPN、演算子順位法のフルトレース</td><td>2023・2024年度とも山井パートで必ず複数問出題。課題（②③④⑤⑥）と直接一致。</td></tr>
+      <tr><td><span class="rank s">S</span></td><td><code>ebp</code>/<code>esp</code>相対番地、<code>cmp</code>直後の条件分岐、覗き穴式最適化、表4.1/4.2、GC/QP/QPS/CC/ICC/CPの比較</td><td>2023・2024年度とも金子パートの大問の中心。課題①〜⑥の選択式問題と直接対応。</td></tr>
+      <tr><td><span class="rank a">A</span></td><td>チューリングマシンの形式的定義と停止性問題、カントールの定理、NP完全・NP困難、戻り値の計算コード（<code>eax</code>モード）、生存解析・関数フレーム省略</td><td>2023年度の課題・出題根拠あり。特に「戻り値の計算コード」は2024年度の<code>foo</code>関数の過去問と直結する。</td></tr>
+      <tr><td><span class="rank b">B</span></td><td>NP完全問題の個別例（SAT・部分和・巡回セールスマン）、LALR(1)とLR(1)の違い、yacc/bisonの<code>%left</code>/<code>%right</code>宣言</td><td>直接の出題根拠はやや弱いが、6回目課題（絶対値の拡張）で問われた設計判断の土台になる。</td></tr>
+      </tbody></table></div>
+      <h2 id="plan">学習の進め方</h2>
+      <ol>
+        <li><strong>前半 第4〜6回（構文解析）</strong>を最優先。演算子順位法・LL(1)・LR(1)の3つのフルトレースを自分の手で再現できるまで書く。</li>
+        <li><strong>後半（2）〜（4）（コード生成の核）</strong>。<code>ebp</code>相対番地と表4.1/4.2は暗記ではなく「その場で導出できる」レベルにする。</li>
+        <li><strong>過去問の完全解説</strong>（本書後半に収録）を通読し、同型の出題パターンを把握する。</li>
+        <li>前半 第2・3回（形式言語理論・正規表現）、後半（1）（5）（6）を仕上げる。</li>
+        <li>残り時間で前半 第1・7回、直前チェックリストを回す。</li>
+      </ol>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="front"><span class="num">FRONT HALF</span>前半 第1回〜第7回（山井先生）</h1>
+
+      <h2 id="f1">第1回 言語処理系の全体像とコンパイラの構造</h2>
+      <p>この科目のいわば地図にあたる回である。コンパイラ・インタプリタ・アセンブラはいずれも「ある言語で書かれたものを別の形へ移す」処理系だが、何を入力し何を出力するかがそれぞれ異なる。まずはこの違いを図（T図式）で整理したうえで、コンパイラの内部が字句解析・構文解析・中間コード生成・最適化・コード生成という一続きのフェーズに分かれて働く様子を、1つの式を例に最初から最後まで追いかける。以降の回は、この流れのどこか1つのフェーズを深掘りしていく回だと考えると位置づけやすい。</p>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>T図式を使って通訳系・翻訳系・コンパイラ・アセンブラを図示し区別できる。</li>
+        <li>コンパイラの8つのフェーズを順に説明し、各フェーズの入出力を言える。</li>
+        <li>ブートストラップ技法の意味と手順を説明できる。</li>
+      </ul>
+      <p><strong>形式言語</strong>は「生成文法」により定義された「記号列」の「集合」であり、計算機モデル（オートマトン）と密接な関係を持つ。<strong>翻訳系（translator）</strong>は原始言語（source language）のプログラムを目的言語（object/target language）のプログラムへ変換するプログラムであり、目的言語がアセンブリ言語または機械語である翻訳系を<strong>コンパイラ（compiler）</strong>という。アセンブリ言語を機械語に変換する翻訳系は<strong>アセンブラ（assembler）</strong>である。</p>
+      <div class="def"><span class="label">T図式（Tombstone diagram）</span><p>言語処理系の役割を図式化したもの。プログラムは「言語Lで書かれ機能fを持つ」ことを表し、翻訳系は「言語Sを言語Tへ変換し、それ自身は言語Lで書かれている」ことを表す。通訳系（インタプリタ）は「言語Lで書かれたプログラムを計算機M上でそのまま実行する」ことを表す。翻訳系を使うときは、翻訳系自身の記述言語と実行計算機の言語が一致していなければならない点に注意する（一致が必要な箇所が2か所ある）。</p></div>
+      <div class="example"><span class="label">インタプリタとコンパイラの比較</span>
+      <div class="tablewrap"><table><thead><tr><th>比較項目</th><th>コンパイラ</th><th>インタプリタ</th></tr></thead><tbody>
+      <tr><td>実行方法</td><td>低水準言語へ変換したプログラムをOSが直接実行</td><td>インタプリタがプログラムを読み込んで実行</td></tr>
+      <tr><td>実行速度</td><td>高速</td><td>低速</td></tr>
+      <tr><td>処理系の移植</td><td>移植先の計算機に依存</td><td>比較的容易</td></tr>
+      <tr><td>開発効率</td><td>非効率的（対話性に乏しい）</td><td>効率的（対話性に富む）</td></tr>
+      </tbody></table></div>
+      <p>Java Byte Code（JBC）のように中間言語を介してコンパイラとインタプリタを組み合わせる方式もある（<code>javac</code>でJBCへコンパイルし、<code>java</code>（Java仮想マシン）がJBCを解釈実行する）。</p></div>
+      <div class="def"><span class="label">ブートストラップ技法</span><p>高水準言語Lのコンパイラを、L自身で記述する技法。計算機M1用のCコンパイラを何らかの方法で用意し（鶏と卵の関係で最初だけ苦労する）、そのM1用コンパイラを使ってM2用のCコンパイラ（Cで書かれている）をコンパイルすれば、M2用のCコンパイラが得られる。移植が容易になる利点がある。名前の由来は諸説あるが、ほら吹き男爵（ミュンヒハウゼン男爵）が底なし沼から自分のブーツのストラップを引っ張って自身を脱出させた逸話から。</p></div>
+      <h3>コンパイラ内部の処理過程</h3>
+      <pre><code>原始プログラム
+ → 字句解析 → 構文解析 → 意味解析 → 中間コード生成
+ → コード最適化 → 目的コード生成 → 目的プログラム
+（シンボル表管理・エラー処理は複数フェーズにまたがって働く）</code></pre>
+      <p>入力 <code>h = h0 - g / 2 * t * t;</code>（落下t秒後の位置を求める式、変数<code>g</code>はdouble型）を例に各フェーズの出力を追う。</p>
+      <div class="tablewrap"><table><thead><tr><th>フェーズ</th><th>出力の様子</th></tr></thead><tbody>
+      <tr><td>字句解析</td><td>識別子(h) '=' 識別子(h0) '-' 識別子(g) '/' 整数(2) '*' 識別子(t) '*' 識別子(t) ';'　（空白・コメントは無視）</td></tr>
+      <tr><td>構文解析</td><td>式・項・因子からなる構文木（左辺値<code>h</code>への代入として<code>h0 - ((g/2)*t*t)</code>を表す木）</td></tr>
+      <tr><td>意味解析</td><td><code>g</code>がdouble型であることから除算がdouble型除算になり、整数2はdouble型へ自動的にキャストされる</td></tr>
+      <tr><td>中間コード生成</td><td>3番地コード（四つ組）: <code>(dbl,2,nil,t1) (ddiv,g,t1,t2) (dmul,t2,t,t3) (dmul,t3,t,t4) (dsub,h0,t4,h)</code></td></tr>
+      <tr><td>コード最適化</td><td><code>g/2</code>を<code>g*0.5</code>に置換（除算より乗算が高速）。各一時変数<code>t1〜t4</code>は1回しか参照されないため上書きしてメモリ節約</td></tr>
+      <tr><td>目的コード生成</td><td>x86-64であれば<code>movsd</code>/<code>mulsd</code>/<code>subsd</code>などのSSE命令列（浮動小数点用レジスタ<code>xmm0</code>等を使用）</td></tr>
+      </tbody></table></div>
+      <div class="def"><span class="label">シンボル表と誤り処理</span><p>シンボル表（記号表）には識別子の名前と、変数名・関数名・型・サイズ・番地などの属性を記録する。予約語を含める処理系もある。誤りは字句解析（稀）・構文解析・意味解析・目的コード生成（リンクエラー）のいずれの段階でも発生しうる。最初のエラーで停止するのは不親切なので、できる限り処理を続けて他のエラーも発見し、エラーである理由も適切に表示すべきである。</p></div>
+      <div class="example"><span class="label">gccのオプション</span><p><code>gcc -E</code>：プリプロセッサの結果を出力。<code>gcc -S</code>：アセンブリプログラムを出力。<code>gcc -c</code>：再配置可能機械語プログラム（.o）を出力。<code>gcc obj.o -lm</code>：再配置可能機械語プログラムとライブラリ<code>libm.a</code>から実行形式プログラムを作成。</p></div>
+      <h3>コンパイラ生成ツール</h3>
+      <p>字句解析器生成ツールには<strong>lex</strong>（UNIX標準・POSIX規格）とその拡張・無料版である<strong>flex</strong>がある。構文解析器生成ツールには<strong>yacc</strong>（yet another compiler compiler、UNIX標準・POSIX規格）とその拡張・無料版である<strong>bison</strong>（yaccが動物のヤクに似ていることに由来する洒落）がある。完全な自動生成はまだ難しいため「コンパイラジェネレータ」と呼ぶこともある。</p>
+      <div class="exercise"><h3>確認問題<span class="origin">課題①・過去問頻出型</span></h3><p><code>#include &lt;stdio.h&gt;<br>int main(void){ printf("hello, world\n"); return 0; }</code> をコンパイルする一連のコマンドと、各コマンドが生成するファイルの種類を答えよ。</p><details><summary>解答を見る</summary><div class="answer"><p><code>gcc -S hello.c</code>でアセンブリプログラム<code>hello.s</code>を、<code>gcc -c hello.c</code>で再配置可能機械語プログラム<code>hello.o</code>を、<code>gcc hello.c -o hello</code>で実行形式プログラムを生成する。<code>gcc -E hello.c</code>はプリプロセッサ展開後のソースを出力するのみでコンパイルは行わない。</p></div></details></div>
+
+      <h2 id="f2">第2回 形式言語理論とチューリングマシン</h2>
+      <p>コンパイラが「この文字列は文法に従っているか」を判定できるのは、そもそも「文法」や「言語」という言葉が数学的にきちんと定義されているからである。この回はその土台となる形式言語理論を扱い、あわせてチューリングマシンという理想化された計算機を通じて「計算できるとはどういうことか」「計算できない問題は存在するのか」を考える。抽象的で得点源としては見えにくい回だが、次回以降のオートマトンや構文解析は、すべてここで定義した「言語」「文法」という言葉の上に組み立てられている。</p>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>形式文法 <code>G=(N,Σ,S,P)</code> の各要素を説明し、導出・言語L(G)を定義できる。</li>
+        <li>チョムスキー階層の4つの型を、生成規則の制限・対応するオートマトンとあわせて言える。</li>
+        <li>チューリングマシンの形式的定義に基づき、具体的な遷移表から様相の遷移を追える。</li>
+        <li>可算集合・非可算集合を区別し、カントールの定理と対角線論法・床屋のパラドックスの関係を説明できる。</li>
+        <li>停止性問題が決定不能であることを背理法で示せる。</li>
+      </ul>
+      <div class="def"><span class="label">形式文法の定義</span><pre><code>G = (N, Σ, S, P)
+N : 非終端記号の有限集合（N ∩ Σ = φ）
+Σ : アルファベット（終端記号の有限集合）
+S : 開始記号（S ∈ N）
+P : 生成規則の有限集合。α → β （α ∈ (N∪Σ)*N(N∪Σ)*, β ∈ (N∪Σ)*）</code></pre>
+      <p>「*」はクリーネ閉包（0個以上の連接）を表す。導出は次のように定義する：α1⇒α2⇒…⇒αn（n≥0）のとき α1 ⇒* αn（0ステップ以上）、n≥1のとき α1 ⇒+ αn（1ステップ以上）。文法Gが生成する言語は <code>L(G) = {ω | ω∈Σ*, S⇒*ω}</code>（開始記号から導出可能な終端記号列の集合）。</p></div>
+      <div class="example"><span class="label">具体例</span><p>N={S,B}, Σ={a,b,c}, P={S→ε, S→aBc, S→aSBcc, BB→bb, Bc→bc} という文法では、<code>S⇒aBc⇒abc</code>や<code>S⇒aSBcc⇒aaBcBcc⇒aabcBcc⇒aabcbcc(=a²b²c²)</code>のように導出でき、この文法の言語は<code>{aⁿbⁿcⁿ | n≥0}</code>になる。</p></div>
+      <h3>チョムスキー階層</h3>
+      <div class="tablewrap"><table><thead><tr><th>階層</th><th>言語クラス</th><th>文法</th><th>生成規則の形</th><th>対応するオートマトン</th></tr></thead><tbody>
+      <tr><td>Type 0</td><td>帰納的可算言語</td><td>句構造文法</td><td>α→β（制限なし）</td><td>チューリングマシン</td></tr>
+      <tr><td>Type 1</td><td>文脈依存言語</td><td>文脈依存文法</td><td>αAβ→αγβ</td><td>線形有界オートマトン</td></tr>
+      <tr><td>Type 2</td><td>文脈自由言語</td><td>文脈自由文法</td><td>A→α</td><td>プッシュダウンオートマトン</td></tr>
+      <tr><td>Type 3</td><td>正規言語</td><td>正規文法</td><td>A→a または A→aB</td><td>有限オートマトン</td></tr>
+      </tbody></table></div>
+      <p>包含関係は <code>Type 0 ⊋ Type 1 ⊋ Type 2 ⊋ Type 3</code>（1956年Noam Chomsky発表）。</p>
+      <p>この階層のうち生成規則にほぼ制限がないType 0（帰納的可算言語）に対応する計算モデルが、チューリングマシン（TM）である。「なんでも生成できる文法」に対応する機械はどんな形をしているのか、その定義を見ていく。</p>
+      <div class="def"><span class="label">チューリングマシンの形式的定義</span><p><code>M = (Q, Σ, Γ, δ, q0, B, F)</code> の7つ組。<code>Q</code>：状態の有限集合、<code>Σ</code>：入力記号の集合、<code>Γ</code>：テープ記号の集合（Σ⊂Γ）、<code>δ</code>：遷移関数 <code>Q×Γ→Q×Γ×{L,R}</code>（現在の状態とテープヘッド上の記号から、次状態・書換え後の記号・移動方向を決める）、<code>q0</code>：初期状態、<code>B</code>：空白記号（B∈Γ−Σ）、<code>F</code>：受理状態の集合。δ(q,X)が未定義であればTMは停止し、そのとき<code>q∈F</code>なら受理、そうでなければ不受理となる。</p></div>
+      <div class="example"><span class="label">具体例：w wᴿ を受理するTM（wᴿはwの反転）</span>
+      <div class="tablewrap"><table><thead><tr><th>状態</th><th>0</th><th>1</th><th>B</th></tr></thead><tbody>
+      <tr><td>q0</td><td>(q1,B,R)</td><td>(q4,B,R)</td><td>(q7,B,R)</td></tr>
+      <tr><td>q1</td><td>(q1,0,R)</td><td>(q1,1,R)</td><td>(q2,B,L)</td></tr>
+      <tr><td>q2</td><td>(q3,B,L)</td><td>−</td><td>−</td></tr>
+      <tr><td>q3</td><td>(q3,0,L)</td><td>(q3,1,L)</td><td>(q0,B,R)</td></tr>
+      <tr><td>q4</td><td>(q4,0,R)</td><td>(q4,1,R)</td><td>(q5,B,L)</td></tr>
+      <tr><td>q5</td><td>−</td><td>(q6,B,L)</td><td>−</td></tr>
+      <tr><td>q6</td><td>(q6,0,L)</td><td>(q6,1,L)</td><td>(q0,B,R)</td></tr>
+      <tr><td>q7</td><td>−</td><td>−</td><td>−</td></tr>
+      </tbody></table></div>
+      <p>動作原理は「先頭と末尾の記号が一致すればBに置換して内側へ詰める」を繰り返し、全部Bになれば受理（q7）というもの。入力<code>1001</code>は<code>q0 1001 ⊢ B q4 001 ⊢ … ⊢ BBBB q7</code>で受理される。入力<code>101</code>は先頭1と末尾1を消したあと中央の0だけが残り、<code>q2</code>から<code>q3</code>に遷移できず不受理になる（奇数長の文字列は<code>w wᴿ</code>の形になり得ないため妥当）。</p></div>
+      <div class="def"><span class="label">チューリング完全</span><p>フォン・ノイマン型計算機と同じ計算能力を持つことを<strong>チューリング完全</strong>（計算万能性）という。プログラミング言語の多くはチューリング完全であり、意外な例として<code>sed</code>コマンドもチューリング完全であることが知られている。チャーチ゠チューリングのテーゼは「どんな入力でも必ず停止するTMで計算できる関数」＝「計算可能な関数（アルゴリズム）」という主張である。</p></div>
+      <p>TMが「計算」の基準になるとわかったところで、次に気になるのは「TMで計算できないものは本当に存在するのか」という点である。これは単なる数学的興味ではない。もし答えが「存在する」なら、コンパイラがどれだけ賢くなっても原理的に判定できない性質（たとえば「このプログラムは無限ループするか」）が必ず残ることになり、静的解析や最適化の限界を理解するうえで避けて通れない。この問いに答えるための道具として、以下では無限集合の「大きさ」（濃度）を比較する方法を準備する。</p>
+      <h3>無限集合と濃度</h3>
+      <p>有限集合では<code>A⊂B ⇒ |A|&lt;|B|</code>が常に成り立つが、無限集合では成り立つとは限らない。集合<code>A</code>と<code>B</code>の間に全単射（1対1対応）が存在するとき<code>|A|=|B|</code>と定義する。</p>
+      <div class="tablewrap"><table><thead><tr><th>集合</th><th>濃度</th><th>根拠</th></tr></thead><tbody>
+      <tr><td>整数全体 ℤ</td><td>ℵ0（可算）</td><td>1↔0, 2↔1, 3↔-1, 4↔2, 5↔-2,… という全単射がℕとの間に存在</td></tr>
+      <tr><td>有理数全体 ℚ</td><td>ℵ0（可算）</td><td>格子状に並べ対角線状に数える（ヒルベルトの無限ホテルのパラドックス参照）</td></tr>
+      <tr><td>実数全体 ℝ</td><td>ℵ（連続体濃度）</td><td>対角線論法により<strong>ℕとの間に全単射が存在しないことが証明できる</strong></td></tr>
+      </tbody></table></div>
+      <div class="def"><span class="label">対角線論法（区間[0,1]の実数が非可算であることの略証）</span><p>区間[0,1]の実数を2進数で並べ<code>r1=0.r11r12r13…</code>のように番号付けできたと仮定する。新しい実数<code>a=0.a1a2a3…</code>を「<code>a_j</code>は<code>r_jj</code>と逆」（<code>r_jj=0</code>なら<code>a_j=1</code>、<code>r_jj=1</code>なら<code>a_j=0</code>）と定める。この<code>a</code>はどの<code>r_i</code>とも小数点以下<code>i</code>桁目で必ず食い違うため、列挙に含まれない実数が存在する。よって区間[0,1]の実数とℕの間に全単射は存在しない。</p></div>
+      <div class="def"><span class="label">カントールの定理と「床屋のパラドックス」</span><p>任意の集合<code>A</code>に対し、その冪集合<code>P(A)</code>について<code>|A| &lt; |P(A)|</code>が成り立つ。証明は背理法：<code>A</code>から<code>P(A)</code>への全射<code>f</code>が存在すると仮定し、<code>B={x | x∈A, x∉f(x)}∈P(A)</code>を考える。全射性より<code>B=f(x)</code>となる<code>x∈A</code>が存在するはずだが、<code>x∈f(x)</code>なら<code>x∉B</code>となり<code>B=f(x)</code>と矛盾し、<code>x∉f(x)</code>なら<code>x∈B</code>となりやはり矛盾する。これは「自分で髭を剃らない村人だけの髭を剃る床屋」（床屋のパラドックス）と同じ構造であり、「利己的（<code>n∈f(n)</code>）」「非利己的（<code>n∉f(n)</code>）」という言い換えでも同型の矛盾を示せる。</p></div>
+      <div class="def"><span class="label">言語の集合の濃度</span><p>アルファベットΣ上の文字列全体<code>Σ*</code>は可算無限（ℵ0）である。しかし<strong>言語</strong>は<code>Σ*</code>の部分集合として定義されるので、全言語の集合は冪集合<code>P(Σ*)</code>に当たる。カントールの定理より<code>|P(Σ*)|&gt;|Σ*|=ℵ0</code>であり、これは実数集合と同じ濃度ℵになる。「文字列の集合」と「言語の集合」を混同しないこと（前者は可算、後者は言語を集めた冪集合なので非可算）。</p></div>
+      <p>対角線論法という道具は「番号付けできたと仮定すると矛盾する要素を作れる」という一般的な形をしている。同じ考え方を「TMが停止するかどうかを判定するTM」に適用すると、具体的な決定不能問題を1つ構成できる。これが次に見る停止性問題であり、「原理的に解けないアルゴリズム的問題が存在する」ことの最も基本的な例である。</p>
+      <div class="caution"><span class="label">停止性問題が決定不能であることの証明（背理法）</span><p>任意のTM <code>M</code>と入力<code>w</code>について「有限時間で停止するか」を判定するTM <code>H(M,w)</code>が存在すると仮定する（<code>M(w)</code>が停止⇔<code>H(M,w)=YES</code>、停止しない⇔<code>H(M,w)=NO</code>）。<code>H</code>を改造した新しいTM <code>M'(A)</code>を「<code>H(A,A)=YES</code>なら無限ループ、<code>H(A,A)=NO</code>なら停止」するように構成する。ここで<code>M'</code>自身に<code>M'</code>を入力する（<code>M'(M')</code>）と、<code>M'(M')</code>が停止するなら<code>H(M',M')=NO</code>のはずだが定義より<code>M'(M')</code>は停止しない、逆に<code>M'(M')</code>が停止しないなら<code>H(M',M')=YES</code>のはずだが定義より<code>M'(M')</code>は停止する、といずれも矛盾する。よって仮定が誤りであり、停止性を判定するTM <code>H</code>は存在しない。</p></div>
+      <p>言語の集合はTMの集合より濃度が濃い（TMの数はℵ0、言語の集合はℵ）ため、「どんなTMでも受理できない言語」が存在することは自明であり、対角線論法でも直接示せる。</p>
+      <div class="exercise"><h3>課題そのもの<span class="origin">課題②（2026/5/11締切）</span></h3><p>1. 「床屋のパラドックス」とはどのようなものか説明せよ。またどの部分がカントールの定理の証明と関係すると思うかを書け。<br>2. 言語の集合は実数の集合と同じ濃度（ℵ）であることを説明せよ。</p><details><summary>解答を見る</summary><div class="answer"><p>1. 上記「カントールの定理と床屋のパラドックス」の解説を参照。床屋自身が「自分の髭を剃るか」を判定しようとする部分が、カントールの定理の証明で<code>x∈f(x)</code>かどうかを判定しようとする部分に対応する。<br>2. 文字列集合Σ*は可算（ℵ0）だが、言語はΣ*の部分集合の集合＝冪集合P(Σ*)なので、カントールの定理より|P(Σ*)|はℵ0より真に大きい。可算無限集合の冪集合の濃度は連続体濃度ℵと一致するため、言語の集合は実数の集合と同じ濃度ℵを持つ。</p></div></details></div>
+
+      <h2 id="f3">第3回 計算複雑性理論・正規表現・有限オートマトン</h2>
+      <p>字句解析（ソースコードをトークンの並びに分割する処理）を実際に動かす道具が、正規表現と有限オートマトンである。この回では、まず「解ける問題」の中にも易しいものと難しいものがあるという計算複雑性の話に軽く触れたあと、正規表現で条件を表す練習に入り、正規表現から機械的にオートマトンを組み立て、それをDFAへ変換する手順を扱う。ここで身につける「状態の集合を手で追いながら表を埋める」感覚は、後の演算子順位法やLR構文解析でも同じ形で繰り返し使うことになる。</p>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>非決定性TM、クラスP・NP、NP完全・NP困難の定義と具体例を言える。</li>
+        <li>正規表現の正式な定義から、頻出パターン（含む/含まない・偶数個・倍数）を導出できる。</li>
+        <li>ε-NFAをεなしNFAへ、NFAをDFAへ変換する手順を実行できる。</li>
+        <li>正規表現からε-NFAを構成する5つの規則を適用できる。</li>
+        <li>DFAから字句解析プログラムを2通りの方法で実装できる。</li>
+      </ul>
+      <p>前回、決定性TMを「アルゴリズムで計算できる」ことの基準とした。ここではまずその変種である非決定性TM（NTM）を導入し、NTMを基準にすることで問題の「難しさ」を測る物差し（P・NP・NP完全などの計算量クラス）を手に入れる。ここだけは本回の主題である字句解析からは少し離れた話題なので、TMの理解を深める補足として読むとよい。この後は一転して、字句解析という実務的な課題に戻る。字句解析は入力を1文字ずつ読みながらトークンを切り出す処理であり、コンパイラの入口として大量の文字を扱うため、TMのような万能な計算モデルではなく、状態数が有限で高速に動く有限オートマトンが使われる。表現力を落とす代わりに速度と実装のしやすさを得る、というのがこの回の後半の主題である。</p>
+      <div class="def"><span class="label">非決定性チューリングマシン（NTM）</span><p>決定性TM（DTM）の遷移関数δが多価関数（<code>δ:(Q×Γ→P(Q×Γ×{L,R}))</code>、P(S)はSの冪集合）になっているもの。「最も幸運な推測機」として動作し、選択可能な動作をすべて並列に選択すると考えてもよい。能力的にはDTMと同じ（並列動作をDTMで模倣可能）。</p></div>
+      <div class="tablewrap"><table><thead><tr><th>複雑性クラス</th><th>定義</th></tr></thead><tbody>
+      <tr><td>P（polynomial time）</td><td>DTMにより入力長nの多項式時間で解ける問題クラス</td></tr>
+      <tr><td>NP（non-deterministic polynomial time）</td><td>NTMによりnの多項式時間で解ける問題クラス（「non-polynomial」ではない点に注意）</td></tr>
+      <tr><td>NP完全</td><td>NPに属する問題のうち最も難しいもの。1つでもPに属することが証明されれば P=NP が証明される</td></tr>
+      <tr><td>NP困難</td><td>NP完全問題と同等かそれ以上に難しい問題。NPに属するかどうかは不問</td></tr>
+      </tbody></table></div>
+      <p>P≠NPは予想されているが未解決（クレイ数学研究所のミレニアム懸賞問題の1つ、解決すれば賞金100万ドル）。</p>
+      <div class="example"><span class="label">NP完全・NP困難の具体例</span>
+      <div class="tablewrap"><table><thead><tr><th>問題</th><th>内容</th><th>分類</th></tr></thead><tbody>
+      <tr><td>充足可能性問題（SAT）</td><td>命題論理式を真にできる真偽値の割当てが存在するか</td><td>NP完全</td></tr>
+      <tr><td>部分和問題</td><td>n個の整数の部分集合で合計がNになるものが存在するか（例：{1,3,7,10,13}で合計21→{1,7,13}が解）</td><td>NP完全</td></tr>
+      <tr><td>巡回セールスマン問題</td><td>各都市を1回ずつ訪れ出発地に戻る最小コスト経路（決定問題化するとNP完全）</td><td>NP困難</td></tr>
+      <tr><td>ナップサック問題</td><td>容量C以下で価値を最大化する荷物の組合せ（決定問題化するとNP完全）</td><td>NP困難</td></tr>
+      </tbody></table></div></div>
+      <h3>正規表現</h3>
+      <p>ここから複雑性理論を離れ、字句解析の話に戻る。トークンの条件（「数字が1つ以上続く」「英字で始まり英数字が続く」など）を簡潔に書き表す記法が正規表現である。正規表現はあくまで「条件の書き方」であり、それ単体では文字列を判定する機械にはならない。そこで後段では、正規表現を実際に動く機械（オートマトン）へ機械的に変換する手順を扱う。まずは正規表現そのものの定義と、頻出パターンの組み立て方から見ていく。</p>
+      <p>Basic Regular Expression（BRE）は<code>*</code>（0回以上）・<code>[ ]</code>（文字クラス）・<code>.</code>（任意の1文字）を持つ。Extended Regular Expression（ERE）はさらに<code>+</code>（1回以上）・<code>?</code>（0回か1回）・<code>|</code>（選択）を持つ。Perl Compatible Regular Expression（PCRE）はさらに多くの演算子を持ち、一部は本来の正規表現の表現力を超える。</p>
+      <div class="def"><span class="label">正規表現の正式な定義</span><p><code>∅</code>は正規表現で空集合を表す。<code>ε</code>は正規表現で<code>{ε}</code>を表す。<code>a∈Σ</code>に対し<code>a</code>は正規表現で<code>{a}</code>を表す。<code>r,s</code>がそれぞれ言語<code>R,S</code>を表す正規表現のとき、<code>r+s</code>・<code>r・s</code>・<code>(r*)</code>はいずれも正規表現で、それぞれ<code>R∪S</code>・<code>R・S={xy|x∈R,y∈S}</code>（連接）・<code>R*=∪ᵢ₌₀^∞ Rⁱ</code>（Kleene閉包）を表す。演算子の優先順位は<code>*,・,+</code>の順に高く、括弧・<code>・</code>は省略できる。</p></div>
+      <div class="example"><span class="label">頻出パターンの導出</span>
+      <div class="tablewrap"><table><thead><tr><th>条件</th><th>正規表現</th><th>導出の考え方</th></tr></thead><tbody>
+      <tr><td>同じ文字が連続しない0,1の文字列</td><td>(0+ε)(10*1+ε)*0*（簡略形）</td><td>0と1が交互に現れる列＋空文字列</td></tr>
+      <tr><td>00または11を含む2進列</td><td>(0+1)*(00+11)(0+1)*</td><td>中央に00か11を一度だけ確定させ前後は任意</td></tr>
+      <tr><td>0を偶数個含む0,1の文字列</td><td>1*(01*01*)*（簡略形）</td><td>0を2個ずつペアにして挟み込む</td></tr>
+      <tr><td>正の3の倍数の2進表記</td><td>1(10*1+01*0)*10*</td><td>3進オートマトンの状態遷移を追って構成（余り0/1/2の状態を持つDFAに相当）</td></tr>
+      </tbody></table></div></div>
+      <h3>有限オートマトン</h3>
+      <p>正規表現が「条件の書き方」なら、有限オートマトン（FA）はその条件を実際に判定する「機械」にあたる。以下ではまずFAの形式的な定義を確認し、次に「正規表現をFAへ変換する手順」と「変換されたFAを実際に動かせる形（DFA）へ整える手順」の両方を見る。この2つの手順を続けて実行できれば、任意の正規表現から動く字句解析器を機械的に作れるようになる。</p>
+      <div class="def"><span class="label">FAの形式的定義</span><p><code>M=(Q,Σ,δ,q0,F)</code>の5つ組。δは<code>Q×Σ→Q</code>（決定性）。非決定性FA（NFA）はδが多価関数<code>Q×{Σ∪ε}→P(Q)</code>になったもので、入力なしでの遷移（ε-動作）も許す（ε-NFA）。能力的にはDFAと同じでDFAへ変換可能。</p></div>
+      <p>オートマトンは「状態を丸、状態から状態への遷移を矢印」で図示する。以下ではこの矢印のことを<span class="term">辺</span>と呼ぶ（グラフの辺と同じ意味）。「a辺」は文字aを読んで通る矢印、「ε辺」は文字を読まずに（ε-動作で）通れる矢印を指す。ここから、正規表現をε-NFAに組み立て→ε辺を取り除いてNFAにする→部分集合構成法でDFAにする、という3段階を順番に、図つきで追っていく。</p>
+
+      <h3>ステップ1：正規表現 → ε-NFA（トンプソン構成法）</h3>
+      <p>ポイントは1つだけ：正規表現のどんな部分式にも「入口が1個・出口（受理状態）が1個」の小さなε-NFAを対応させる。これを守れば、部品を機械的につなぐだけで、どんなに複雑な正規表現からもε-NFAが組み立てられる。基本パーツが3つ、それらをつなぐ組み立てパーツが3つ、合計5規則である。</p>
+      <div class="example"><span class="label">基本パーツ①：r=ε</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> 入口
+  入口 --> 出口 : ε
+  出口 --> [*]</pre><p class="cap">何も読まずに受理できる。</p></div></div>
+      <div class="example"><span class="label">基本パーツ②：r=a（a∈Σ）</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> 入口
+  入口 --> 出口 : a
+  出口 --> [*]</pre><p class="cap">aを1文字読めば受理できる。</p></div></div>
+      <div class="example"><span class="label">基本パーツ③：r=∅</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> 入口
+  出口 --> [*]</pre><p class="cap">入口から出口への辺が1本もない＝どんな文字列でも絶対に受理できない。</p></div></div>
+      <div class="example"><span class="label">組み立てパーツ④：r=r1+r2（並列合成＝「r1でもr2でもよい」）</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> 新入口
+  新入口 --> r1 : ε
+  新入口 --> r2 : ε
+  r1 --> 新出口 : ε
+  r2 --> 新出口 : ε
+  新出口 --> [*]</pre><p class="cap">r1・r2は、すでに組み上がった「入口1個・出口1個」の小さなε-NFAを1つの箱として表したもの。新しい入口から両方の入口へε辺、両方の出口から新しい出口へε辺を張る。</p></div></div>
+      <div class="example"><span class="label">組み立てパーツ⑤：r=r1r2（直列合成＝「r1の後にr2」）</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> r1
+  r1 --> r2 : ε
+  r2 --> [*]</pre><p class="cap">r1の出口とr2の入口をε辺でつなぐだけ。r1の入口が全体の入口、r2の出口が全体の出口になる。</p></div></div>
+      <div class="example"><span class="label">組み立てパーツ⑥：r=r1*（Kleene閉包＝「r1の0回以上の繰返し」）</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> 新入口
+  新入口 --> r1 : ε
+  新入口 --> 新出口 : ε（0回）
+  r1 --> 新出口 : ε
+  r1 --> r1 : ε（もう1回）
+  新出口 --> [*]</pre><p class="cap">「0回でスキップ」「1回通って終わる」「出口から入口へ戻ってもう1回通る」の3通りをε辺で用意する。</p></div></div>
+      <p>正規表現は<code>∅・ε・a</code>という葉から<code>+</code>・連接・<code>*</code>という枝を伸ばした木（構文木）とみなせる。この6つの図は、その木を葉から根に向かって辿りながら各部分式ごとに小さなε-NFAを作り、ε辺でつなぎ合わせる手順そのものである。</p>
+      <div class="example"><span class="label">組み立て例：<code>(a+b)*a</code></span><p>①<code>a</code>と<code>b</code>それぞれの最小ε-NFAを作る（基本パーツ）。②その2つを並列合成し<code>a+b</code>のε-NFAにする（パーツ④）。③それにKleene閉包を適用し<code>(a+b)*</code>のε-NFAにする（パーツ⑥）。④最後に別の<code>a</code>の最小ε-NFAと直列合成する（パーツ⑤）。この順で「常に入口1個・出口1個」を保ったまま組み上がる。</p></div>
+
+      <h3>ステップ2・3：ε-NFA → NFA → DFA</h3>
+      <p>組み立てたε-NFAは、そのままでは「次にどの記号でどこへ動くか」が一意に決まらず、プログラムとして実行しづらい。ここから2段階かけて、実際に動かせる決定性の機械（DFA）へ整える。まずε辺を消してNFAにし、次に部分集合構成法でDFAにする。次の小さな例で手順を最初から最後まで追う。</p>
+      <div class="example"><span class="label">例で使うε-NFA：正規表現 <code>a*b</code></span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> p
+  p --> p : a
+  p --> q : ε
+  q --> r : b
+  r --> [*]</pre><p class="cap">pが初期状態、rが受理状態。「aを0回以上読んでから、ε辺でqへ移り、最後にbを1回読む」＝「aがいくつあってもよいが最後は必ずb」を表す。</p></div></div>
+      <div class="def"><span class="label">ε-動作つきNFA → ε-動作なしNFA</span><p>新しい遷移関数を<code>δ̂(q,a)={q'|qからε*aε*でq'へ遷移可能}</code>と定義する（日本語で言うと「今の状態からε辺を何本か通り、記号aを1つ読み、またε辺を何本か通って到達できる状態を全部集める」）。受理状態は、初期状態からε-動作だけで受理状態に到達できるなら<code>F̂=F∪{q0}</code>、そうでなければ<code>F̂=F</code>とする。</p></div>
+      <div class="example"><span class="label">上の例に適用する</span><p>初期状態pのε閉包（εだけで到達できる状態の集合）は<code>{p,q}</code>。ここから<code>a</code>を読めるのはpだけ（p→p）なので、δ̂(p,a)は<code>{p}</code>のε閉包＝<code>{p,q}</code>。<code>b</code>を読めるのはqだけ（q→r）なので、δ̂(p,b)は<code>{r}</code>のε閉包＝<code>{r}</code>。qからは<code>a</code>で動けないのでδ̂(q,a)=∅、δ̂(q,b)は<code>{r}</code>。受理状態はr∈Fのみ（pのε閉包にrは含まれないのでF̂=F={r}のまま）。</p><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> p
+  p --> p : a
+  p --> q : a
+  p --> r : b
+  q --> r : b
+  r --> [*]</pre><p class="cap">ε辺が消え、pから直接q・rへ動けるようになった（依然「非決定性」——pはaを読むとpとqの2か所に同時に動ける）。</p></div></div>
+      <div class="def"><span class="label">ε-動作なしNFA → DFA（部分集合構成法）</span><p>状態集合をQのべき集合P(Q)へ拡張し、<code>δ̂([p1,p2,…],a)=∪ᵢδ(pᵢ,a)</code>と定義する（日本語で言うと「集合の中の各状態から、その記号で動ける先を全部集めて、それをまとめて1つの新しい状態にする」）。DFAの状態[p1,p2,…]は、いずれかの<code>pᵢ∈F</code>であれば受理状態とする。<strong>状態最小化</strong>は、任意の<code>x∈Σ*</code>について<code>δ(p,x)</code>と<code>δ(q,x)</code>が「ともに受理」または「ともに非受理」になるとき<code>p≡q</code>として同値類にまとめる（アルゴリズムの詳細は省略。<code>|Σ|=k,|Q|=n</code>のとき計算量は<code>O(kn²)</code>）。過去問では「状態最小化はしない」と明示されることが多いので、その場合は到達した状態集合をそのまま残す。</p></div>
+      <div class="example"><span class="label">上の例に適用する</span><p>初期状態は<code>D0={p}</code>。D0でaを読むと<code>δ̂(p,a)={p,q}</code>なので<code>D1={p,q}</code>へ。D0でbを読むと<code>δ̂(p,b)={r}</code>なので<code>D2={r}</code>へ（rを含むので受理状態）。D1でaを読むと<code>δ̂(p,a)∪δ̂(q,a)={p,q}∪∅={p,q}</code>なのでD1自身に戻る。D1でbを読むと<code>δ̂(p,b)∪δ̂(q,b)={r}∪{r}={r}</code>なのでD2へ。</p>
+      <div class="tablewrap"><table><thead><tr><th>DFA状態</th><th>中身</th><th>a</th><th>b</th><th>受理？</th></tr></thead><tbody>
+      <tr><td>D0</td><td>{p}</td><td>D1</td><td>D2</td><td>―</td></tr>
+      <tr><td>D1</td><td>{p,q}</td><td>D1</td><td>D2</td><td>―</td></tr>
+      <tr><td>D2</td><td>{r}</td><td>―</td><td>―</td><td>受理</td></tr>
+      </tbody></table></div>
+      <div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> D0
+  D0 --> D1 : a
+  D0 --> D2 : b
+  D1 --> D1 : a
+  D1 --> D2 : b
+  D2 --> [*]</pre><p class="cap">できあがったDFA。例えば「aab」はD0→D1→D1→D2と動いて受理される。</p></div></div>
+      <p>これで「正規表現→ε-NFA→NFA→DFA」という一連の変換がすべて揃った。最後に残る問いは「求めたDFAを、実際にCのようなプログラムでどう動かすか」である。答えは単純で、DFAの状態をそのままプログラムの制御フローに対応させればよい。</p>
+      <h3>字句解析器の実装</h3>
+      <p>DFAから字句解析プログラムを作る方法は2通りある。(1) 状態を<code>enum</code>で明示的に持ちswitch文で遷移する方法。(2) 状態を明示せず、DFAの処理の流れを<code>while</code>ループへ直接コーディングする方法（簡単・高速だが経験が必要）。</p>
+      <pre><code>/* 方法(2)の例：0*1*2* を受理するDFA相当 */
+while ((ch=次の文字) != '\0') {
+  while (ch=='0') ch=次の文字;  /* Q012 */
+  while (ch=='1') ch=次の文字;  /* Q12  */
+  while (ch=='2') ch=次の文字;  /* Q2   */
+  1文字戻してこれまでの文字列をreturn;
+}</code></pre>
+      <div class="def"><span class="label">lexファイルの構成</span><pre><code>定義部
+%%
+ルール部（正規表現(ERE)  アクション(Cプログラム) の列挙。longest matchが基本。同じ長さなら先に書いた規則を優先）
+%%
+サブルーチン部</code></pre></div>
+      <div class="exercise"><h3>浮動小数点数のlex仕様書<span class="origin">課題③（double.l）</span></h3><p>文字列を浮動小数点数として解釈しdouble型変数<code>val</code>に格納するlex仕様書<code>double.l</code>を作成せよ。<code>1.23</code>・<code>.123</code>・<code>123.</code>・<code>6.02e23</code>・<code>.105e-33</code>は受理し、<code>1.2.3</code>・<code>e23</code>・<code>1.2e</code>は拒否すること。</p><details><summary>解答を見る（実際に動作確認済み）</summary><div class="answer"><pre><code>%{
+double val;
+int yywrap(void) { return 1; }
+%}
+%%
+([0-9]+\.[0-9]*|\.[0-9]+|[0-9]+)([eE][+-]?[0-9]+)? {
+     sscanf(yytext, "%lf", &amp;val);
+     printf("\"%s\"(%lf) is a decimal fraction constant.\n", yytext, val);
+}
+.*   printf("It is not a fraction constant.\n");
+"\n" ;
+%%
+int main(void){ yylex(); return 0; }</code></pre>
+<p>整数部・小数部のどちらかが必須（両方省略は不可）という条件を<code>[0-9]+\.[0-9]*|\.[0-9]+|[0-9]+</code>の3択で表現し、指数部は<code>?</code>で省略可能にすることで、仕様の○×表をすべて満たす。</p></div></details></div>
+      <h2 id="f4">第4回 構文解析の基礎・曖昧文法・演算子順位法</h2>
+      <p>字句解析でトークンの列に分割したあと、構文解析はその列に木構造（構文木）を与える。この回ではまず文法の書き方（BNF/EBNF・構文図式）を整理し、同じ文字列に複数の構文木が対応してしまう「曖昧性」という落とし穴を扱う。そのうえで、上向き構文解析の最初の具体例として演算子順位法を学ぶ。ここで扱う「優先順位表を作り、shift/reduceを表に従ってなぞる」という進め方は、第6回のLR構文解析でも姿を変えて登場する。</p>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>BNF/EBNF/構文図式を相互に変換でき、構文木からRPNを後順走査で得られる。</li>
+        <li>曖昧文法を見抜き、3通りの解消方法を説明できる。</li>
+        <li>演算子順位関係の3規則から優先順位表を構築し、構文解析のフルトレースを書ける。</li>
+      </ul>
+      <div class="def"><span class="label">BNF・構文図式</span><p>BNF（Backus Naur Form）は<code>構文要素 ::= 記号列</code>の形で書く（<code>::=</code>の代わりに<code>→</code>もよく使われる）。EBNFは<code>{...}</code>で0回以上の繰返し、<code>[...]</code>で0回か1回の出現を表す（ISO 14977でさらに拡張）。構文図式はこれを図として表現したもの。ABNF（RFC 5234）は通信プロトコルの定義に使われる拡張である。</p></div>
+      <div class="def"><span class="label">逆ポーランド記法（RPN）</span><p>構文木を<strong>帰りがけ順（post-order）</strong>で辿って得る記号列。<code>a+b*c → a b c * +</code>。本来のポーランド記法は<strong>行きがけ順（pre-order）</strong>で<code>a+b*c → + a * b c</code>（関数呼出<code>add(a,mult(b,c))</code>と同じ語順）。RPNはスタックマシン（レジスタの代わりにスタックを使い、命令のオペランドをスタックトップから取得する計算機）と親和性が高く、Java仮想マシンやPostScriptで採用されている。</p></div>
+      <p>RPNは構文木さえ手に入れば、後順に辿るだけで機械的に求まる。ところが厄介なことに、同じ文字列に対して構文木が1通りに定まらない文法が存在する。木が複数通りあれば、そこから求めたRPN（＝計算の実行順序）も複数通り作れてしまい、プログラムの意味が構文だけでは確定しなくなる。これが次に扱う曖昧性の問題である。</p>
+      <h3>曖昧な文法</h3>
+      <p>1つの文字列に対して構文木が複数存在する文法を<strong>曖昧（ambiguous）</strong>という。<code>E→E+E|E*E|(E)|id</code>という文法では、<code>id+id*id</code>が<code>(id+id)*id</code>（左結合の解釈）と<code>id+(id*id)</code>（右結合の解釈）の両方に解析できてしまう。</p>
+      <div class="example"><span class="label">2通りの構文木（左：(id+id)*id、右：id+(id*id)）</span>
+      <div class="diagram"><pre class="mermaid">flowchart TD
+  A1["E"] --> A2["E"]
+  A1 --> A3["*"]
+  A1 --> A4["id"]
+  A2 --> A5["E"]
+  A2 --> A6["+"]
+  A2 --> A7["E"]
+  A5 --> A8["id"]
+  A7 --> A9["id"]</pre><p class="cap">左の木：外側が<code>E*E</code>（*が根）、左のEがさらに<code>E+E</code>に展開される＝<code>(id+id)*id</code>。</p></div>
+      <div class="diagram"><pre class="mermaid">flowchart TD
+  B1["E"] --> B2["id"]
+  B1 --> B3["+"]
+  B1 --> B4["E"]
+  B4 --> B5["E"]
+  B4 --> B6["*"]
+  B4 --> B7["E"]
+  B5 --> B8["id"]
+  B7 --> B9["id"]</pre><p class="cap">右の木：外側が<code>E+E</code>（+が根）、右のEがさらに<code>E*E</code>に展開される＝<code>id+(id*id)</code>。同じ文字列<code>id+id*id</code>から、根の演算子が違う2通りの木が作れてしまう点が曖昧性の正体である。</p></div></div>
+      <div class="caution"><span class="label">ぶら下がりelse（dangling else）</span><p>生成規則 <code>S→if C then S | if C then S else S</code> について、入力 <code>if C1 then if C2 then S1 else S2</code> は「elseが内側のifに結びつく」構文木と「elseが外側のifに結びつく」構文木の両方を持ち曖昧である。多くの言語では「elseは直近のthenに結びつく」（内側のif）という規約を採用する。</p></div>
+      <div class="diagram"><pre class="mermaid">flowchart TD
+  O1["S（外側）"] --> O2["if"]
+  O1 --> O3["C1"]
+  O1 --> O4["then"]
+  O1 --> O5["S"]
+  O5 --> O6["if"]
+  O5 --> O7["C2"]
+  O5 --> O8["then"]
+  O5 --> O9["S1"]
+  O5 --> O10["else"]
+  O5 --> O11["S2"]</pre><p class="cap">解釈①（内側結合）：外側のSは「else なし」の形（if-then）で、elseは内側のS（if-then-else）に属する。</p></div>
+      <div class="diagram"><pre class="mermaid">flowchart TD
+  P1["S（外側）"] --> P2["if"]
+  P1 --> P3["C1"]
+  P1 --> P4["then"]
+  P1 --> P5["S"]
+  P1 --> P6["else"]
+  P1 --> P7["S2"]
+  P5 --> P8["if"]
+  P5 --> P9["C2"]
+  P5 --> P10["then"]
+  P5 --> P11["S1"]</pre><p class="cap">解釈②（外側結合）：外側のSが「else あり」の形（if-then-else）になり、内側のS（then節）は「else なし」になる。両方の木が同じ入力から作れてしまうため曖昧。</p></div>
+      <div class="example"><span class="label">曖昧さの解消方法（3通り）</span>
+      <p>1. <strong>文法を変形する</strong>：<code>E→E+E|E*E|(E)|id</code>を<code>E→E+T|T</code>、<code>T→T*F|F</code>、<code>F→(E)|id</code>に分けて優先順位を文法構造に埋め込む。dangling elseは<code>S→Sm|Su</code>、<code>Sm→if C then Sm else Sm</code>、<code>Su→if C then S|if C then Sm else Su</code>のように「elseを伴うif（Sm）」と「伴わないif（Su）」を区別して解消する。<br>
+      2. <strong>構文解析器生成ツールの優先度宣言を使う</strong>：yacc/bisonの<code>%left '+' '-'</code>・<code>%left '*' '/'</code>のように下の行ほど優先度が高いと宣言する。<br>
+      3. <strong>デフォルト動作を使う</strong>：<code>stmt: IF cond THEN stmt | IF cond THEN stmt ELSE stmt</code>という規則ではyacc/bisonは「elseを処理する際に長い方の規則（shift）を優先」というデフォルト規則により、自動的にelseを最も近いthenへ結びつける。</p></div>
+      <p>曖昧性を解消する3つの方法のうち、1番目「文法を優先順位に応じて分割する」という考え方を、構文解析のアルゴリズムそのものに直接落とし込んだものが演算子順位法である。文法を書き換える代わりに、演算子どうしの優先順位関係を表にしてしまい、以降はその表を機械的に参照しながらshift（積む）とreduce（還元する）を判断していく。</p>
+      <h3>演算子順位法</h3>
+      <div class="def"><span class="label">演算子文法</span><p>文脈自由文法のうち、全ての生成規則が「右辺で非終端記号が連続しない」「右辺が空でない」を満たすものを演算子文法という（例：<code>E→E+T|T</code>、<code>T→T*F|F</code>、<code>F→(E)|id</code>）。</p></div>
+      <div class="def"><span class="label">演算子（終端記号）間の優先順位関係（3規則）</span>
+      <p><strong>≐（同順位）</strong>：<code>A→…st…</code>または<code>A→…sBt…</code>の形の規則があれば<code>s≐t</code>。（例：<code>F→(E)</code>より<code>(≐)</code>）<br>
+      <strong>⋖（sがtより低順位）</strong>：<code>A→…sB…</code>の形の規則があり、さらに<code>B⇒+t…</code>または<code>B⇒+Ct…</code>となる導出があれば<code>s⋖t</code>。（例：<code>E→E+T</code>、<code>T⇒+T*F</code>より<code>+⋖*</code>）<br>
+      <strong>⋗（sがtより高順位）</strong>：<code>A→…Bt…</code>の形の規則があり、さらに<code>B⇒+…s</code>または<code>B⇒+…sC</code>となる導出があれば<code>s⋗t</code>。（例：<code>F→(E)</code>、<code>E⇒+T*F</code>より<code>*⋗)</code>）</p></div>
+      <p>全ての終端記号間で矛盾なく順位が決まれば「演算子順位文法」となる。<code>E→E+T|T</code>、<code>T→T*F|F</code>、<code>F→(E)|id</code>に対する優先順位表（├は文頭、┤は文末を表す新記号。<code>S'→├S┤</code>を追加）：</p>
+      <div class="tablewrap"><table><thead><tr><th>左＼右</th><th>+</th><th>*</th><th>(</th><th>)</th><th>id</th><th>┤</th></tr></thead><tbody>
+      <tr><td>+</td><td>⋗</td><td>⋖</td><td>⋖</td><td>⋗</td><td>⋖</td><td>⋗</td></tr>
+      <tr><td>*</td><td>⋗</td><td>⋗</td><td>⋖</td><td>⋗</td><td>⋖</td><td>⋗</td></tr>
+      <tr><td>(</td><td>⋖</td><td>⋖</td><td>⋖</td><td>≐</td><td>⋖</td><td>—</td></tr>
+      <tr><td>)</td><td>⋗</td><td>⋗</td><td>—</td><td>⋗</td><td>—</td><td>⋗</td></tr>
+      <tr><td>id</td><td>⋗</td><td>⋗</td><td>—</td><td>⋗</td><td>—</td><td>⋗</td></tr>
+      <tr><td>├</td><td>⋖</td><td>⋖</td><td>⋖</td><td>—</td><td>⋖</td><td>≐</td></tr>
+      </tbody></table></div>
+      <div class="def"><span class="label">演算子順位法の解析アルゴリズム</span><p>入力<code>a1a2…am┤</code>、初期状態でスタックに├を積む。(1) 次の入力記号<code>aj</code>を読む。(2) スタック上の記号<code>ai</code>と比較し、<code>ai⋗aj</code>ならスタックからポップして(2)に戻る。そうでなければ<code>aj</code>をプッシュする。(3) <code>ai=├</code>かつ<code>aj=┤</code>なら終了、そうでなければ(1)に戻る。ポップする範囲は「<code>af⋖ag≐…≐ah≐ai⋗aj</code>」の<code>ag…ah ai</code>の部分（＝ハンドル）にあたる。</p></div>
+      <div class="exercise"><h3>演算子順位法のフルトレース<span class="origin">S・スライドp.21の例</span></h3><p>入力 <code>i*(i+i)┤</code> に対する動作を示せ。</p><details><summary>解答を見る</summary><div class="answer">
+      <div class="tablewrap"><table><thead><tr><th>#</th><th>スタック</th><th>関係</th><th>入力</th><th>動作</th></tr></thead><tbody>
+      <tr><td>1</td><td>├</td><td>⋖</td><td>i</td><td>push i</td></tr>
+      <tr><td>2</td><td>├i</td><td>⋗</td><td>*</td><td>pop i</td></tr>
+      <tr><td>3</td><td>├</td><td>⋖</td><td>*</td><td>push *</td></tr>
+      <tr><td>4</td><td>├*</td><td>⋖</td><td>(</td><td>push (</td></tr>
+      <tr><td>5</td><td>├*(</td><td>⋖</td><td>i</td><td>push i</td></tr>
+      <tr><td>6</td><td>├*(i</td><td>⋗</td><td>+</td><td>pop i</td></tr>
+      <tr><td>7</td><td>├*(</td><td>⋖</td><td>+</td><td>push +</td></tr>
+      <tr><td>8</td><td>├*(+</td><td>⋖</td><td>i</td><td>push i</td></tr>
+      <tr><td>9</td><td>├*(+i</td><td>⋗</td><td>)</td><td>pop i</td></tr>
+      <tr><td>10</td><td>├*(+</td><td>⋗</td><td>)</td><td>pop +</td></tr>
+      <tr><td>11</td><td>├*(</td><td>≐</td><td>)</td><td>push )</td></tr>
+      <tr><td>12</td><td>├*()</td><td>⋗</td><td>┤</td><td>pop )(</td></tr>
+      <tr><td>13</td><td>├*</td><td>⋗</td><td>┤</td><td>pop *</td></tr>
+      <tr><td>14</td><td>├</td><td>≐</td><td>┤</td><td>終了</td></tr>
+      </tbody></table></div>
+      </div></details></div>
+      <p class="src">課題④の「i+i*i」のトレース、および文法 <code>E→E+T|T, T→T*F|F, F→P^F|P, P→(E)|id</code> の優先順位表は、本書後半「予想対策問題」にフルトレース付きで収録する。</p>
+
+      <h2 id="f5">第5回 下向き構文解析法とLL(1)文法</h2>
+      <p>構文解析には大きく分けて、開始記号から木を「上から」組み立てていく下向き型と、入力記号から木を「下から」組み立てていく上向き型がある。この回はその前者、LL(1)構文解析を扱う。First・Follow・Directorの計算はやや機械的な作業に見えるが、これがきちんと求まれば、予測構文解析表と再帰的下向き構文解析器（＝実際に動くプログラム）の両方を自力で導けるようになる。次回の上向き構文解析と対で理解すると、構文解析全体の見通しがよくなる。</p>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>左括り出しと左再帰除去を実行し、その限界（左括り出しで解決できないケース）を説明できる。</li>
+        <li>First・Follow・Directorを定義通りに計算できる。</li>
+        <li>再帰的下向き構文解析器を生成規則から機械的に構築できる。</li>
+        <li>予測的構文解析表を使ったスタックのフルトレースを書ける。</li>
+      </ul>
+      <p><strong>下向き構文解析法（top-down parsing）</strong>は開始記号から入力文を導出する構文解析法。単純な実装ではバックトラックが必要になる場合がある（例：<code>文→ラベル付き文|代入文</code>、<code>ラベル付き文→識別子:文</code>、<code>代入文→識別子=式</code>ではどちらも最初は「識別子」なので1トークン先読みでは判別できない）。</p>
+      <p>この「共通接頭辞のせいで1トークン先読みだけでは選べない」問題を解決する技法が、次に見る左括り出しである。</p>
+      <div class="def"><span class="label">左括り出し（left factoring）</span><p>共通の接頭辞をまとめることで判断を先送りする。<code>文→識別子 文後半</code>、<code>文後半→:文|=式</code>のようにする。ただし<strong>解決できない場合もある</strong>：<code>S→aBc</code>、<code>B→bBb|b</code>という文法では、<code>match('a'); B(); match('c');</code>と<code>match('b'); if(token=='c') match('c');</code>という素朴な実装では、入力<code>abcc</code>で<code>B</code>が<code>bBb</code>を選ぶべきか<code>b</code>を選ぶべきか1トークン先読みだけでは決定できない（ネストの深さに依存するため）。</p></div>
+      <div class="def"><span class="label">左再帰性の除去</span><p><code>E→E+T|T</code>のような左再帰規則をそのまま<code>void E(void){E(); match('+'); T();}</code>と実装すると、入力を消費せず無限再帰になり動作しない。一般に <code>A→Aα1|Aα2|…|Aαm|β1|β2|…|βn</code> は次のように書き換える：</p>
+      <pre><code>A  → β1 A' | β2 A' | … | βn A'
+A' → α1 A' | α2 A' | … | αm A' | ε</code></pre>
+      <p>この書き換えにより、元の左結合の構文木（<code>((T+T)+T)</code>）が右結合寄りの構文木（<code>T((+T)(+T ε))</code>相当）に変わってしまう点に注意が必要。実用上は生成規則の途中（<code>+T</code>を解析した直後）に処理を挿入することで、左から順に処理しながら元の左結合と同じ計算順序を再現する：<code>E'→+T[処理]E'|ε</code>のように、次の<code>+T</code>があるかどうかを見る前に直前の演算を処理してしまう。</p></div>
+      <p>共通接頭辞と左再帰、下向き構文解析を邪魔する2つの主な原因はこれで文法から取り除けた。しかしこの2つがない文法であっても、1トークンの先読みだけで規則を一意に選べるとは限らない。「この非終端記号は、次のトークンがどの集合に属するときにどの規則を選ぶべきか」を厳密に定めるのが、First・Follow・Directorという3つの集合である。</p>
+      <div class="def"><span class="label">LL(1)文法・First・Follow・Director</span><p><strong>LL(1)文法</strong>とは、入力を左から読み最左導出（leftmost derivation）を行い、1トークンの先読みで適用する生成規則を一意に決定できる文法。kトークンの先読みを許すならLL(k)文法という。</p>
+      <p><code>First(α) = {a | a∈Σ, α⇒*a…}</code>（αが⇒*εならεも含む）。<code>Follow(A) = {a | a∈Σ, S⇒*…Aa…}</code>（Aの直後に来られる終端記号の集合）。<code>Director(A,α) = {a | a∈Σ, a∈First(α) または (α⇒*ε かつ a∈Follow(A))}</code>。全ての非終端記号<code>A</code>と規則<code>A→αi</code>について<code>Director(A,αi)</code>が互いに共通部分を持たなければLL(1)文法である。</p></div>
+      <h3>First・Follow・Directorの計算規則</h3>
+      <p><strong>First(α)の求め方</strong>：(1a) First(ε)=ε。(1b) A→εがあればFirst(A)にεを追加。(2a) First(aβ)={a}。(2b) A→aβがあればFirst(A)にaを追加。(3a) First(Bα)は、ε∉First(B)ならFirst(B)、ε∈First(B)なら(First(B)−ε)∪First(α)。(3b) A→Bαがあれば同様にFirst(A)へ追加。</p>
+      <p><strong>Follow(A)の求め方</strong>：開始記号Sに対しFollow(S)={┤}とする。追加がなくなるまで次を繰り返す：(1) B→αAβ（β≠ε）があればFollow(A)にFirst(β)−{ε}を追加。(2) B→αAまたはB→αAβ（ε∈First(β)）があればFollow(A)にFollow(B)を追加。</p>
+      <div class="example"><span class="label">計算例（第4回で用いた式文法）</span>
+      <pre><code>E  → T E'
+E' → + T E' | ε
+T  → F T'
+T' → * F T' | ε
+F  → ( E ) | i</code></pre>
+      <div class="tablewrap"><table><thead><tr><th>非終端記号</th><th>First</th><th>Follow</th></tr></thead><tbody>
+      <tr><td>E</td><td>{ (, i }</td><td>{ ┤, ) }</td></tr>
+      <tr><td>E'</td><td>{ +, ε }</td><td>{ ┤, ) }</td></tr>
+      <tr><td>T</td><td>{ (, i }</td><td>{ +, ┤, ) }</td></tr>
+      <tr><td>T'</td><td>{ *, ε }</td><td>{ +, ┤, ) }</td></tr>
+      <tr><td>F</td><td>{ (, i }</td><td>{ *, +, ┤, ) }</td></tr>
+      </tbody></table></div>
+      <p>Directorは、E: {(,i}、E': {+}(規則+TE')と{┤,)}(規則ε)、T: {(,i}、T': {*}(規則*FT')と{+,┤,)}(規則ε)、F: {(}(規則(E))と{i}(規則i)。同一非終端記号のDirectorに共通の終端記号がないためLL(1)文法である。</p></div>
+      <p>Director集合まで求まり、この文法がLL(1)であることも確認できた。ここから先は驚くほど機械的で、生成規則の形を1対1でプログラムの構造に写し取るだけで、実際に動く構文解析器が手に入る。</p>
+      <h3>再帰的下向き構文解析器の一般的な構築法</h3>
+      <p>生成規則から機械的にプログラムを導く手順：<br>
+      1. <code>A→α</code>に対する関数は <code>void A(void){T(α);}</code>。<br>
+      2. <code>α=X1X2…Xn</code>なら<code>T(α)</code>は<code>T(X1);T(X2);…;T(Xn);</code>。<br>
+      3. <code>α=β1|β2|…|βn</code>なら<code>T(α)</code>は<code>switch(token){case First(β1): T(β1); break; … default: error();}</code>（εに導ける選択肢があれば、それをdefault節に回す）。<br>
+      4. <code>α={β}</code>（EBNFの繰返し）なら<code>T(α)</code>は<code>while(in(token,First(β))){T(β);}</code>。<br>
+      5. <code>α=A</code>（非終端記号）なら<code>T(α)</code>は<code>A();</code>。<br>
+      6. <code>α=a</code>（終端記号）なら<code>T(α)</code>は<code>if(token==a) gettoken(); else error();</code>。<br>
+      7. <code>main()</code>は開始記号をSとすると<code>int main(void){gettoken(); S(); if(token!=EOF) error(); return 0;}</code>。</p>
+      <pre><code>void E(void){T(); while(token=='+'){gettoken(); T(); puttoken('+');}}
+void T(void){F(); while(token=='*'){gettoken(); F(); puttoken('*');}}
+void F(void){switch(token){
+  case ID: puttoken(ID); gettoken(); break;
+  case '(': gettoken(); E();
+            if(token==')') gettoken(); else error(); break;
+  default: error();}}</code></pre>
+      <p>入力「1+2*3」に対する呼出しの様子（インデントは再帰の深さ）：<code>E()→T()→F()</code>でトークン1を出力、<code>T1()</code>から+を検出して<code>E1()→T()→F()</code>でトークン2を出力、さらに<code>*</code>を検出して<code>F()</code>でトークン3を出力、<code>puttoken('*')</code>（出力「1 2 3 *」）、最後に<code>puttoken('+')</code>（出力「1 2 3 * +」）で完了する。</p>
+      <p>再帰的下向き構文解析器はプログラムとして読みやすいが、「どの規則を展開中か」という情報をCの関数呼出しスタックに暗黙に任せている。この関数呼出しスタックを、自分で管理する明示的なスタックに置き換えると、再帰を使わない予測的構文解析器になる。判断の中身はDirector集合と変わらないが、それを表として持ち歩き、実行時に引くだけの形にする。</p>
+      <h3>予測的構文解析器（非再帰）</h3>
+      <p>LL(1)文法を非再帰的に解析する方式（predictive parser）。開始記号からの導出過程をスタックに保存する。スタックトップが非終端記号<code>A</code>なら次の終端記号<code>a∈Director(A,α)</code>となる<code>α</code>に置換える。スタックトップが終端記号<code>a</code>なら、次の終端記号が<code>a</code>と一致すればポップして次の入力へ進む。<strong>構文解析表</strong>は「<code>a∈Director(A,α)</code>なら(A,a)要素に<code>α</code>を記入する」表として作る。</p>
+      <div class="tablewrap"><table><thead><tr><th>A＼a</th><th>i</th><th>+</th><th>*</th><th>(</th><th>)</th><th>┤</th></tr></thead><tbody>
+      <tr><td>E</td><td>TE'</td><td></td><td></td><td>TE'</td><td></td><td></td></tr>
+      <tr><td>E'</td><td></td><td>+T[+]E'</td><td></td><td></td><td>ε</td><td>ε</td></tr>
+      <tr><td>T</td><td>FT'</td><td></td><td></td><td>FT'</td><td></td><td></td></tr>
+      <tr><td>T'</td><td></td><td>ε</td><td>*F[*]T'</td><td></td><td>ε</td><td>ε</td></tr>
+      <tr><td>F</td><td>i[i]</td><td></td><td></td><td>(E)</td><td></td><td></td></tr>
+      </tbody></table></div>
+      <p>（<code>[i]</code>・<code>[+]</code>・<code>[*]</code>は出力を行う動作記号）</p>
+      <div class="exercise"><h3>予測的構文解析器のフルトレース<span class="origin">S・スライドp.24-25の例</span></h3><p>入力 <code>i*(i+i)┤</code> に対する動作を示せ（スタックは下端の┤側を左、トップを右に書く）。</p><details><summary>解答を見る（全30ステップ）</summary><div class="answer">
+      <div class="tablewrap"><table><thead><tr><th>#</th><th>スタック</th><th>入力</th><th>動作</th><th>出力</th></tr></thead><tbody>
+      <tr><td>1</td><td>┤E</td><td>i</td><td>pop E, push TE'</td><td></td></tr>
+      <tr><td>2</td><td>┤E'T</td><td>i</td><td>pop T, push FT'</td><td></td></tr>
+      <tr><td>3</td><td>┤E'T'F</td><td>i</td><td>pop F, push i[i]</td><td></td></tr>
+      <tr><td>4</td><td>┤E'T'[i]i</td><td>i</td><td>pop i</td><td></td></tr>
+      <tr><td>5</td><td>┤E'T'[i]</td><td>*</td><td>pop [i]</td><td>i</td></tr>
+      <tr><td>6</td><td>┤E'T'</td><td>*</td><td>pop T', push *F[*]T'</td><td></td></tr>
+      <tr><td>7</td><td>┤E'T'[*]F*</td><td>*</td><td>pop *</td><td></td></tr>
+      <tr><td>8</td><td>┤E'T'[*]F</td><td>(</td><td>pop F, push (E)</td><td></td></tr>
+      <tr><td>9</td><td>┤E'T'[*])E(</td><td>(</td><td>pop (</td><td></td></tr>
+      <tr><td>10</td><td>┤E'T'[*])E</td><td>i</td><td>pop E, push TE'</td><td></td></tr>
+      <tr><td>11</td><td>┤E'T'[*])E'T</td><td>i</td><td>pop T, push FT'</td><td></td></tr>
+      <tr><td>12</td><td>┤E'T'[*])E'T'F</td><td>i</td><td>pop F, push i[i]</td><td></td></tr>
+      <tr><td>13</td><td>┤E'T'[*])E'T'[i]i</td><td>i</td><td>pop i</td><td></td></tr>
+      <tr><td>14</td><td>┤E'T'[*])E'T'[i]</td><td>+</td><td>pop [i]</td><td>ii</td></tr>
+      <tr><td>15</td><td>┤E'T'[*])E'T'</td><td>+</td><td>pop T', (push ε)</td><td></td></tr>
+      <tr><td>16</td><td>┤E'T'[*])E'</td><td>+</td><td>pop E', push +T[+]E'</td><td></td></tr>
+      <tr><td>17</td><td>┤E'T'[*])E'[+]E'+T</td><td>+</td><td>pop +</td><td></td></tr>
+      <tr><td>18</td><td>┤E'T'[*])E'[+]T</td><td>i</td><td>pop T, push FT'</td><td></td></tr>
+      <tr><td>19</td><td>┤E'T'[*])E'[+]T'F</td><td>i</td><td>pop F, push i[i]</td><td></td></tr>
+      <tr><td>20</td><td>┤E'T'[*])E'[+]T'[i]i</td><td>i</td><td>pop i</td><td></td></tr>
+      <tr><td>21</td><td>┤E'T'[*])E'[+]T'[i]</td><td>)</td><td>pop [i]</td><td>iii</td></tr>
+      <tr><td>22</td><td>┤E'T'[*])E'[+]T'</td><td>)</td><td>pop T', (push ε)</td><td></td></tr>
+      <tr><td>23</td><td>┤E'T'[*])E'[+]</td><td>)</td><td>pop [+]</td><td>iii+</td></tr>
+      <tr><td>24</td><td>┤E'T'[*])E'</td><td>)</td><td>pop E', (push ε)</td><td></td></tr>
+      <tr><td>25</td><td>┤E'T'[*])</td><td>)</td><td>pop )</td><td></td></tr>
+      <tr><td>26</td><td>┤E'T'[*]</td><td>┤</td><td>pop [*]</td><td>iii+*</td></tr>
+      <tr><td>27</td><td>┤E'T'</td><td>┤</td><td>pop T', (push ε)</td><td></td></tr>
+      <tr><td>28</td><td>┤E'</td><td>┤</td><td>pop E', (push ε)</td><td></td></tr>
+      <tr><td>29</td><td>┤</td><td>┤</td><td>pop ┤</td><td></td></tr>
+      <tr><td>30</td><td colspan="3">終了（最終出力: i i i + *）</td><td></td></tr>
+      </tbody></table></div>
+      </div></details></div>
+      <p class="src">この文法に対する<code>rdp.c</code>への<code>^</code>右結合対応（<code>F→P^F|P</code>への拡張）と課題「i+i*i」のフルトレースは、本書後半「予想対策問題」に収録する。</p>
+      <h2 id="f6">第6回 上向き構文解析法とLR(1)構文解析法</h2>
+      <p>前半の構文解析パートの本命にあたる回で、上向き構文解析の中心であるLR構文解析を扱う。第4回で学んだ演算子順位法を、より一般の文法にも使えるよう組織立てたものだと捉えると理解しやすい。LR(0)項・closure・GOTOという道具立ては初見では抽象的に感じられるが、いったん状態遷移図と構文解析表さえ作ってしまえば、あとはshift/reduce/accept/errorの4種類の動作を表に従って機械的になぞるだけになる。</p>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>最右導出・右文形式・ハンドル・還元を区別して説明できる。</li>
+        <li>LR(0)項・closure・GOTOからLR(0)オートマトンの全状態を構築できる。</li>
+        <li>SLR(1)構文解析表を使ってACTION/GOTOのフルトレースを書ける。</li>
+        <li>yacc/bisonの<code>%left</code>/<code>%right</code>/<code>%nonassoc</code>宣言の意味を説明できる。</li>
+      </ul>
+      <p><strong>上向き構文解析法（bottom-up parsing）</strong>は移動還元構文解析法（shift-reduce parsing）とも呼ばれる。スタックを使い、<strong>移動（shift）</strong>：入力の終端記号をスタックに積む、<strong>還元（reduce）</strong>：生成規則<code>A→α</code>によりスタックトップの<code>α</code>を<code>A</code>に置換える、の2種類の基本操作からなる。代表例は演算子順位法（第4回）とLR(1)構文解析法（本節）。</p>
+      <div class="def"><span class="label">最右導出・ハンドル・還元</span><p><strong>最右導出（rightmost derivation）</strong>は導出において常に最も右の非終端記号を置き換えること（記号<code>⇒rm</code>で表す）。Sから最右導出で得られる記号列を<strong>右文形式（right-sentential form）</strong>という。<strong>ハンドル（handle）</strong>は、右文形式において直前の最右導出で置き換えた部分（と使った生成規則）のこと。ハンドルを非終端記号に置き換えることを<strong>還元（reduce）</strong>という。上向き構文解析は、最右導出の逆順にハンドルを還元し続けて開始記号へ戻す操作に相当する。</p></div>
+      <p>上向き構文解析の課題は「今スタックに積まれている記号列の中で、どこからどこまでがハンドルか」を、構文解析の各時点で機械的に見分けることである。第4回の演算子順位法は演算子どうしの2項関係だけでこれを判定したが、より一般の文法ではそれでは足りない。そこで、生成規則のどこまで読み終えたかをドットの位置で記録するLR(0)項という道具を使い、あり得る進み具合をすべて列挙してしまう。</p>
+      <div class="def"><span class="label">LR(0)項とclosure</span><p>生成規則<code>A→XYZ</code>の解析途中の状態は、ドット「・」の位置で4通り区別できる：<code>A→・XYZ</code>、<code>A→X・YZ</code>、<code>A→XY・Z</code>、<code>A→XYZ・</code>（最後はハンドル<code>XYZ</code>を<code>A</code>に還元可能な状態）。これを<strong>LR(0)項</strong>という。LR(0)項の集合<code>I</code>の<strong>閉包 closure(I)</strong>は次で定義する：(1) closure(I):=I。(2) <code>A→α・Bβ∈closure(I)</code>に対し生成規則<code>B→γ</code>があれば<code>B→・γ</code>をclosure(I)に追加。(3) 追加がなくなるまで(2)を繰り返す。この閉包がLR(1)構文解析法の「状態」に相当する。</p></div>
+      <div class="def"><span class="label">GOTO関数と全状態の構築</span><p><code>GOTO(I,X) = closure({A→αX・β | A→α・Xβ∈I})</code>（記号Xによる状態遷移）。全状態の求め方：(1) 初期状態<code>C:=closure({S'→・S┤})</code>。(2) 任意の<code>I∈C</code>と<code>X∈Σ∪N</code>について<code>GOTO(I,X)</code>をCに追加。(3) 追加がなくなるまで(2)を繰り返す。</p></div>
+      <div class="example"><span class="label">文法 E→E+T|T, T→T*F|F, F→(E)|i の状態遷移図（I0〜I11）</span>
+      <div class="tablewrap"><table><thead><tr><th>状態</th><th>LR(0)項</th></tr></thead><tbody>
+      <tr><td>I0（初期）</td><td>E'→・E┤／E→・E+T／E→・T／T→・T*F／T→・F／F→・(E)／F→・i</td></tr>
+      <tr><td>I1 = GOTO(I0,E)</td><td>E'→E・┤／E→E・+T</td></tr>
+      <tr><td>I2 = GOTO(I0,T)</td><td>E→T・#／T→T・*F</td></tr>
+      <tr><td>I3 = GOTO(I0,F)</td><td>T→F・#</td></tr>
+      <tr><td>I4 = GOTO(I0,()</td><td>F→(・E)／E→・E+T／E→・T／T→・T*F／T→・F／F→・(E)／F→・i</td></tr>
+      <tr><td>I5 = GOTO(I0,i)</td><td>F→i・#</td></tr>
+      <tr><td>I6 = GOTO(I1,+)</td><td>E→E+・T／T→・T*F／T→・F／F→・(E)／F→・i</td></tr>
+      <tr><td>I7 = GOTO(I2,*)</td><td>T→T*・F／F→・(E)／F→・i</td></tr>
+      <tr><td>I8 = GOTO(I4,E)</td><td>F→(E・)／E→E・+T</td></tr>
+      <tr><td>I9 = GOTO(I6,T)</td><td>E→E+T・#／T→T・*F</td></tr>
+      <tr><td>I10 = GOTO(I7,F)</td><td>T→T*F・#</td></tr>
+      <tr><td>I11 = GOTO(I8,))</td><td>F→(E)・#</td></tr>
+      </tbody></table></div>
+      <p>「#」はその項がハンドルを還元可能な状態（受理項）であることを示す。</p></div>
+      <div class="example"><span class="label">同じ状態を遷移図で見る（GOTOによるshift/goto辺のみ。数字はI0〜I11の番号）</span><div class="diagram"><pre class="mermaid">stateDiagram-v2
+  [*] --> 0
+  0 --> 5 : i
+  0 --> 4 : (
+  0 --> 1 : E
+  0 --> 2 : T
+  0 --> 3 : F
+  1 --> 6 : +
+  2 --> 7 : *
+  4 --> 5 : i
+  4 --> 4 : (
+  4 --> 8 : E
+  4 --> 2 : T
+  4 --> 3 : F
+  6 --> 5 : i
+  6 --> 4 : (
+  6 --> 9 : T
+  6 --> 3 : F
+  7 --> 5 : i
+  7 --> 4 : (
+  7 --> 10 : F
+  8 --> 6 : +
+  8 --> 11 : )</pre><p class="cap">矢印は上の表のGOTO（shift／非終端記号への移動）だけを表す。矢印が出ていない状態（3,5,9,10,11）は、その項がすでに<code>・</code>で終わっており、reduce（還元）だけを行う状態にあたる——上のLR(0)項の表で確認できる。reduceは「スタックを戻す」操作であり、この図の矢印のような単純な状態遷移ではない点に注意（reduce後にどこへ戻るかはSLR(1)構文解析表のGOTO列を見る）。</p></div></div>
+      <div class="caution"><span class="label">「気まずい状態」とSLR(1)/LR(1)/LALR(1)の違い</span><p>状態I2（<code>E→T・#</code>と<code>T→T・*F</code>を同時に含む）では、次のトークンが<code>*</code>のとき「還元すべきか移動すべきか」がLR(0)項だけからは決まらない。これを<strong>気まずい（不都合な）状態</strong>と呼ぶ。解決方法によって次のように細分化される：<strong>SLR(1)</strong>（Simple LR(1)）は次のトークンがFollow(E)に含まれているときに限り還元する。<strong>正規（canonical）LR(1)</strong>（単にLR(1)と呼ぶことが多い）は先読み記号を項自体に付加する。<strong>LALR(1)</strong>（LookAhead LR(1)）はLR(1)項の一部を合併して状態数を削減する。能力の大小関係は <code>SLR(1) ⊊ LALR(1) ⊊ LR(1)</code> であり、<strong>yacc/bisonはLALR(1)</strong>を採用している。</p></div>
+      <p>この講義ではSLR(1)（気まずい状態をFollow集合で解決する方式）を採用する。LR(0)オートマトンの各状態がそのままSLR(1)構文解析表の行になり、状態I2のような「気まずい状態」にはFollow集合を使ってreduceの列だけを埋める。表さえ完成すれば、あとは次のACTION/GOTOの動作規則に従って機械的になぞるだけになる。</p>
+      <h3>SLR(1)構文解析表</h3>
+      <div class="tablewrap"><table><thead><tr><th>状態</th><th>i</th><th>+</th><th>*</th><th>(</th><th>)</th><th>┤</th><th>E</th><th>T</th><th>F</th></tr></thead><tbody>
+      <tr><td>0</td><td>s5</td><td></td><td></td><td>s4</td><td></td><td></td><td>1</td><td>2</td><td>3</td></tr>
+      <tr><td>1</td><td></td><td>s6</td><td></td><td></td><td></td><td>acc</td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td>r2</td><td>s7</td><td></td><td>r2</td><td>r2</td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td>r4</td><td>r4</td><td></td><td>r4</td><td>r4</td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td>s5</td><td></td><td></td><td>s4</td><td></td><td></td><td>8</td><td>2</td><td>3</td></tr>
+      <tr><td>5</td><td></td><td>r6</td><td>r6</td><td></td><td>r6</td><td>r6</td><td></td><td></td><td></td></tr>
+      <tr><td>6</td><td>s5</td><td></td><td></td><td>s4</td><td></td><td></td><td></td><td>9</td><td>3</td></tr>
+      <tr><td>7</td><td>s5</td><td></td><td></td><td>s4</td><td></td><td></td><td></td><td></td><td>10</td></tr>
+      <tr><td>8</td><td></td><td>s6</td><td></td><td></td><td>s11</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>9</td><td></td><td>r1</td><td>s7</td><td></td><td>r1</td><td>r1</td><td></td><td></td><td></td></tr>
+      <tr><td>10</td><td></td><td>r3</td><td>r3</td><td></td><td>r3</td><td>r3</td><td></td><td></td><td></td></tr>
+      <tr><td>11</td><td></td><td>r5</td><td>r5</td><td></td><td>r5</td><td>r5</td><td></td><td></td><td></td></tr>
+      </tbody></table></div>
+      <p>生成規則の番号：(1) E→E+T　(2) E→T　(3) T→T*F　(4) T→F　(5) F→(E)　(6) F→i。<code>sN</code>は状態Nへ移動、<code>rK</code>は規則Kで還元、<code>acc</code>は受理、空欄はエラー。</p>
+      <div class="def"><span class="label">LR構文解析器の動作（様相の定義）</span><p>様相は<code>s0 X1 s1 X2 s2 … Xm sm, ai ai+1…an┤</code>（前半がスタック、後半が残り入力）。(1) <code>action(sm,ai)=shift s</code>なら<code>ai</code>と<code>s</code>をスタックに積む。(2) <code>action(sm,ai)=reduce A→β</code>なら、スタックから<code>2|β|</code>個の記号を降ろし、<code>A</code>と<code>s=goto(sm-|β|,A)</code>を積む（入力は進めない）。(3) <code>action(sm,ai)=accept</code>なら終了。(4) <code>action(sm,ai)=error</code>ならエラー処理。</p></div>
+      <div class="exercise"><h3>LR構文解析のフルトレース①<span class="origin">S・スライドp.15の例</span></h3><p>入力 <code>i*i+i</code> に対する動作を示せ。</p><details><summary>解答を見る</summary><div class="answer">
+      <div class="tablewrap"><table><thead><tr><th>#</th><th>スタック</th><th>入力</th><th>動作</th><th>出力</th></tr></thead><tbody>
+      <tr><td>1</td><td>0</td><td>i*i+i┤</td><td>shift 5</td><td></td></tr>
+      <tr><td>2</td><td>0 i5</td><td>*i+i┤</td><td>reduce 6 (F→i)</td><td>i</td></tr>
+      <tr><td>3</td><td>0 F3</td><td>*i+i┤</td><td>reduce 4 (T→F)</td><td></td></tr>
+      <tr><td>4</td><td>0 T2</td><td>*i+i┤</td><td>shift 7</td><td></td></tr>
+      <tr><td>5</td><td>0 T2 *7</td><td>i+i┤</td><td>shift 5</td><td></td></tr>
+      <tr><td>6</td><td>0 T2 *7 i5</td><td>+i┤</td><td>reduce 6 (F→i)</td><td>ii</td></tr>
+      <tr><td>7</td><td>0 T2 *7 F10</td><td>+i┤</td><td>reduce 3 (T→T*F)</td><td>ii*</td></tr>
+      <tr><td>8</td><td>0 T2</td><td>+i┤</td><td>reduce 2 (E→T)</td><td></td></tr>
+      <tr><td>9</td><td>0 E1</td><td>+i┤</td><td>shift 6</td><td></td></tr>
+      <tr><td>10</td><td>0 E1 +6</td><td>i┤</td><td>shift 5</td><td></td></tr>
+      <tr><td>11</td><td>0 E1 +6 i5</td><td>┤</td><td>reduce 6 (F→i)</td><td>ii*i</td></tr>
+      <tr><td>12</td><td>0 E1 +6 F3</td><td>┤</td><td>reduce 4 (T→F)</td><td></td></tr>
+      <tr><td>13</td><td>0 E1 +6 T9</td><td>┤</td><td>reduce 1 (E→E+T)</td><td>ii*i+</td></tr>
+      <tr><td>14</td><td>0 E1</td><td>┤</td><td>accept</td><td></td></tr>
+      </tbody></table></div>
+      </div></details></div>
+      <p class="src">入力 <code>i*(i+i)</code> のトレース（学生課題そのものと同型）は、本書後半「予想対策問題」に収録する。</p>
+      <h3>yacc/bisonによる実装</h3>
+      <p>yacc/bisonの仕様書もlexと同様に「定義部 %% ルール部 %% サブルーチン部」の3部構成。定義部で<code>%start</code>（開始記号）、<code>%union</code>（記号の値の型）、<code>%token</code>（終端記号とその値の型）、<code>%left</code>/<code>%right</code>/<code>%nonassoc</code>（結合性と優先順位。下に書くほど優先度が高い）、<code>%type</code>（非終端記号の値の型）を宣言する。</p>
+      <pre><code>%left   '+' '-'      /* 最下位（左結合） */
+%left   '*' '/'      /* 3番目 */
+%nonassoc UMINUS      /* 2番目（単項マイナス用） */
+%right  '^'           /* 最高位（右結合） */
+%type &lt;dval&gt; expr
+
+expr : expr '+' expr { $$ = $1 + $3; }
+     | expr '-' expr { $$ = $1 - $3; }
+     | expr '*' expr { $$ = $1 * $3; }
+     | expr '/' expr { $$ = $1 / $3; }
+     | expr '^' expr { $$ = pow($1,$3); }
+     | '-' expr %prec UMINUS { $$ = - $2; }
+     | '(' expr ')' { $$ = $2; }
+     | NUM
+     ;</code></pre>
+      <p>ビルド手順：<code>lex calc.l</code>（<code>lex.yy.c</code>生成）→<code>yacc -v calc.y</code>（<code>y.tab.c</code>・<code>y.output</code>生成）→<code>mv y.tab.c calc.c</code>→<code>cc -c calc.c</code>→<code>cc calc.o -o calc -lm</code>。<code>-v</code>オプションで生成される<code>y.output</code>には各状態の詳細（どのLR項を含み、どの記号でshift/reduceするか）が記載され、デバッグに使える。</p>
+      <div class="exercise"><h3>絶対値の拡張<span class="origin">課題⑥・実際に動作確認済み</span></h3><p><code>calc.l</code>・<code>calc.y</code>を、絶対値<code>|式|</code>を計算できるように修正せよ（例：<code>|3-7|</code>→<code>4</code>）。</p><details><summary>解答を見る</summary><div class="answer"><p><code>expr</code>規則に1行追加するだけでよい：</p>
+      <pre><code>expr : ...
+     | '|' expr '|' { $$ = fabs($2); }
+     | NUM
+     ;</code></pre>
+      <p>この規則は<code>'(' expr ')'</code>と同じ「対になる区切り記号」型であり、二項演算子ではない。開き<code>|</code>を読んだ直後（式の先頭を期待する状態）と、二項演算のreduceが完了した直後（演算子・閉じ<code>|</code>・終端記号を期待する状態）はLR(0)オートマトン上で異なる状態になるため、<code>|i+i|</code>のように内部に演算を含む場合でも「先に<code>expr→expr+expr</code>をreduceしてから閉じ<code>|</code>をshiftする」動作が一意に定まる。<code>%prec</code>等の優先順位指定も不要で、<code>bison -y calc.y</code>実行時の衝突件数は0件になる。<code>fabs</code>は既にincludeされている<code>&lt;math.h&gt;</code>で宣言されているため追加includeも不要。実行例：<code>|3-7|→4</code>、<code>-|3|→-3</code>（単項マイナスは絶対値の外側に作用）、<code>|2|*|-3|→6</code>、<code>||-2||→2</code>（入れ子も正しく解析）。</p></div></details></div>
+
+      <h2 id="f7">第7回 質疑応答・課題の解説（中間コードの視点）</h2>
+      <h3>この回で答えられること</h3>
+      <ul>
+        <li>制御構造（if/while等）が中間コードレベルでどのようにgoto文へ変換されるか説明できる。</li>
+        <li>関数呼出しにおけるフレームポインタ（FP）・スタックポインタ（SP）の役割を、呼出し前後の4段階で図示できる。</li>
+      </ul>
+      <p>この回は前半全体の質疑応答と課題解説にあてられた回で、新しい試験範囲というより既出内容の補足に近いが、後半（金子先生パート）のx86アセンブリの話とは異なる「中間コード」レベルでの制御構造・関数呼出しの扱いが示されており、両者を対比すると理解が深まる。</p>
+      <div class="def"><span class="label">制御構造の中間コード表現</span><p>すべての制御構造は<strong>goto命令</strong>で表現される。</p>
+      <pre><code>while ( 式 ) 文;
+  ↓
+LABEL L001
+式
+iffalse L002
+文
+goto L001
+LABEL L002</code></pre></div>
+      <div class="def"><span class="label">関数フレーム（中間コードレベル）</span><p>関数やローカル変数は「フレーム」で管理する。引数やローカル変数はフレームポインタ（FP）からのオフセットで参照する。</p>
+      <pre><code>関数定義：
+ENTRY func
+FRAME 1        (ローカル変数の個数)
+本体の中間コード
+RET
+
+関数呼出し：
+PUSH 引数1
+PUSH 引数2
+CALL func
+POPR 2         (2つPOPして返値をPUSH)</code></pre>
+      <p>呼出しの流れは4段階で図示される：(1) 呼出し前：SPとFPは古いフレームの上に位置する。(2) 引数プッシュ後：引数1・引数2がスタックに積まれる。(3) 呼出し中：<code>CALL</code>によりPC（戻り番地）と旧FPがさらに積まれ、新しいFPがそこを指し、続けてローカル変数の領域が確保され、最後に返値が積まれる。(4) 呼出し後：<code>POPR 2</code>により引数と管理領域が破棄され、返値だけがスタックトップに残る。この「PC・旧FPをスタックに保存し新FPを設定する」考え方は、後半（2）で学ぶ<code>push ebp; mov ebp,esp</code>のx86実装と本質的に同じである。</p></div>
+      <div class="caution"><span class="label">出題可能性についての注記</span><p>この回は「配布資料では割愛」とされた課題解説パートを除けば質疑応答が中心であり、2023・2024年度の過去問メモにもこの回に対応する出題は見当たらない。ただし、goto変換とフレームの考え方そのものは後半の内容の理解を助ける前提知識として押さえておくとよい。</p></div>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="back"><span class="num">BACK HALF</span>後半 言語処理系（1）〜（6）（金子先生）</h1>
+
+      <h2 id="b1">言語処理系（1） コンパイラ入門</h2>
+      <p>後半はここから、前半で作った構文木を実際に動く機械語へ変換していく、コンパイラのいわば「後工程」を追っていく。この回はまず前半の内容を振り返りながら、字句解析・構文解析・中間コード生成・最適化・コード生成という各フェーズが、それぞれ何を受け取り何を渡すのかを1つの関数の例で確認する。以降の回は、この中の「コード生成」を、環境モデル（(2)）→制御構造（(3)）→算術式（(4)）→最適化（(5)）の順に、より具体的に掘り下げていく構成になっている。</p>
+      <h3>この回で答えられること</h3>
+      <ul><li>コンパイラの各フェーズの入出力を説明できる。</li><li>記号表・誤り処理がどのフェーズと関係するか説明できる。</li><li>簡単な関数のコンパイル結果（字句解析・構文解析・コード生成）を一連の流れとして追える。</li></ul>
+      <p>翻訳系（translator）は原始言語のプログラムを目的言語のプログラムに変換するプログラムであり、目的言語がアセンブリ言語や機械語であるものをコンパイラと呼ぶ。コンパイルと実行は個別の2段階からなる：<code>原始コード → [コンパイラ] → 目的コード</code>、その後<code>目的コード + 入力 → [実行] → 出力</code>。</p>
+      <div class="tablewrap"><table><thead><tr><th>フェーズ</th><th>主な入力</th><th>主な出力</th><th>試験での見分け方</th></tr></thead><tbody>
+      <tr><td>字句解析系</td><td>文字列</td><td>字句（トークン）列</td><td>ソースプログラムとコンパイラとのインタフェース</td></tr>
+      <tr><td>構文解析系</td><td>字句列</td><td>解析木（parse tree）</td><td>字句を構文単位のまとまりへ構成</td></tr>
+      <tr><td>中間コード生成系</td><td>解析木</td><td>3番地コードなどの中間コード</td><td>計算機の詳細から独立した構造</td></tr>
+      <tr><td>コード最適化</td><td>中間コード</td><td>改良された中間コード</td><td>必ずあるとは限らない</td></tr>
+      <tr><td>コード生成系</td><td>中間コード</td><td>アセンブリ／機械コード</td><td>記憶位置・レジスタを決定</td></tr>
+      </tbody></table></div>
+      <div class="def"><span class="label">記号表（表管理）と誤り処理</span><p>記号表（symbol table）には原始プログラム中の全データ対象の情報（整数か実数か、配列の大きさ、関数の引数の数など）を記入する。情報は複数のフェーズにまたがって収集・利用される（例：字句解析で識別子MAXを発見すると仮登録し、宣言<code>integer MAX</code>を発見すると型情報を追記、型誤り検出や暗黙の型変換で利用）。誤りは各フェーズで検出されうる：字句解析（綴り誤り）、構文解析（構文誤り）、中間コード生成（不適切な型の被演算子）、コード最適化（到達不能文の検出）、コード生成（目的機械の1語に合わない定数）、記帳（多重宣言）。誤り処理系は各フェーズからの報告を受けて適切なメッセージを生成し、可能な限り処理の継続を試みる。</p></div>
+      <div class="example"><span class="label">具体例：<code>int foo(int x){int y=x*x; return y+2;}</code></span><p>字句解析→構文解析（関数定義・複合文・宣言・return文からなる構文木）を経て、コード生成系は次のアセンブリを出力する（さらに最適化すると簡略化される）：</p>
+      <pre><code>_foo: push ebp
+      mov  ebp, esp
+      sub  esp, 4
+      mov  eax, 8[ebp]
+      imul eax, 8[ebp]
+      mov  -4[ebp], eax
+      mov  eax, -4[ebp]
+      add  eax, 2
+      mov  esp, ebp
+      pop  ebp
+      ret
+
+（最適化後）
+_foo: mov eax, 4[esp]
+      imul eax, eax
+      add  eax, 2
+      ret</code></pre></div>
+      <p>「パス（pass）」はいくつかのフェーズをまとめたもの。パス間のデータのやり取りは中間ファイルで行い、パス内のフェーズはコルーチンとして動作しうる（パス分割に決まった原則は存在しない）。</p>
+
+      <h2 id="b2">言語処理系（2） コード生成の環境モデル</h2>
+      <p>コード生成を理解するには、まずプログラムが実行時にメモリのどこに置かれ、CPUのレジスタをどう使うかという「実行環境のモデル」を知る必要がある。この回はx86アセンブリの基本命令と、関数を呼び出すたびにスタック上に組み立てられる「関数フレーム」の構造を扱う。ここで覚える<code>ebp</code>相対番地の読み方は、後半全体を通じて何度も使う最も基礎的な道具になるので、この回でしっかり固めておくと以降が楽になる。</p>
+      <h3>この回で答えられること</h3>
+      <ul><li>メモリ領域（コード・大域データ・ヒープ・スタック）とレジスタの役割を説明できる。</li><li>算術・移動・比較・ジャンプ・スタック操作・呼出し命令を読み書きできる。</li><li>関数フレームの<code>ebp</code>相対番地を即答できる。</li><li>再帰関数のフレームをスタック図で追える。</li></ul>
+      <div class="def"><span class="label">80486のメモリ領域とレジスタ</span><p>32ビットアドレス空間はOS領域とユーザ領域からなり、ユーザ領域はコード領域・大域データ領域・ヒープ（動的生成変数用）・スタック（局所変数・関数フレーム用）に分かれる。汎用レジスタ（32ビット）：<code>eax,ebx,ecx,edx,esi,edi</code>。<code>ebp</code>：ベースポインタ、<code>esp</code>：スタックポインタ。条件フラグ（1ビット）：<code>Z</code>（ゼロフラグ）、<code>S</code>（符号フラグ）など。命令ポインタ<code>eip</code>：次に実行する命令の番地（32ビット）。</p></div>
+      <h3>アセンブリ命令の種類</h3>
+      <div class="tablewrap"><table><thead><tr><th>種類</th><th>命令例</th><th>注意</th></tr></thead><tbody>
+      <tr><td>算術命令（2項）</td><td><code>add eax,ebx</code> / <code>sub esp,4</code> / <code>imul ebx,_x</code></td><td>第1オペランドは汎用レジスタかメモリ番地、第2は定数/レジスタ/メモリ番地。<strong>両方をメモリ番地にはできない</strong></td></tr>
+      <tr><td>算術命令（単項）</td><td><code>neg eax</code> / <code>dec eax</code> / <code>inc eax</code></td><td>オペランドは汎用レジスタかメモリ番地</td></tr>
+      <tr><td>移動命令</td><td><code>mov eax,4</code></td><td>第2を第1に格納。両方をメモリ番地にはできない</td></tr>
+      <tr><td>比較命令</td><td><code>cmp x,y</code></td><td>第2を第1から減算しフラグ更新。第1&gt;第2⇒Z:0,S:0／第1=第2⇒Z:1,S:0／第1&lt;第2⇒Z:0,S:1</td></tr>
+      <tr><td>ジャンプ命令</td><td><code>jmp L</code> / <code>jcc L</code></td><td>下表参照</td></tr>
+      <tr><td>スタック操作</td><td><code>push</code>（<code>esp</code>が4減少）/ <code>pop</code>（<code>esp</code>が4増加）</td><td><code>push</code>は汎用レジスタ・メモリ番地・定数、<code>pop</code>は汎用レジスタ・メモリ番地</td></tr>
+      <tr><td>呼出し</td><td><code>call L</code>（<code>eip</code>をスタックに積みLへ）/ <code>ret</code>（スタックから戻り番地をpopし<code>eip</code>へ）</td><td></td></tr>
+      </tbody></table></div>
+      <div class="tablewrap"><table><thead><tr><th>命令</th><th>条件</th></tr></thead><tbody>
+      <tr><td>jg</td><td>x&gt;y (Z=0 and S=0)</td></tr>
+      <tr><td>jge</td><td>x≥y (S=0)</td></tr>
+      <tr><td>je / jz</td><td>x=y (Z=1)</td></tr>
+      <tr><td>jne</td><td>x≠y (Z=0)</td></tr>
+      <tr><td>jl</td><td>x&lt;y (S=1)</td></tr>
+      <tr><td>jle</td><td>x≤y (Z=1 or S=1)</td></tr>
+      </tbody></table></div>
+      <p>個々の命令が読めるようになったところで、それらを組み合わせて「関数を呼ぶ」という動作を実現する仕組みを見る。関数を1回呼ぶたびにスタック上へ何が積まれ、<code>ebp</code>が何を指すことになるかが分かれば、その関数の引数・局所変数はすべて<code>ebp</code>からの相対番地として一意に追えるようになる。</p>
+      <h3>関数フレーム</h3>
+      <p>関数<code>f</code>のアセンブリの型：</p>
+      <pre><code>_f:  push ebp
+     mov  ebp, esp
+     sub  esp, Nlocal      ; 局所変数領域を確保
+     本体の実行
+Lret: mov esp, ebp
+     pop  ebp
+     ret</code></pre>
+      <p>関数呼出し<code>f(e1,e2,...,en)</code>のアセンブリ：<code>en</code>から<code>e1</code>の順に計算しスタックに積み、<code>call _f</code>、その後<code>add esp, n*4</code>で引数領域を破棄する（引数は右から左の順に積む）。</p>
+      <div class="def"><span class="label">関数フレームの番地</span>
+      <div class="tablewrap"><table><thead><tr><th>位置</th><th>内容</th></tr></thead><tbody>
+      <tr><td>4[ebp]</td><td>戻り番地</td></tr>
+      <tr><td>8[ebp]</td><td>第1引数</td></tr>
+      <tr><td>12[ebp]</td><td>第2引数</td></tr>
+      <tr><td>16[ebp]</td><td>第3引数</td></tr>
+      <tr><td>-4[ebp]</td><td>第1局所変数</td></tr>
+      </tbody></table></div></div>
+      <div class="example"><span class="label">再帰関数の実行例：階乗</span>
+      <pre><code>int fact(int n){ if(n==0) return 1; else return n*fact(n-1); }
+
+_fact: push ebp
+       mov  ebp, esp
+       cmp  8[ebp], 0     ; n == 0
+       jne  L2
+       mov  eax, 1        ; 戻り値1
+       jmp  L1
+L2:    mov  eax, 8[ebp]   ; n-1
+       sub  eax, 1
+       push eax
+       call _fact         ; 再帰呼出し
+       add  esp, 4
+       imul eax, 8[ebp]   ; (n-1)! * n
+L1:    pop  ebp
+       ret</code></pre></div>
+      <p>関数フレームの中身が分かったところで、最後に「同じフレームの中で、どんな種類の値が同居しているか」を整理しておく。引数・局所変数・一時変数はいずれも番地で参照する点は同じだが、生存期間や再利用のされ方が異なり、これは後半（5）の最適化を理解するときの前提知識になる。</p>
+      <h3>局所変数・一時変数・レジスタ退避</h3>
+      <p>関数呼出しの引数は第1引数<code>8[ebp]</code>、第2引数<code>12[ebp]</code>…と並ぶ。局所変数は関数ごとに位置を決め、<strong>スコープが重ならない変数は同じ領域を再利用</strong>して領域を小さく抑える。一時変数はレジスタの値の退避に使い、スコープを持たないため通常の変数と同様に処理できる。</p>
+      <div class="def"><span class="label">呼出し側退避・関数側退避</span><p><strong>関数側退避（callee-saved）</strong>レジスタ：呼出し側が使用中の可能性があるため、関数側が実行開始前にスタックへ退避する。<strong>呼出し側退避（caller-saved）</strong>レジスタ：関数側が使用する可能性があるため、呼出し側が関数呼出し前にスタックへ退避する。<code>eax</code>レジスタは呼出し側退避である。</p></div>
+
+      <h2 id="b3">言語処理系（3） 文のコード生成</h2>
+      <p>関数フレームの読み書きに慣れたところで、次はif文やwhile文といった制御構造を、ラベルと条件分岐命令の組合せへどう変換するかを扱う。「真ならこう分岐する」ではなく「本体を飛ばすべき偽条件でジャンプを置く」と考える点さえ押さえれば、パターンはごく少数に限られ、穴埋め問題はほぼ機械的に解けるようになる。</p>
+      <h3>この回で答えられること</h3>
+      <ul><li>if / if-else / while / for 文をラベルと条件分岐で書ける。</li><li>break・continueの飛び先を正しく選べる。</li><li>複合文・多重代入のコード生成を書ける。</li></ul>
+      <div class="def"><span class="label">if文</span><pre><code>if (e) s
+  ↓
+eを計算，偽ならL1へ分岐
+sの実行
+L1:</code></pre>
+      <p>例：<code>if(x&lt;0) x=-x;</code>（xは8[ebp]）→ <code>cmp 8[ebp],0 / jge L1 / mov eax,8[ebp] / neg eax / mov 8[ebp],eax / L1:</code></p></div>
+      <div class="def"><span class="label">if-else文</span><pre><code>if (e) s1 else s2
+  ↓
+eを計算，偽ならL1へ分岐
+s1の実行
+jmp L2
+L1: s2の実行
+L2:</code></pre></div>
+      <div class="def"><span class="label">while文</span><pre><code>while (e) s
+  ↓
+L1: eを計算，偽ならL2へ分岐
+    sの実行
+    jmp L1
+L2:</code></pre>
+      <p>break文は<code>jmp L2</code>（ループ終了ラベル）、continue文は<code>jmp L1</code>（条件判定位置）。</p></div>
+      <div class="def"><span class="label">for文</span><pre><code>for (e1; e2; e3) s
+  ↓
+e1の計算
+L1: e2を計算，偽ならL3へ分岐
+    sの実行
+L2: e3の計算
+    jmp L1
+L3:</code></pre>
+      <p>（L2はcontinue文の飛び先。break文は<code>jmp L3</code>）。例：<code>for(i=1;i&lt;3;i++) x+=i;</code>（i:-4[ebp], x:8[ebp]）→</p>
+      <pre><code>mov  -4[ebp], 1
+L1: cmp  -4[ebp], 3
+    jge  L3
+    mov  eax, -4[ebp]
+    add  8[ebp], eax
+L2: add  -4[ebp], 1
+    jmp  L1
+L3:</code></pre></div>
+      <p>if・while・forと、分岐やループを伴う制御構造の変換パターンが一通り出そろった。最後に、分岐を含まない最も単純な文である式文・代入文を確認しておく。これらは次回（4）で扱う算術式のコード生成と直結する、いわば制御構造の「中身」にあたる部分である。</p>
+      <div class="def"><span class="label">式文・代入式</span><p>式文<code>e;</code>は<code>e</code>を計算するだけ（結果は使わない）。代入式<code>v=e</code>は<code>e</code>を計算後<code>mov loc(v), R</code>。多重代入<code>v1=v2=…=vn=e;</code>は<code>e</code>を1回計算し、<code>mov loc(vn),R / mov loc(vn-1),R / … / mov loc(v1),R</code>と全変数に同じ結果を書き込む。</p></div>
+      <div class="exercise"><h3>if-else込みのwhile文<span class="origin">演習問題1（原本に解答あり）</span></h3><p><code>while(x!=0) if(x&gt;0) x--; else x++;</code>（xは<code>-4[ebp]</code>）のコードを示せ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>L1: cmp -4[ebp], 0
+    jz  L2
+    cmp -4[ebp], 0
+    jle L3
+    sub -4[ebp], 1
+    jmp L4
+L3: add -4[ebp], 1
+L4: jmp L1
+L2:</code></pre></div></details></div>
+      <div class="exercise"><h3>ビット演算を含むwhile文<span class="origin">練習問題1・注意すべき演算子優先順位あり</span></h3><p><code>while(x!=1) if(x&amp;1==0) x&gt;&gt;=1; else x=x*3+1;</code>（xは<code>8[ebp]</code>）のコードを示せ。</p><details><summary>解答を見る</summary><div class="answer">
+      <div class="caution"><span class="label">出題の意図についての注意</span><p>C言語では<code>==</code>が<code>&amp;</code>より結合力が強いため、<code>x&amp;1==0</code>は実際には<code>x&amp;(1==0)</code>＝<code>x&amp;0</code>＝常に0と解釈され、意図した「xが偶数か」の判定にはならない（正しく書くなら<code>(x&amp;1)==0</code>が必要）。この種の演算子優先順位の罠は後半①(4)の三項演算子の過去問（本書の過去問解説を参照）とも通じる頻出の着眼点である。ここでは出題意図（コラッツ予想のロジック、xが偶数かどうかで分岐）を汲み、<code>(x&amp;1)==0</code>として実装する。</p></div>
+      <pre><code>L1: cmp 8[ebp], 1
+    je  L2
+    mov eax, 8[ebp]
+    and eax, 1
+    cmp eax, 0
+    jne L3
+    sar 8[ebp], 1        ; x >>= 1
+    jmp L4
+L3: mov eax, 8[ebp]
+    imul eax, 3
+    add  eax, 1
+    mov  8[ebp], eax
+L4: jmp L1
+L2:</code></pre></div></details></div>
+      <div class="exercise"><h3>入れ子のfor文<span class="origin">練習問題2</span></h3><p><code>for(i=0;i&lt;5;i++) for(j=i;j&lt;5;j++) f(i,j);</code>（i:-4[ebp], j:-8[ebp]）のコードを示せ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>mov  -4[ebp], 0
+L1: cmp  -4[ebp], 5
+    jge  L3
+    mov  eax, -4[ebp]
+    mov  -8[ebp], eax        ; j = i
+L4: cmp  -8[ebp], 5
+    jge  L6
+    push -8[ebp]
+    push -4[ebp]
+    call _f
+    add  esp, 8
+L5: add  -8[ebp], 1
+    jmp  L4
+L6:
+L2: add  -4[ebp], 1
+    jmp  L1
+L3:</code></pre></div></details></div>
+      <div class="exercise"><h3>多重代入<span class="origin">練習問題3</span></h3><p><code>x=y=a+1;</code>（x:8[ebp], y:12[ebp], a:-4[ebp]、結果はeaxに残す）のコードを示せ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>mov  eax, -4[ebp]
+add  eax, 1
+mov  12[ebp], eax   ; y = a+1
+mov  8[ebp], eax    ; x = y</code></pre></div></details></div>
+
+      <h2 id="b4">言語処理系（4） 算術式のコード生成</h2>
+      <p>1つの算術式であっても、部分式をどの順番で計算し、どのレジスタに結果を置くかによって、必要なレジスタの本数や命令の効率が変わる。この回の表4.1・表4.2はまるごと暗記するものではなく、部分式ごとに必要レジスタ数r(e)を下から順に書き出していけば、その場で機械的に導出できる道具として使う。焦って全体を一気に暗算しないことが、この分野で失点しないコツである。</p>
+      <h3>この回で答えられること</h3>
+      <ul><li>RSL/RL/R/LR/Lの5つのコード生成型を、表4.1から即答できる。</li><li>表4.2から必要レジスタ数r(e)をその場で導出できる。</li><li>論理式・関数呼出し・戻り値の計算コードを生成できる。</li></ul>
+      <p>二項算術演算子<code>e1 op e2</code>の基本手順は「<code>e1</code>をレジスタRにロード→Rを第1、<code>e2</code>を第2オペランドとして命令実行」。ただし<code>e1</code>の値が既にレジスタR'にあるなら再ロードは不要（例：<code>a*b+y</code>は<code>mov R',loc(a); imul R',loc(b); add R',loc(y)</code>で済む）。</p>
+      <div class="def"><span class="label">可換・非可換と計算順序</span><p><code>e1 op e2 = e2 op e1</code>なら可換（+,*）、そうでなければ非可換（-,/）。計算順序は「使用可能なレジスタ数N」「各<code>ei</code>の計算に必要なレジスタ数r(ei)」「演算子の可換性」に依存する。ただし<code>r(e1)=r(e2)=N</code>なら常に<code>e2</code>から計算する（非可換演算に備え退避が必要になるため）。</p></div>
+      <p>計算順序を左右する3つの要因（使用可能レジスタ数N、r(e1)とr(e2)、演算子の可換性）の組合せを整理すると、実際に現れるパターンは以下の5通りに尽きる。</p>
+      <h3>5つのコード生成型</h3>
+      <div class="tablewrap"><table><thead><tr><th>型</th><th>手順</th></tr></thead><tbody>
+      <tr><td>RSL型</td><td>e2を計算（結果R2）→一時変数に退避→e1を計算（結果R1）→R1を使って演算実行</td></tr>
+      <tr><td>RL型</td><td>e2を計算（結果R2）→e1を計算（結果R1）→R1を使って演算実行</td></tr>
+      <tr><td>R型</td><td>e2を計算（結果R2）→R2を使って演算実行（e1が変数/定数かつ可換の場合のみ）</td></tr>
+      <tr><td>LR型</td><td>e1を計算（結果R1）→e2を計算（結果R2）→R1を使って演算実行</td></tr>
+      <tr><td>L型</td><td>e1を計算（結果R1）→R1を使って演算実行（e2が変数/定数の場合）</td></tr>
+      </tbody></table></div>
+      <p>5つのうちどれを選ぶべきかを、r(e1)とr(e2)の関係だけから機械的に決められるように整理したのが、次の表4.1である。</p>
+      <div class="def"><span class="label">表4.1　算術式 e1 op e2 のコード生成型</span>
+      <div class="tablewrap"><table><thead><tr><th>r(e1)＼r(e2)</th><th>r(e2)=N</th><th>0&lt;r(e2)&lt;N</th><th>r(e2)=0</th></tr></thead><tbody>
+      <tr><td>r(e1)=N</td><td>RSL</td><td>LR</td><td>L</td></tr>
+      <tr><td>0&lt;r(e1)&lt;N</td><td>RL</td><td>RL or LR</td><td>L</td></tr>
+      <tr><td>r(e1)=0（非可換）</td><td>RL</td><td>RL</td><td>L</td></tr>
+      <tr><td>r(e1)=0（可換）</td><td>R</td><td>R</td><td>L or R</td></tr>
+      </tbody></table></div></div>
+      <div class="def"><span class="label">表4.2　必要レジスタ数 r(e1 op e2) の見積り</span>
+      <div class="tablewrap"><table><thead><tr><th>r(e1)＼r(e2)</th><th>r(e2)=N</th><th>0&lt;r(e2)&lt;N</th><th>r(e2)=0</th></tr></thead><tbody>
+      <tr><td>r(e1)=N</td><td>N</td><td>N</td><td>N</td></tr>
+      <tr><td>0&lt;r(e1)&lt;N</td><td>N</td><td>RL: max(r(e1)+1,r(e2))<br>LR: max(r(e1),r(e2)+1)</td><td>r(e1)</td></tr>
+      <tr><td>r(e1)=0（非可換）</td><td>N</td><td>max(2,r(e2))</td><td>1</td></tr>
+      <tr><td>r(e1)=0（可換）</td><td>N</td><td>r(e2)</td><td>1</td></tr>
+      </tbody></table></div>
+      <p>eが変数・定数ならr(e)=0。関数呼出し<code>f(e1,…,en)</code>の各<code>ei</code>はスタックに積むが、関数実行中に何本使うか不明なので<strong>r(f(e1,…,en))=N</strong>と見積る。</p></div>
+      <div class="exercise"><h3>表4.1/4.2の適用<span class="origin">演習問題1（原本に解答あり）</span></h3><p><code>a*b-x*y</code>を計算するコードを生成せよ（N=2）。</p><details><summary>解答を見る</summary><div class="answer"><p>r(a)=r(b)=r(x)=r(y)=0より、表4.2で0&lt;r(a*b)=r(x*y)=1&lt;N。表4.1より<code>a*b</code>と<code>x*y</code>はL型（R型も可）。全体は0&lt;r(e1)=1&lt;N、r(e2)=1&lt;Nなので<strong>RL型（またはLR型）</strong>：</p>
+      <pre><code>mov  R, loc(x)
+imul R, loc(y)
+mov  R', loc(a)
+imul R', loc(b)
+sub  R', R</code></pre></div></details></div>
+      <div class="exercise"><h3>N=3の複雑な式<span class="origin">練習問題1</span></h3><p><code>((a-b)*(c+d)+(e-f)*(g+h*i))*(j*k-l*m)</code>を計算するコードを示せ（N=3、レジスタは<code>eax,ebx,ecx</code>）。</p><details><summary>解答を見る</summary><div class="answer"><p>部分式ごとにrを求める：<code>a-b</code>,<code>c+d</code>,<code>e-f</code>はいずれもr=1（変数同士の演算）。<code>h*i</code>はr=1、<code>g+(h*i)</code>は0&lt;r(e1)=0(可換)...実際にはg(r=0)+(h*i)(r=1)で「r(e1)=0可換, 0&lt;r(e2)&lt;N」よりr=r(e2)=1。<code>(e-f)*(g+h*i)</code>は共にr=1なのでr=max(2,1)=2（非可換ではなく可換なのでRL/LRのうち小さい方max(1+1,1)=2）。<code>(a-b)*(c+d)</code>も同様にr=2。両者を+で結合すると0&lt;r(e1)=2&lt;3、0&lt;r(e2)=2&lt;3でr=max(3,2)=3=N。<code>j*k</code>,<code>l*m</code>はそれぞれr=1、<code>j*k-l*m</code>は非可換で0&lt;r(e2)&lt;Nよりr=max(2,1)=2。最後に外側の<code>*</code>はr(e1)=N=3の行なので、列0&lt;r(e2)=2&lt;3よりLR型、r=N=3。<strong>結論：必要レジスタ数3（ぴったり使い切る）、外側の乗算はLR型</strong>。命令列は各部分式をこの順序に従いeax/ebx/ecxを使い分けて生成する（左側の大きな部分式を先にすべて計算しレジスタ3本を使い切ってから、右側の部分式を計算し最後に演算する）。</p></div></details></div>
+      <p>算術式のコード生成が一通りできたところで、対象を論理式と関数の戻り値へ広げる。骨格は変わらず「部分式を計算し、結果をレジスタに置く」ことの繰返しだが、論理式は結果を値ではなくジャンプ先で表す点が、戻り値は最終的にeaxへ収まる点が、それぞれ独自の工夫のしどころになる。</p>
+      <h3>論理式・戻り値の計算コード</h3>
+      <div class="def"><span class="label">論理式のコード生成</span><p>一般には「eを計算(結果R)→<code>cmp R,0</code>→<code>jne L</code>」（真ならLへ）。比較演算<code>e1&gt;=e2</code>なら「e2計算(R2)→e1計算(R1)→<code>cmp R1,R2</code>→<code>jge L</code>」。オペランドを入れ替えると条件も入れ替える：「e2計算→e1計算→<code>cmp R2,R1</code>→<code>jle L</code>」でも同じ意味になる。論理積<code>e1&amp;&amp;e2</code>が<strong>偽</strong>ならLへ：「e1が偽ならL」「e2が偽ならL」（短絡評価、2つの条件分岐を続けて書くだけでよい）。<strong>真</strong>ならLへ：「e1が偽ならL'（Lの後ろの新ラベル）」「e2が真ならL」「L':」。</p></div>
+      <div class="def"><span class="label">戻り値の計算コード（eaxモード）</span><p><code>return e;</code>は「eを計算(結果R)→<code>mov eax,R</code>→<code>jmp Lret</code>」。eの計算結果を<strong>最初からeaxに格納</strong>できれば<code>mov</code>命令を省略できる。これを利用し、RL型の演算<code>e1 op e2</code>では「e2の計算はできるだけ非eaxレジスタに（<strong>非eaxモード</strong>）」「e1の計算はできるだけeaxレジスタに（<strong>eaxモード</strong>）」というモード指定でコード生成を最適化する（RSL型のe2の計算はどちらでもよいので<strong>自由モード</strong>）。これは2024年度過去問の<code>foo</code>関数（本書の過去問解説を参照）で実際に使われた考え方であり、「<code>b=a; return b;</code>を<code>b</code>へ書き込まずに直接<code>a</code>を返す」形の最適化の理論的裏付けになる。</p></div>
+      <div class="exercise"><h3>戻り値付きコード<span class="origin">練習問題2</span></h3><p>RL型で<code>a*b-x*y</code>を計算し値を戻す<code>return a*b-x*y;</code>のコードを生成せよ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>mov  ebx, loc(x)     ; e2 側は非eaxモード
+imul ebx, loc(y)
+mov  eax, loc(a)     ; e1 側はeaxモード
+imul eax, loc(b)
+sub  eax, ebx        ; 結果はそのままeaxに残る→movが不要</code></pre></div></details></div>
+
+      <h2 id="b5">言語処理系（5） 最適化</h2>
+      <p>これまでの回で組み立ててきたコードには、まだ無駄な命令や省略できる手続きが残っている。この回は、その無駄を局所的なパターン照合で取り除く覗き穴式最適化と、条件がそろえば関数フレームそのものを省略してしまう最適化、そして使われない値への代入を消す生存解析を扱う。素朴なコードから最適化後のコードへの「差分」を追えるようにしておくと、穴埋め問題への対応力が上がる。</p>
+      <h3>この回で答えられること</h3>
+      <ul><li>覗き穴式最適化の主要パターンを一通り適用できる。</li><li>変数の参照回数をfor/if文について推定できる。</li><li>関数フレームの省略と生存解析を順に適用できる。</li></ul>
+      <div class="def"><span class="label">覗き穴式最適化のパターン</span>
+      <div class="tablewrap"><table><thead><tr><th>変換前</th><th>変換後</th></tr></thead><tbody>
+      <tr><td><code>add eax,0</code> / <code>imul eax,1</code> / <code>mov eax,eax</code></td><td>削除（フラグ変化・符号拡張の利用時は要注意）</td></tr>
+      <tr><td><code>mov -4[ebp],eax</code> の直後の <code>mov eax,-4[ebp]</code></td><td>2つ目の命令は冗長なので削除</td></tr>
+      <tr><td><code>add [ebx],1</code></td><td><code>inc [ebx]</code></td></tr>
+      <tr><td><code>sub eax,1</code></td><td><code>dec eax</code></td></tr>
+      <tr><td><code>imul eax,16</code></td><td><code>shl eax,4</code></td></tr>
+      <tr><td><code>mov -8[ebp],eax</code>の直後の<code>add ebx,-8[ebp]</code></td><td><code>add ebx,eax</code>（既にeaxにある値をメモリ経由で読み直さない）</td></tr>
+      <tr><td>鎖状分岐：<code>jmp L1 / … / L1: jcc L2 / jmp L3 / L2:</code></td><td><code>jcc L3</code>（ラベル直後が無条件分岐ならその先で置換）</td></tr>
+      <tr><td><code>jmp L1 / add eax,2 / imul eax,eax / … / L2:</code>（jmp直後の到達不能命令）</td><td>到達不能命令を削除</td></tr>
+      </tbody></table></div>
+      <p>最適化により新しいパターンが生まれることがあるため、コードが不変になるまで反復する。</p></div>
+      <div class="exercise"><h3>覗き穴式最適化のフルトレース<span class="origin">演習問題1（原本に解答あり）</span></h3><p><code>int f(int x){x+=2; x=3*x+1; return x;}</code>のコードを示し、覗き穴式最適化を施せ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>_f: push ebp
+    mov  ebp, esp
+    mov  eax, 8[ebp]
+    add  eax, 2
+    mov  8[ebp], eax
+    mov  eax, 8[ebp]   ; ← 直前でebpに書いた値を読み直す冗長パターン
+    imul eax, 3
+    add  eax, 1
+    mov  8[ebp], eax
+    mov  eax, 8[ebp]   ; ← 同じく冗長
+Lret: mov esp, ebp
+    pop  ebp
+    ret
+
+（最適化後）
+_f: push ebp
+    mov  ebp, esp
+    mov  eax, 8[ebp]
+    add  eax, 2
+    mov  8[ebp], eax
+    imul eax, 3
+    inc  eax            ; add eax,1 → inc eax
+    mov  8[ebp], eax
+Lret: mov esp, ebp
+    pop  ebp
+    ret</code></pre></div></details></div>
+      <p>覗き穴式最適化は隣接する数命令しか見ない、視野の狭い最適化である。次はもう少し視野を広げ、「実行のたびに同じ値を計算し直している」部分に目を向ける。定数どうしの計算はコンパイル時に確定するし、ループの中で値が変わらない計算はループの外へ追い出せる。</p>
+      <div class="def"><span class="label">不変計算の畳込みと移動</span><p><code>b=1024*4;</code>はコンパイル時に計算して<code>mov loc(b),4096</code>とできる（定数畳込み）。代入後に変わらない「定数変数」も畳込み対象にできるが、ポインタ経由で書き換えられる可能性がある場合は要注意。ループ内で値が変わらない計算（loop invariant）はループ外へ移動できる：<code>while(...){...(b+c)...}</code>→<code>tmp=b+c; while(...){...tmp...}</code>。</p></div>
+      <p>命令列そのものの無駄を削ったところで、次は「どの変数をレジスタに乗せるか」という資源配分の問題に移る。レジスタはメモリと違って本数が限られているので、頻繁に参照される変数から優先的に割り当てたい。その優先順位を決める指標が参照回数である。</p>
+      <div class="def"><span class="label">レジスタ変数と参照回数</span><p>関数本体の計算でレジスタが余れば、局所変数や引数をレジスタに割り当てる。優先順位は参照回数に基づいて決める。ループ中の参照はループ回数Kで数える：<code>for(j=i;j&lt;n;j++) s+=j;</code>では<code>j</code>: 4K+2回（初期化1、条件K+1、j++でK回×2、s+=jでK回）、<code>s</code>: 2K回、<code>n</code>: K+1回、<code>i</code>: 1回。条件文中の参照は確率を均等割りして推定する：<code>if(e) s1 else s2;</code>なら<code>(eの参照回数)+((s1の参照回数)+(s2の参照回数))/2</code>。</p></div>
+      <p>参照回数に基づくレジスタ割当まで済んだら、最後は個々の命令や変数ではなく、関数全体の構造そのものを見直す番である。局所変数がない、あるいはスタック位置が実行中ずっと変わらない関数では、フレーム管理そのものが丸ごと無駄になっている場合があり、また一度も読み出されない代入は生存解析でまとめて消せる。</p>
+      <div class="def"><span class="label">関数フレームの省略と生存解析</span><p>関数中で<code>esp</code>の値が不変（局所変数がない、またはスタック位置が一定）なら<code>push ebp; mov ebp,esp; …; mov esp,ebp; pop ebp;</code>を省略でき、<code>ebp</code>相対番地はすべて<code>esp</code>相対番地に読み替える（例：<code>8[ebp]</code>だった第1引数は<code>4[esp]</code>になる。<code>ebp</code>を積む分の4バイトがなくなるため）。<strong>生存解析</strong>は使用されない変数への代入・領域確保を削除する処理（例：局所変数の書込みが読み出される前に上書きされるなら削除できる）。</p></div>
+      <div class="exercise"><h3>フレーム省略と生存解析<span class="origin">演習問題2（原本に解答あり）</span></h3><p>演習問題1で最適化したコードから関数フレームを省略し、さらに生存解析をせよ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>_f: mov  eax, 4[esp]   ; ebp→esp相対に変換（8[ebp]→4[esp]）
+    add  eax, 2
+    imul eax, 3
+    inc  eax
+Lret: ret</code></pre>
+      <p>局所変数へのmov（<code>mov 8[ebp],eax</code>相当の書込み）は、その後読み出される前に次の計算でeaxが上書きされるため生存解析で削除できる。</p></div></details></div>
+
+      <h2 id="b6">言語処理系（6） ソフトウェアウォーターマーキング</h2>
+      <p>後半最後のこの回だけは毛色が変わる。コード生成では「レジスタをどう割り当てるか」が課題だったが、ここではその割当（グラフ彩色問題）を逆手にとり、実行結果を変えないままソフトウェアに識別情報を埋め込む、ソフトウェアウォーターマーキングを扱う。これまでに学んだ干渉グラフやレジスタ割当の知識を、コード生成とは別の目的に転用する応用例として読むと位置づけやすい。</p>
+      <h3>この回で答えられること</h3>
+      <ul><li>干渉グラフとレジスタ割当（彩色問題）の関係を説明できる。</li><li>GCアルゴリズムを手で実行できる。</li><li>QP/QPS/CC/ICC/CPの違いを「回復可能性」「新色導入」の軸で比較できる。</li></ul>
+      <div class="def"><span class="label">ウォーターマーキングと干渉グラフ</span><p>ウォーターマーク（電子透かし）は著作物に追加する識別情報。ソフトウェアウォーターマーキングでは、実行結果に影響を与えずに識別情報を埋め込む（冗長コードの埋込み、コード置換え、<strong>レジスタ割当の変更</strong>など）。中間コードの各一時変数について、生存区間が重なる変数を辺で結んだグラフを<strong>干渉グラフ</strong>という。隣接ノードには同じレジスタを割り当てられないため、レジスタ割当は干渉グラフの<strong>ノード彩色問題</strong>（最少の色数で隣接ノードを異なる色にする）に帰着する。</p></div>
+      <div class="def"><span class="label">GC彩色アルゴリズム</span><pre><code>function GC(G(V={1,...,n}, E))
+  for i:=1 to n do g[i]:=0;
+  c:=1;
+  for i:=1 to n do
+    if g[i]=0 then begin
+      g[i]:=c;
+      for j:=i+1 to n do
+        if g[j]=0 and (for all (j,j') in E, g[j']&lt;&gt;c) then g[j]:=c;
+      c:=c+1
+    end;
+  return g</code></pre>
+      <p>未彩色の最小番号ノードへ新色を割り当て、その色を割り当てられる（隣接ノードに同色がない）非隣接ノードにも同色を貪欲に割り当てる。ノード番号の順序が結果に影響するため、途中経過を飛ばさず順に確認することが重要。</p></div>
+      <p>GCで求めた彩色は、あくまで「レジスタを衝突なく割り当てるための基準」であり、それ自体には識別情報は含まれていない。以下の5手法は、この基準彩色をどう意図的に変形すれば識別情報を埋め込め、かつ実行結果を壊さずに後から復元できるかを競うものである。発表順に見ると改良の系譜になっており、QPの弱点（埋込みに失敗することがある）をQPSが解消し、QPSの弱点（埋め込める情報量が少ない）をCC/ICCが解消し、CPはレジスタ数が多い場面に特化した手法として位置づけられる。</p>
+      <div class="tablewrap"><table><thead><tr><th>アルゴリズム</th><th>基本操作</th><th>回復可能性</th><th>新色の導入</th><th>特徴</th></tr></thead><tbody>
+      <tr><td>QP<br><span style="font-weight:400">（Qu&amp;Potkonjak 1999）</span></td><td>識別情報に応じ、ノード間の巡回的な近さ（i+1,…,n,1,…,i-1）に基づき干渉グラフに枝を追加してからGC彩色</td><td><strong>失敗する可能性あり</strong>（識別情報を正しく回復できないことがある）</td><td>GCの結果に依存</td><td>基本手法。埋込みに失敗する場合もある（abort）</td></tr>
+      <tr><td>QPS<br><span style="font-weight:400">（Myles&amp;Collberg 2003）</span></td><td>先にGC彩色し、同色の3ノード(colored triple)を検出して識別情報に応じ1ノードの色を変更</td><td><strong>必ず回復可能</strong></td><td>導入する</td><td>埋込み可能な情報量が激減する</td></tr>
+      <tr><td>CC<br><span style="font-weight:400">（Lee&amp;Kaneko 2008）</span></td><td>先にGC彩色し、識別情報の各ビットを各ノードに対応させ、ビット1なら色を変更</td><td>回復可能</td><td>導入する場合あり</td><td>変数が多いときに有効</td></tr>
+      <tr><td>ICC<br><span style="font-weight:400">（改良CC）</span></td><td>CCの改良版（色変更の探索条件を工夫）</td><td>回復可能</td><td>導入する場合あり</td><td>CCより新色の導入を抑えられる</td></tr>
+      <tr><td>CP<br><span style="font-weight:400">（Lee&amp;Kaneko 2008）</span></td><td>先にGC彩色し、識別情報に応じて彩色パタン（順列）を変更</td><td>回復可能</td><td><strong>導入しない</strong></td><td>色数（レジスタ数）が多いときに有効</td></tr>
+      </tbody></table></div>
+      <div class="caution"><span class="label">過去問で直接問われる結論</span><p>識別情報を正しく回復できない可能性がある方式：<strong>QP</strong>。新たな色を導入しない方式：<strong>CP</strong>。生存区間の重なりを表すグラフ：<strong>干渉グラフ</strong>。これらは2023・2024年度とも金子パートで直接出題されている（本書の過去問解説を参照）。</p></div>
+      <div class="exercise"><h3>干渉グラフの作成<span class="origin">練習問題1</span></h3><p><code>t1&lt;-0; t2&lt;-4; t3&lt;-t1+t2; t4&lt;-t1*t1; t5&lt;-t3+t4; t5&lt;-t5+t1;</code>（以下t1〜t4は出現せず）に対する干渉グラフを示せ。</p><details><summary>解答を見る</summary><div class="answer"><p>各変数の生存区間：t1は定義(1行目)から最後の使用(6行目<code>t5+t1</code>)まで生存。t2は2行目〜3行目。t3は3行目〜5行目。t4は4行目〜5行目。区間が重なるペアに辺を引く：t1-t2（t2生存中にt1も生存）、t1-t3、t1-t4（4行目でt1使用中にt3も生存＝t3-t4も辺）、t3-t4。まとめると<strong>辺は {(t1,t2),(t1,t3),(t1,t4),(t3,t4)}</strong>（t2とt3・t4は生存区間が重ならないので辺なし）。</p><div class="diagram"><pre class="mermaid">flowchart LR
+  t1 --- t2
+  t1 --- t3
+  t1 --- t4
+  t3 --- t4</pre><p class="cap">t1はt2・t3・t4のすべてと隣接（同じレジスタを割り当てられない）。t3とt4も隣接。t2はt3・t4のどちらとも生存区間が重ならないため辺がなく、同じレジスタを共有できる。</p></div></div></details></div>
+      <div class="exercise"><h3>GCアルゴリズムの適用<span class="origin">練習問題2</span></h3><p>7ノードの干渉グラフ（V={1..7}, 例のグラフ構造）にGCアルゴリズムを適用したときの彩色結果を求める考え方を説明せよ。</p><details><summary>解答を見る</summary><div class="answer"><p>ノード番号順（1→7）に、未彩色かつ最小番号のノードへ新色を割り当て、その色を割り当てても隣接ノードと衝突しない他の未彩色ノードにも同じ色をまとめて割り当てる、という操作を全ノードが彩色されるまで繰り返す。実際のグラフに適用する際は、隣接関係の表を作ってから機械的にこの手順をなぞることが失点を防ぐコツ（暗算で飛ばさない）。</p></div></details></div>
+      <div class="exercise"><h3>各アルゴリズムの識別情報回復方法<span class="origin">練習問題6</span></h3><p>QPS・CC（ICC）・CPの各アルゴリズムについて、埋め込んだ識別情報の回復方法を簡単に説明せよ。</p><details><summary>解答を見る</summary><div class="answer"><p><strong>QPS</strong>：同色になるはずの3ノード（colored triple）のうち色が変更されたノードを検出し、変更前の色との対応から埋め込んだビットを復元する。<strong>CC/ICC</strong>：各ノードに対応するビット位置について、GC彩色結果と実際の彩色を比較し、色が変わっていればビット1、変わっていなければビット0として復元する。<strong>CP</strong>：GC彩色結果に対して実際の彩色がどの順列（置換）に対応するかを求め、その順列番号を識別情報の数値表現として復元する。</p></div></details></div>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="pastexam"><span class="num">PAST EXAMS</span>過去問 完全解説</h1>
+      <div class="intro"><h2>この章について</h2><p>2023年度・2024年度の期末試験は、山井パート・金子パートで別々の書き込み式冊子が配布された。以下は受験者本人が記憶を頼りに再現したメモの<strong>原文の設問内容</strong>に、本書の該当節へのリンクと解説を付けたものである。「実際の試験とは異なる部分、条件が正確でない部分も多々ある」と原文中に明記されている点に注意し、唯一の一次資料として傾向をつかむために使うこと。</p></div>
+
+      <h2 id="pe2023">2023年度 期末試験</h2>
+      <h3>山井先生パート（大問3つ）</h3>
+      <div class="exercise"><h3>[1.1] 正規表現</h3><p>次の正規表現を答えよ。使える演算子は<code>*</code>・<code>・</code>（省略可）・<code>+</code>のみ、使える文字は0と1のみ。(1)「4の倍数となる2進数」(2)「0と1をどちらも含む数」</p><details><summary>解答を見る</summary><div class="answer"><p>(1) 4の倍数の2進表記は下2桁が<code>00</code>で終わる（先頭に無駄な0がなければ）：<code>(0+1)*00 + 0</code>（0自身も4の倍数として許すかは問題文次第）。(2) 0と1を両方含む＝全て0でも全て1でもない：<code>(0+1)*0(0+1)*1(0+1)* + (0+1)*1(0+1)*0(0+1)*</code>、または「0から始まり途中で1が出る」「1から始まり途中で0が出る」を<code>0(0+1)*1(0+1)* + 1(0+1)*0(0+1)*</code>とまとめてもよい。<a href="#f3">→第3回</a></p></div></details></div>
+      <div class="exercise"><h3>[1.2] ε-NFA→NFA変換</h3><p>与えられたε動作つきNFAをε動作なしNFAに変換せよ（第3回資料の例と同一のものが出題）。</p><details><summary>解答を見る</summary><div class="answer"><p><a href="#f3">→第3回「ε-動作つきNFA → ε-動作なしNFA」</a>の手順（新しい遷移関数δ̂の定義と受理状態の拡張規則）をそのまま適用する。授業例そのものが出るため、配布資料の変換例を暗記レベルで再現できるようにしておくこと。</p></div></details></div>
+      <div class="exercise"><h3>[2.1] 構文図式からEBNFを記述</h3><p>「構造子 → ( 式 { , 式 } ) 」のような構文図式で表されるEBNFを記述せよ。</p><details><summary>解答を見る</summary><div class="answer"><code>構造子 → "(" 式 { "," 式 } ")"</code><p><a href="#f4">→第4回「BNF・構文図式」</a>の<code>{...}</code>＝0回以上の繰返しの読み方に対応する。</p></div></details></div>
+      <div class="exercise"><h3>[2.2] 曖昧文法の2構文木</h3><p><code>E→E+E|E*E|(E)|i</code>は曖昧である。「i+i*i」を表す二つの構文木を書け。</p><details><summary>解答を見る</summary><div class="answer"><p><a href="#f4">→第4回「曖昧な文法」</a>参照。(id+id)*idと解釈する左結合の木、id+(id*id)と解釈する右結合の木の2通りを描く。</p></div></details></div>
+      <div class="exercise"><h3>[3.1] First・Follow</h3><p><code>E→TE', E'→+TE'|ε, T→FT', T'→*FT'|ε, F→(E)|i</code>について<code>First(E')</code>と<code>Follow(T)</code>を求めよ。</p><details><summary>解答を見る</summary><div class="answer"><code>First(E')={+,ε}</code>、<code>Follow(T)={+,┤,)}</code>。<a href="#f5">→第5回「First・Follow・Directorの計算例」</a>の表を参照。</div></details></div>
+      <div class="exercise"><h3>[3.2] LR(1)文法</h3><p>（原文注：詳細不明だが「LR(1)文法の回の課題を解けていれば解答可能な問題」とのこと）</p><details><summary>解答を見る</summary><div class="answer"><p>第6回の課題（<a href="#f6">→第6回</a>のSLR(1)構文解析表とフルトレース）と同型の出題と推測される。closure・GOTO・状態遷移表の構築を手を動かして再現できるようにしておく。</p></div></details></div>
+
+      <h3>金子先生パート（大問5つ）</h3>
+      <div class="exercise"><h3>[1]〜[3] f(a,b)関数の穴埋め</h3><p>次のC関数のアセンブリコードの穴埋め、L1直前のスタックとeaxレジスタの状態、覗き穴的最適化後の穴埋めが出題された。</p>
+      <pre><code>f(a,b){
+  int c=a*2-1;
+  return c+b;
+}</code></pre>
+      <details><summary>解答を見る（想定復元）</summary><div class="answer"><pre><code>_f: push ebp
+    mov  ebp, esp
+    mov  eax, 8[ebp]   ; a
+    add  eax, eax       ; a*2 （shl eax,1 と等価。imul eax,2でもよい）
+    sub  eax, 1         ; c = a*2-1
+    add  eax, 12[ebp]   ; c+b
+    mov  esp, ebp
+    pop  ebp
+    ret</code></pre>
+      <p>L1直前（原文にL1の詳細はないが、典型的にはreturn直前のラベルと想定）でのスタック：<code>4[ebp]</code>戻り番地、<code>8[ebp]</code>=a、<code>12[ebp]</code>=b、eaxには計算途中の値（<code>a*2-1</code>相当）が入っている。<strong>覗き穴的最適化</strong>では<code>add eax,eax</code>は<code>shl eax,1</code>への置換対象、<code>sub eax,1</code>は<code>dec eax</code>への置換対象、フレームに局所変数がなければ<code>push ebp; mov ebp,esp; …; pop ebp</code>を省略しesp相対番地に変換できる（フレームの除去）。<a href="#b5">→言語処理系（5）「覗き穴式最適化のパターン」</a>を参照。</p></div></details></div>
+      <div class="exercise"><h3>[4] コード生成型とレジスタ数</h3><p>（原文注：詳細不明だが「RSL型、RL型などのコード生成アルゴリズムと必要なレジスタ数を問う問題」で「表4.1/4.2の内容を頭に入れておかないと解けない」とのこと）</p><details><summary>解答を見る</summary><div class="answer"><p><a href="#b4">→言語処理系（4）「表4.1」「表4.2」</a>を暗記ではなく毎回導出できるようにしておく。過去問では<code>N</code>と部分式の値が与えられ、r(e)を再帰的に求めさせる形が典型（本書「N=3の複雑な式」の演習を参照）。</p></div></details></div>
+      <div class="exercise"><h3>[5] GC・ICCアルゴリズム</h3><p>GCアルゴリズムとICCアルゴリズムの挙動を問う問題（コードは出題されず）。</p><details><summary>解答を見る</summary><div class="answer"><p><a href="#b6">→言語処理系（6）</a>のGC疑似コードとCC/ICCの比較表を参照。「先にGCで彩色してから識別情報に応じて色を変更する」という共通の流れを押さえた上で、ICCがCCの改良版であること（色変更を抑える探索条件）を説明できるようにする。</p></div></details></div>
+
+      <h2 id="pe2024">2024年度 期末試験</h2>
+      <h3>山井先生パート</h3>
+      <div class="tablewrap"><table><thead><tr><th>出題項目（原文）</th><th>対応する節</th></tr></thead><tbody>
+      <tr><td>00か11（もしくはその両方）を含む正規表現</td><td><a href="#f3">第3回</a>「00または11を含む2進列：(0+1)*(00+11)(0+1)*」</td></tr>
+      <tr><td>00, 11を含まない正規表現</td><td><a href="#f3">第3回</a>「同じ文字が連続しない0,1の文字列」</td></tr>
+      <tr><td>最右導出の問題</td><td><a href="#f6">第6回</a>「最右導出・ハンドル・還元」</td></tr>
+      <tr><td>S→if C then S｜if C then S else S のdangling else、2つの構文木</td><td><a href="#f4">第4回</a>「ぶら下がりelse」</td></tr>
+      <tr><td>First(T), Follow(T')を求めよ</td><td><a href="#f5">第5回</a>「First・Follow・Directorの計算例」</td></tr>
+      <tr><td>E→E+・T のclosureを求めよ</td><td><a href="#f6">第6回</a>「LR(0)項とclosure」の計算例と同型</td></tr>
+      <tr><td>ε動作なしNFAをDFA（状態最小化なし）に変換せよ（授業資料と同じオートマトン）</td><td><a href="#f3">第3回</a>「ε-動作なしNFA→DFA（部分集合構成法）」</td></tr>
+      <tr><td>「RL文法(3)」についての問題（原文表記のまま、詳細不明）</td><td>推測の域を出ないが演算子順位法または左再帰除去（第4・5回）関連の可能性</td></tr>
+      <tr><td>逆ポーランド記法で (A-B^(C^D))-(E*F) を示せ</td><td><a href="#f4">第4回</a>「逆ポーランド記法」。解答：<code>A B C D ^ ^ - E F * -</code>（<code>^</code>は右結合なので<code>C^D</code>を先に評価）</td></tr>
+      </tbody></table></div>
+
+      <h3>金子先生パート</h3>
+      <div class="exercise"><h3>GC・ICCアルゴリズムで彩色する問題</h3><p>（ソースコードは出題されず、グラフのみが与えられた）</p><details><summary>解答を見る</summary><div class="answer"><p><a href="#b6">→言語処理系（6）</a>のGC疑似コードを、ノード番号順に手を動かして適用する。</p></div></details></div>
+      <div class="exercise"><h3>foo関数の穴埋め（短絡評価＋戻り値最適化の好例）</h3><p>次の関数について、冗長なアセンブリコードの穴埋め、L3まで実行したときのスタック（espからの4つ分）とeaxの値、最適化後の穴埋めが出題された。最適化後の解答（原文に記載されたもの）は以下の通り。</p>
+      <pre><code>int foo(int a, int b){
+  if (a>=0 &amp;&amp; a&lt;b) b=a;
+  return b;
+}
+
+_foo:
+  mov eax, 4[esp]     ; a （関数フレーム省略済み、esp相対）
+  cmp eax, 0
+  jl  L1
+  cmp eax, 8[esp]     ; a と b を比較
+  jl  L2
+L1:
+  mov eax, 8[esp]     ; b
+L2:
+  ret</code></pre>
+      <details><summary>この最適化コードがなぜ正しいかの解説</summary><div class="answer"><p>この関数は<code>if(条件) b=a; return b;</code>という「条件を満たすときだけ代入して即returnする」形なので、実際に<code>b</code>のメモリへ書き込む必要はなく、<strong>「aとbのどちらを返すか」を直接分岐で決めてしまえる</strong>（<a href="#b4">言語処理系（4）「戻り値の計算コード（eaxモード）」</a>の考え方の実例）。<br>
+      ・<code>a&lt;0</code>のとき：条件が偽なので<code>b</code>を返すべき→<code>jl L1</code>で<code>L1</code>に飛び、<code>mov eax,8[esp]</code>で<code>eax=b</code>にして返す。<br>
+      ・<code>a&gt;=0</code>かつ<code>a&gt;=b</code>（<code>a&lt;b</code>が偽）のとき：条件が偽なので<code>b</code>を返すべき→2つ目の<code>jl L2</code>が不成立で素通りし、そのまま<code>L1</code>に落ちて<code>eax=b</code>にして返す（<code>L1</code>のコードは「a&lt;0の場合」と共有されている）。<br>
+      ・<code>a&gt;=0</code>かつ<code>a&lt;b</code>のとき：条件が真なので<code>b=a</code>としたうえで<code>b</code>（＝a）を返すべき→2つ目の<code>jl L2</code>が成立して<code>L2</code>へ飛び、<code>eax</code>は<code>mov eax,4[esp]</code>でロードした<code>a</code>のままなので、そのまま<code>a</code>を返す（<code>b</code>へのメモリ書込みが完全に省略されている）。<br>
+      このように<code>&amp;&amp;</code>の短絡評価（<a href="#b4">言語処理系（4）「論理式のコード生成」</a>）と戻り値の最適化が組み合わさった良問である。</p></div></details></div>
+      <div class="exercise"><h3>N=3のレジスタ数・命令型</h3><p>汎用レジスタ3つが使える場面において<br><code>{(a-1)*(b-2)+(c-3)*(e-4)*(d-5)}*{(e)-(f-6)}</code><br>の必要レジスタ数と命令型を求めよ。</p><details><summary>解答を見る（表4.1/4.2によるフル導出）</summary><div class="answer">
+      <p>変数と定数の差（<code>a-1</code>等）はいずれも非可換・両辺r=0なので表4.2より<strong>r=1、L型</strong>。同様に<code>b-2</code>,<code>c-3</code>,<code>e-4</code>,<code>d-5</code>,<code>f-6</code>もすべてr=1・L型。<code>(e)</code>は変数単体でr=0。</p>
+      <p><code>(a-1)*(b-2)</code>：可換、両辺r=1（0&lt;r&lt;N=3）→表4.2よりRL:max(2,1)=2、LR:max(1,2)=2、<strong>r=2</strong>（RL or LR）。<code>(c-3)*(e-4)</code>も同様に<strong>r=2</strong>。</p>
+      <p><code>(c-3)*(e-4)*(d-5)</code>：左部分r=2、右部分（d-5）r=1（0&lt;r&lt;N）→RL:max(3,1)=3、LR:max(2,2)=2。可換なので小さい方のLRを選び<strong>r=2</strong>。</p>
+      <p>足し算の左側<code>(a-1)*(b-2)</code>（r=2）と右側<code>(c-3)*(e-4)*(d-5)</code>（r=2）を+で結合：RL:max(3,2)=3、LR:max(2,3)=3→<strong>r=3=N</strong>（これをT1とする）。</p>
+      <p><code>(e)-(f-6)</code>：非可換、e(r=0)-（(f-6)、r=1）→表4.2「r(e1)=0非可換」行・「0&lt;r(e2)&lt;N」列よりmax(2,1)=2、<strong>r=2、RL型</strong>（これをT2とする）。</p>
+      <p>最後にT1(r=3=N)とT2(r=2)を掛ける：表4.1/4.2の「r(e1)=N」行、「0&lt;r(e2)&lt;N」列より<strong>LR型、r=N=3</strong>（T1を先に計算してレジスタ3本を使い切り、その後T2を計算して結合する）。</p>
+      <div class="def"><span class="label">結論</span><p>必要レジスタ数は<strong>3（=N、限界ちょうど）</strong>、外側の乗算の命令型は<strong>LR型</strong>。</p></div>
+      </div></details></div>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="mock"><span class="num">PRACTICE</span>予想対策問題</h1>
+      <h2 id="mock-front">前半模試</h2>
+      <div class="exercise"><h3>問1 正規表現<span class="origin">過去問・課題の同型</span></h3><p>アルファベット<code>{0,1}</code>上で、<code>00</code>または<code>11</code>を含む文字列全体を表す正規表現を書け。</p><details><summary>解答を見る</summary><div class="answer"><code>(0+1)*(00+11)(0+1)*</code></div></details></div>
+      <div class="exercise"><h3>問2 正規表現（含まない版）</h3><p><code>00</code>も<code>11</code>も含まない0,1の文字列全体を表す正規表現を書け（空文字列を含む）。</p><details><summary>解答を見る</summary><div class="answer"><code>(0+ε)(10*1+ε)*0*</code>、または <code>ε + 0(10)*(ε+1) + 1(01)*(ε+0)</code></div></details></div>
+      <div class="exercise"><h3>問3 最右導出</h3><p><code>S -&gt; AB</code>、<code>A -&gt; aA | a</code>、<code>B -&gt; bB | b</code>について、<code>aabbb</code>の最右導出を示せ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>S =>rm AB =>rm A bB =>rm A bbB =>rm A bbb
+  =>rm aA bbb =>rm aabbb</code></pre></div></details></div>
+      <div class="exercise"><h3>問4 曖昧文法（dangling else）</h3><p><code>S -&gt; if C then S | if C then S else S</code>について、<code>if C then if C then S else S</code>に対する2つの構文木の違いを説明せよ。</p><details><summary>解答を見る</summary><div class="answer"><p>「内側のifにelseが結びつく」解釈と「外側のifにelseが結びつく」解釈の2通り。多くの言語ではelseは直近のthen（内側のif）に結びつく規約を採用する。<a href="#f4">→第4回</a></p></div></details></div>
+      <div class="exercise"><h3>問5 First/Follow</h3><p>文法<code>E -&gt; TE'</code>、<code>E' -&gt; +TE' | ε</code>、<code>T -&gt; FT'</code>、<code>T' -&gt; *FT' | ε</code>、<code>F -&gt; (E) | i</code>について、<code>FIRST(E')</code>と<code>FOLLOW(T)</code>を求めよ。</p><details><summary>解答を見る</summary><div class="answer"><code>FIRST(E')={+,ε}</code>、<code>FOLLOW(T)={+,),┤}</code>。</div></details></div>
+      <div class="exercise"><h3>問6 closure</h3><p><code>E -&gt; E+T | T</code>、<code>T -&gt; T*F | F</code>、<code>F -&gt; (E) | i</code>に対し、<code>{E -&gt; E + . T}</code>のclosureを求めよ。</p><details><summary>解答を見る</summary><div class="answer"><pre><code>E -> E + . T
+T -> . T * F
+T -> . F
+F -> . ( E )
+F -> . i</code></pre></div></details></div>
+      <div class="exercise"><h3>問7 RPN</h3><p><code>(A-B^(C^D))-(E*F)</code>を逆ポーランド記法で表せ。ただし<code>^</code>は右結合。</p><details><summary>解答を見る</summary><div class="answer"><code>A B C D ^ ^ - E F * -</code></div></details></div>
+      <div class="exercise"><h3>問8 演算子順位法（i+i*iのフルトレース）</h3><p>本書第4回の優先順位表を用いて、入力<code>i+i*i┤</code>に対する動作をフルトレースせよ。</p><details><summary>解答を見る</summary><div class="answer">
+      <div class="tablewrap"><table><thead><tr><th>#</th><th>スタック</th><th>関係</th><th>入力</th><th>動作</th></tr></thead><tbody>
+      <tr><td>1</td><td>├</td><td>⋖</td><td>i</td><td>push i</td></tr>
+      <tr><td>2</td><td>├i</td><td>⋗</td><td>+</td><td>pop i</td></tr>
+      <tr><td>3</td><td>├</td><td>⋖</td><td>+</td><td>push +</td></tr>
+      <tr><td>4</td><td>├+</td><td>⋖</td><td>i</td><td>push i</td></tr>
+      <tr><td>5</td><td>├+i</td><td>⋗</td><td>*</td><td>pop i</td></tr>
+      <tr><td>6</td><td>├+</td><td>⋖</td><td>*</td><td>push *</td></tr>
+      <tr><td>7</td><td>├+*</td><td>⋖</td><td>i</td><td>push i</td></tr>
+      <tr><td>8</td><td>├+*i</td><td>⋗</td><td>┤</td><td>pop i</td></tr>
+      <tr><td>9</td><td>├+*</td><td>⋗</td><td>┤</td><td>pop *</td></tr>
+      <tr><td>10</td><td>├+</td><td>⋗</td><td>┤</td><td>pop +</td></tr>
+      <tr><td>11</td><td>├</td><td>≐</td><td>┤</td><td>終了</td></tr>
+      </tbody></table></div>
+      <p>+より*の方が優先度が高いため、+はスタックに残ったまま先に*側が還元される。</p></div></details></div>
+      <div class="exercise"><h3>問9 LL(1)予測構文解析（i+i*iのフルトレース）</h3><p>本書第5回の構文解析表を用いて、入力<code>i+i*i┤</code>に対する動作をフルトレースせよ。</p><details><summary>解答を見る</summary><div class="answer">
+      <div class="tablewrap"><table><thead><tr><th>#</th><th>スタック</th><th>入力</th><th>動作</th></tr></thead><tbody>
+      <tr><td>1</td><td>┤E</td><td>i</td><td>pop E, push TE'</td></tr>
+      <tr><td>2</td><td>┤E'T</td><td>i</td><td>pop T, push FT'</td></tr>
+      <tr><td>3</td><td>┤E'T'F</td><td>i</td><td>pop F, push i[i]</td></tr>
+      <tr><td>4</td><td>┤E'T'[i]i</td><td>i</td><td>pop i</td></tr>
+      <tr><td>5</td><td>┤E'T'[i]</td><td>+</td><td>pop [i]（出力: i）</td></tr>
+      <tr><td>6</td><td>┤E'T'</td><td>+</td><td>pop T', (push ε)</td></tr>
+      <tr><td>7</td><td>┤E'</td><td>+</td><td>pop E', push +T[+]E'</td></tr>
+      <tr><td>8</td><td>┤E'[+]T+</td><td>+</td><td>pop +</td></tr>
+      <tr><td>9</td><td>┤E'[+]T</td><td>i</td><td>pop T, push FT'</td></tr>
+      <tr><td>10</td><td>┤E'[+]T'F</td><td>i</td><td>pop F, push i[i]</td></tr>
+      <tr><td>11</td><td>┤E'[+]T'[i]i</td><td>i</td><td>pop i</td></tr>
+      <tr><td>12</td><td>┤E'[+]T'[i]</td><td>*</td><td>pop [i]（出力: i i）</td></tr>
+      <tr><td>13</td><td>┤E'[+]T'</td><td>*</td><td>pop T', push *F[*]T'</td></tr>
+      <tr><td>14</td><td>┤E'[+][*]F*</td><td>*</td><td>pop *</td></tr>
+      <tr><td>15</td><td>┤E'[+][*]F</td><td>i</td><td>pop F, push i[i]</td></tr>
+      <tr><td>16</td><td>┤E'[+][*][i]i</td><td>i</td><td>pop i</td></tr>
+      <tr><td>17</td><td>┤E'[+][*][i]</td><td>┤</td><td>pop [i]（出力: i i i）</td></tr>
+      <tr><td>18</td><td>┤E'[+][*]</td><td>┤</td><td>pop [*]（出力: i i i *）</td></tr>
+      <tr><td>19</td><td>┤E'[+]</td><td>┤</td><td>pop T', (push ε)</td></tr>
+      <tr><td>20</td><td>┤E'[+]</td><td>┤</td><td>pop [+]（出力: i i i * +）</td></tr>
+      <tr><td>21</td><td>┤E'</td><td>┤</td><td>pop E', (push ε)</td></tr>
+      <tr><td>22</td><td>┤</td><td>┤</td><td>pop ┤・終了</td></tr>
+      </tbody></table></div>
+      <p>最終出力 <code>i i i * +</code> は<code>i+i*i</code>の後置記法として正しい（*の方が先に処理される）。</p></div></details></div>
+      <div class="exercise"><h3>問10 LR構文解析（i*(i+i)のフルトレース）</h3><p>本書第6回のSLR(1)表を用いて、入力<code>i*(i+i)┤</code>に対する動作をフルトレースせよ。</p><details><summary>解答を見る</summary><div class="answer">
+      <div class="tablewrap"><table><thead><tr><th>#</th><th>スタック</th><th>入力</th><th>動作</th></tr></thead><tbody>
+      <tr><td>1</td><td>0</td><td>i*(i+i)┤</td><td>shift 5</td></tr>
+      <tr><td>2</td><td>0 i5</td><td>*(i+i)┤</td><td>reduce 6 F→i、goto(0,F)=3</td></tr>
+      <tr><td>3</td><td>0 F3</td><td>*(i+i)┤</td><td>reduce 4 T→F、goto(0,T)=2</td></tr>
+      <tr><td>4</td><td>0 T2</td><td>*(i+i)┤</td><td>shift 7</td></tr>
+      <tr><td>5</td><td>0 T2 *7</td><td>(i+i)┤</td><td>shift 4</td></tr>
+      <tr><td>6</td><td>0 T2 *7 (4</td><td>i+i)┤</td><td>shift 5</td></tr>
+      <tr><td>7</td><td>0 T2 *7 (4 i5</td><td>+i)┤</td><td>reduce 6 F→i、goto(4,F)=3</td></tr>
+      <tr><td>8</td><td>0 T2 *7 (4 F3</td><td>+i)┤</td><td>reduce 4 T→F、goto(4,T)=2</td></tr>
+      <tr><td>9</td><td>0 T2 *7 (4 T2</td><td>+i)┤</td><td>reduce 2 E→T、goto(4,E)=8</td></tr>
+      <tr><td>10</td><td>0 T2 *7 (4 E8</td><td>+i)┤</td><td>shift 6</td></tr>
+      <tr><td>11</td><td>0 T2 *7 (4 E8 +6</td><td>i)┤</td><td>shift 5</td></tr>
+      <tr><td>12</td><td>… +6 i5</td><td>)┤</td><td>reduce 6 F→i、goto(6,F)=3</td></tr>
+      <tr><td>13</td><td>… +6 F3</td><td>)┤</td><td>reduce 4 T→F、goto(6,T)=9</td></tr>
+      <tr><td>14</td><td>… +6 T9</td><td>)┤</td><td>reduce 1 E→E+T、goto(4,E)=8</td></tr>
+      <tr><td>15</td><td>0 T2 *7 (4 E8</td><td>)┤</td><td>shift 11</td></tr>
+      <tr><td>16</td><td>0 T2 *7 (4 E8 )11</td><td>┤</td><td>reduce 5 F→(E)、goto(7,F)=10</td></tr>
+      <tr><td>17</td><td>0 T2 *7 F10</td><td>┤</td><td>reduce 3 T→T*F、goto(0,T)=2</td></tr>
+      <tr><td>18</td><td>0 T2</td><td>┤</td><td>reduce 2 E→T、goto(0,E)=1</td></tr>
+      <tr><td>19</td><td>0 E1</td><td>┤</td><td>accept</td></tr>
+      </tbody></table></div>
+      <p>すべてのreduceでgoto先の状態が一意に定まり、衝突がないことを確認できる。</p></div></details></div>
+      <h2 id="mock-back">後半模試</h2>
+      <div class="exercise"><h3>問1 フレーム</h3><p><code>f(1,2,3)</code>を呼び出した関数のフレームで、戻り番地と第3引数の位置を答えよ。</p><details><summary>解答を見る</summary><div class="answer"><code>4[ebp]</code>、<code>16[ebp]</code>。</div></details></div>
+      <div class="exercise"><h3>問2 分岐</h3><p><code>if (x &gt;= 0) x += 1;</code>に対して、<code>cmp 8[ebp],0</code>の直後に本体を飛ばす条件分岐を置く。命令は何か。</p><details><summary>解答を見る</summary><div class="answer"><code>jl L1</code>。偽条件<code>x&lt;0</code>で本体を飛ばす。</div></details></div>
+      <div class="exercise"><h3>問3 レジスタ数</h3><p><code>N=2</code>のとき、<code>x-y*z</code>と<code>x*y-z</code>のコード生成型および必要レジスタ数を答えよ。</p><details><summary>解答を見る</summary><div class="answer"><p><code>x-y*z</code>: r(x)=0（非可換）、r(y*z)=1（0&lt;r&lt;N）→<strong>RL型、2本</strong>。<code>x*y-z</code>: r(x*y)=1、r(z)=0→<strong>L型、1本</strong>。</p></div></details></div>
+      <div class="exercise"><h3>問4 覗き穴最適化</h3><pre><code>mov eax, 8[ebp]
+mov ebx, 8[ebp]
+add eax, 1
+imul ecx, 16
+mov edx, edx</code></pre><details><summary>解答を見る</summary><div class="answer"><pre><code>mov eax, 8[ebp]
+mov ebx, eax
+inc eax
+shl ecx, 4</code></pre><p>（<code>mov edx,edx</code>は削除）</p></div></details></div>
+      <div class="exercise"><h3>問5 ウォーターマーキング</h3><p>生存区間の重なりを表すグラフ、回復に失敗し得る方式、新色を導入しない方式を順に答えよ。</p><details><summary>解答を見る</summary><div class="answer">干渉グラフ、QP、CP。</div></details></div>
+      <div class="exercise"><h3>問6 参照回数</h3><p><code>for(j=i;j&lt;n;j++) s+=j;</code>をK回反復するとき、変数jの参照回数を求めよ。</p><details><summary>解答を見る</summary><div class="answer"><strong>4K+2</strong>（初期化1、条件判定K+1、j++の読み書きで2K、s+=jで K）</div></details></div>
+      <div class="exercise"><h3>問7 戻り値の最適化</h3><p><code>int foo(int a,int b){ if(a&gt;=0 &amp;&amp; a&lt;b) b=a; return b; }</code>を、bへの書込みを行わずaかbを直接返すコードに最適化する方針を1文で説明せよ。</p><details><summary>解答を見る</summary><div class="answer"><p>条件が偽ならbを返し、真ならaを返せばよいので、条件分岐の行き先ラベルでeaxにaかbのどちらをロードするかを直接決めてしまい、b自体への書込みを省略する（本書「過去問解説2024年度」参照）。</p></div></details></div>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="check"><span class="num">CHECKLIST</span>直前チェックリスト</h1>
+      <h2 id="check-front">前半</h2><ul class="check">
+      <li>T図式でインタプリタ・翻訳系・コンパイラの違いを図示できる。</li>
+      <li>形式文法 G=(N,Σ,S,P) の各要素とチョムスキー階層の4型を言える。</li>
+      <li>チューリングマシンの形式的定義M=(Q,Σ,Γ,δ,q0,B,F)を書け、簡単な遷移表のトレースができる。</li>
+      <li>カントールの定理の証明（背理法）と床屋のパラドックスの対応を説明できる。</li>
+      <li>停止性問題が決定不能であることを背理法で示せる。</li>
+      <li>NP完全・NP困難の定義の違い（Pに1つでも属せばP=NP、NPに属するかは不問）を言える。</li>
+      <li>00/11を含む・含まない正規表現を白紙から書ける。</li>
+      <li>ε-NFA→NFA→DFAの変換手順、DFA最小化の同値定義を説明できる。</li>
+      <li>正規表現→ε-NFAの5構成規則（∅,ε,a,r1+r2,r1r2,r1*）を再現できる。</li>
+      <li>i+i*iとdangling elseの構文木を二通り描ける。</li>
+      <li>曖昧さの解消3方法（文法変形・優先度宣言・デフォルト動作）を言える。</li>
+      <li>演算子順位関係の3規則（≐,⋖,⋗）から優先順位表を作れる。</li>
+      <li>演算子順位法・LL(1)予測構文解析・SLR(1)構文解析の3種のフルトレースをそれぞれ白紙から書ける。</li>
+      <li>左括り出し・左再帰除去の一般公式と、それぞれの限界を説明できる。</li>
+      <li>First/Follow/Directorをこの授業の記法通りに計算できる。</li>
+      <li>closureとGOTOの定義から状態遷移図を構築できる。</li>
+      <li>SLR(1)/LR(1)/LALR(1)の能力の大小関係とyacc/bisonがLALR(1)であることを言える。</li>
+      <li>yacc/bisonの<code>%left</code>/<code>%right</code>/<code>%nonassoc</code>の意味を説明できる。</li>
+      </ul>
+      <h2 id="check-back">後半</h2><ul class="check">
+      <li><code>4[ebp]</code>、<code>8[ebp]</code>、<code>-4[ebp]</code>を即答できる。</li>
+      <li><code>cmp</code>の直後に置く「偽条件ジャンプ」を選べる（jg/jge/je/jne/jl/jle）。</li>
+      <li>if、if-else、while、for、break、continueのラベル形を書ける。</li>
+      <li>表4.1/4.2を毎回導出でき、RSL/RL/R/LR/Lと r(e) を求められる。</li>
+      <li>論理式の短絡評価コード（&amp;&amp;が真/偽ならLへ、それぞれの形）を書ける。</li>
+      <li>戻り値計算のeaxモード／非eaxモード／自由モードの意味を説明できる。</li>
+      <li><code>inc</code>、<code>dec</code>、<code>shl</code>、冗長movの置換ができる。</li>
+      <li>変数の参照回数をfor文・if文について推定できる。</li>
+      <li>フレーム省略後の<code>esp</code>相対番地への読み替え、生存解析の適用ができる。</li>
+      <li>GCアルゴリズムを手で実行できる。</li>
+      <li>QP/QPS/CC/ICC/CPを「回復可能性・新色導入・向く状況」で比較できる。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="glossary"><span class="num">GLOSSARY</span>用語集</h1>
+      <dl class="gloss">
+        <dt>T図式（Tombstone diagram）</dt><dd>言語処理系の役割（プログラム・翻訳系・通訳系）を図式化したもの。</dd>
+        <dt>ブートストラップ</dt><dd>言語Lのコンパイラを言語L自身で記述する技法。</dd>
+        <dt>3番地コード（three-address code）</dt><dd>「演算子・引数1・引数2・結果格納先」の四つ組で表す代表的な中間コード形式。</dd>
+        <dt>形式文法 G=(N,Σ,S,P)</dt><dd>非終端記号N・終端記号Σ・開始記号S・生成規則Pの4つ組で定義される文法。</dd>
+        <dt>チョムスキー階層</dt><dd>生成規則の制限に基づく言語クラスの包含関係（Type0⊋Type1⊋Type2⊋Type3）。</dd>
+        <dt>チューリングマシン</dt><dd>M=(Q,Σ,Γ,δ,q0,B,F)で定義される、計算機を単純化・理想化した仮想機械。</dd>
+        <dt>チューリング完全</dt><dd>フォン・ノイマン型計算機と同じ計算能力を持つこと。</dd>
+        <dt>停止性問題</dt><dd>任意のTMと入力について有限時間で停止するか判定する問題。決定不能（背理法で証明）。</dd>
+        <dt>可算集合／非可算集合</dt><dd>自然数全体と全単射が存在する集合（可算）と、存在しない集合（非可算、例：実数全体）。</dd>
+        <dt>カントールの定理</dt><dd>任意の集合Aについて |A| &lt; |P(A)|（冪集合の濃度は元の集合より真に大きい）。</dd>
+        <dt>NP完全／NP困難</dt><dd>NPクラスの中で最も難しい問題（NP完全）、それと同等以上の難しさを持つ問題（NP困難、NPに属すかは不問）。</dd>
+        <dt>ε-NFA・NFA・DFA</dt><dd>ε動作を許す非決定性オートマトン、許さない非決定性オートマトン、決定性オートマトン。この順に変換できる。</dd>
+        <dt>BNF/EBNF</dt><dd>生成規則を書く記法（Backus Naur Form）とその拡張（繰返し<code>{}</code>・省略可<code>[]</code>を追加）。</dd>
+        <dt>逆ポーランド記法（RPN）</dt><dd>構文木を帰りがけ順（post-order）で辿って得られる後置記法。</dd>
+        <dt>曖昧文法</dt><dd>1つの文字列に対し構文木が複数存在する文法。</dd>
+        <dt>演算子順位法</dt><dd>演算子（終端記号）間の順位関係（≐,⋖,⋗）を使う上向き構文解析法。</dd>
+        <dt>左括り出し／左再帰除去</dt><dd>下向き構文解析でバックトラックや無限再帰を避けるための文法変形。</dd>
+        <dt>First/Follow/Director</dt><dd>LL(1)文法判定と予測構文解析表構築に使う3つの集合。</dd>
+        <dt>LL(1)文法</dt><dd>1トークンの先読みでバックトラックなしに下向き構文解析できる文法クラス。</dd>
+        <dt>最右導出・ハンドル・還元</dt><dd>常に最も右の非終端記号を置換する導出、直前の最右導出で置換した部分、それを非終端記号へ戻す操作。</dd>
+        <dt>LR(0)項・closure・GOTO</dt><dd>ドットの位置で構文解析の進行状況を表す項、その集合の閉包、記号による状態遷移。</dd>
+        <dt>SLR(1)／LR(1)／LALR(1)</dt><dd>「気まずい状態」の解決方法によるLR構文解析法の分類。能力はSLR(1)⊊LALR(1)⊊LR(1)。yacc/bisonはLALR(1)。</dd>
+        <dt>関数フレーム</dt><dd>スタック上に確保される、関数の引数・戻り番地・局所変数を格納する領域。<code>ebp</code>相対番地で参照する。</dd>
+        <dt>覗き穴式最適化</dt><dd>局所的な命令列パターンを走査・置換する最適化手法。コードが変化しなくなるまで反復する。</dd>
+        <dt>表4.1・表4.2</dt><dd>算術式のコード生成型（RSL/RL/R/LR/L）と必要レジスタ数r(e)を、r(e1)・r(e2)・可換性から求める表。</dd>
+        <dt>eaxモード／非eaxモード／自由モード</dt><dd>戻り値計算の最適化のため、部分式の計算結果をeaxに入れるべきか避けるべきかを指定するモード。</dd>
+        <dt>生存解析</dt><dd>使用されない変数への代入・領域確保を検出し削除する最適化。</dd>
+        <dt>干渉グラフ</dt><dd>生存区間が重なる変数どうしを辺で結んだグラフ。レジスタ割当はこのグラフの彩色問題に帰着する。</dd>
+        <dt>QP/QPS/CC/ICC/CP</dt><dd>干渉グラフの彩色を利用したソフトウェアウォーターマーキングの5つのアルゴリズム。</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h1 class="chapter" id="appendix"><span class="num">APPENDIX</span>参照資料</h1>
+      <p>本文は次の資料を照合して作成した。講義資料の原本は、この参考書と同じフォルダ階層の親ディレクトリ、および<code>_Classroom/courseWorkMaterials</code>以下にある。</p>
+      <ul>
+        <li>前半（全7回）: <code>言語処理系202601.pdf</code> 〜 <code>言語処理系202607.pdf</code></li>
+        <li>後半（全6回）: <code>言語処理系（１）.pdf</code> 〜 <code>言語処理系（６）.pdf</code></li>
+        <li>課題一覧（原文）: <code>課題.txt</code></li>
+        <li>過去問メモ: <code>過去問/山井&amp;金子_2023期末メモ.pdf</code>、<code>過去問/金子&amp;山井2024期末.pdf</code></li>
+        <li>実装コード: 第5回<code>project/rdp.c</code>（再帰的下向き構文解析器）、第6回<code>project/calc.l</code>・<code>project/calc.y</code>（yacc/bison電卓）、第3回<code>project/double.l</code>・追加資料<code>integer-e.l</code></li>
+        <li>学生自身の提出レポート: <code>05/24266007.pdf</code>（第5回課題、LL(1)予測構文解析のフルトレース）、<code>06/24266007.pdf</code>（第6回課題、SLR(1)構文解析のフルトレース、絶対値拡張の設計方針）</li>
+      </ul>
+      <p class="src">過去問メモは受験者の記憶に基づく再現であり、問題文の細部が完全に一致する保証はない旨が原文中に明記されている。ここでは、2023年度・2024年度に共通する出題形式と、各回の課題・講義資料に直接対応する論点を突き合わせて解説を作成した。前半第5回・第6回・第7回のスライドは当初PDFの内部構造が破損しており読み取れなかったが、ユーザーが後日フォルダへ配置した版を用いてすべて読み取り、本書に反映済みである。</p>
+    </section>
+</main>
+</div>
+<div id="progress"></div>
+<script>
+if(window.mermaid){mermaid.initialize({startOnLoad:true,theme:'neutral',flowchart:{htmlLabels:true},securityLevel:'loose'});}
+document.addEventListener('DOMContentLoaded',function(){
+  var content=document.getElementById('content'),toc=document.getElementById('tocList'),sidebar=document.getElementById('sidebar');
+  var headings=[].slice.call(content.querySelectorAll('h1.chapter[id],h2[id]'));
+  toc.innerHTML=headings.map(function(h){var type=h.tagName==='H1'?'chap':'sect';return '<a class="'+type+'" href="#'+h.id+'">'+h.textContent.replace(/^(GUIDE|FRONT HALF|BACK HALF|PAST EXAMS|PRACTICE|CHECKLIST|GLOSSARY|APPENDIX)\s*/,'').trim()+'</a>';}).join('');
+  var links={};[].slice.call(toc.querySelectorAll('a')).forEach(function(a){links[a.getAttribute('href').slice(1)]=a;});
+  var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){Object.keys(links).forEach(function(k){links[k].classList.remove('current');});if(links[e.target.id])links[e.target.id].classList.add('current');}});},{rootMargin:'-18% 0px -72% 0px'});headings.forEach(function(h){observer.observe(h);});
+  var bar=document.getElementById('progress');function progress(){var max=document.documentElement.scrollHeight-window.innerHeight;bar.style.width=(max>0?window.scrollY/max*100:0)+'%';}window.addEventListener('scroll',progress,{passive:true});progress();
+  var key='language-processing-final-bookmark';if(!location.hash){var saved=localStorage.getItem(key);if(saved)window.scrollTo(0,Number(saved));}var timer;window.addEventListener('scroll',function(){clearTimeout(timer);timer=setTimeout(function(){localStorage.setItem(key,String(window.scrollY));},350);},{passive:true});
+  var input=document.getElementById('searchInput'),meta=document.getElementById('searchMeta');function clearMarks(){[].slice.call(content.querySelectorAll('mark.hl')).forEach(function(m){m.replaceWith(document.createTextNode(m.textContent));});content.normalize();}
+  function escapeRegExp(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}function search(){clearMarks();var terms=input.value.trim().split(/\s+/).filter(Boolean);if(!terms.length){meta.textContent='';return;}var targets=[].slice.call(content.querySelectorAll('p,li,td,.exercise'));var hits=targets.filter(function(el){var t=el.textContent.toLowerCase();return terms.every(function(x){return t.indexOf(x.toLowerCase())>=0;});});hits.forEach(function(el){var walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);var nodes=[],n;while(n=walker.nextNode())nodes.push(n);nodes.forEach(function(node){var html=node.nodeValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');terms.forEach(function(term){html=html.replace(new RegExp('('+escapeRegExp(term)+')','gi'),'<mark class="hl">$1</mark>');});if(html!==node.nodeValue){var span=document.createElement('span');span.innerHTML=html;node.replaceWith(span);}});});meta.textContent=hits.length+' 件に一致';}
+  var searchTimer;input.addEventListener('input',function(){clearTimeout(searchTimer);searchTimer=setTimeout(search,180);});
+  var toggle=document.getElementById('tocToggle');toggle.addEventListener('click',function(){sidebar.classList.toggle('collapsed');var open=!sidebar.classList.contains('collapsed');toggle.setAttribute('aria-expanded',String(open));});toc.addEventListener('click',function(){if(window.innerWidth<=900)sidebar.classList.add('collapsed');});
+});
+</script>
+</body>
+</html>
